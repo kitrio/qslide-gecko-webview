@@ -563,24 +563,14 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
 
     @SuppressWarnings("deprecation")
     private static void setTimePickerTime(final TimePicker picker, final Calendar cal) {
-        if (Build.VERSION.SDK_INT >= 23) {
             picker.setHour(cal.get(Calendar.HOUR_OF_DAY));
             picker.setMinute(cal.get(Calendar.MINUTE));
-        } else {
-            picker.setCurrentHour(cal.get(Calendar.HOUR_OF_DAY));
-            picker.setCurrentMinute(cal.get(Calendar.MINUTE));
-        }
     }
 
     @SuppressWarnings("deprecation")
     private static void setCalendarTime(final Calendar cal, final TimePicker picker) {
-        if (Build.VERSION.SDK_INT >= 23) {
-            cal.set(Calendar.HOUR_OF_DAY, picker.getHour());
-            cal.set(Calendar.MINUTE, picker.getMinute());
-        } else {
-            cal.set(Calendar.HOUR_OF_DAY, picker.getCurrentHour());
-            cal.set(Calendar.MINUTE, picker.getCurrentMinute());
-        }
+        cal.set(Calendar.HOUR_OF_DAY, picker.getHour());
+        cal.set(Calendar.MINUTE, picker.getMinute());
     }
 
     @Override
@@ -741,10 +731,10 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
                 (mimeSubtype != null ? mimeSubtype : "*"));
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-        if (Build.VERSION.SDK_INT >= 18 && prompt.type == FilePrompt.Type.MULTIPLE) {
+        if (prompt.type == FilePrompt.Type.MULTIPLE) {
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
-        if (Build.VERSION.SDK_INT >= 19 && prompt.mimeTypes.length > 0) {
+        if (prompt.mimeTypes.length > 0) {
             intent.putExtra(Intent.EXTRA_MIME_TYPES, prompt.mimeTypes);
         }
 

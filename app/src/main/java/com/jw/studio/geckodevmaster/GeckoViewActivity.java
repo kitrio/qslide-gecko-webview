@@ -903,13 +903,9 @@ public class GeckoViewActivity extends AppCompatActivity {
         @Override
         public void onAndroidPermissionsRequest(final GeckoSession session, final String[] permissions,
                                                 final Callback callback) {
-            if (Build.VERSION.SDK_INT >= 23) {
-                // requestPermissions was introduced in API 23.
-                mCallback = callback;
-                requestPermissions(permissions, androidPermissionRequestCode);
-            } else {
-                callback.grant();
-            }
+            // requestPermissions was introduced in API 23.
+            mCallback = callback;
+            requestPermissions(permissions, androidPermissionRequestCode);
         }
 
         @Override
