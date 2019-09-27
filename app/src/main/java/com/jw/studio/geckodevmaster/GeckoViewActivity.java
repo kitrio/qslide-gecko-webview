@@ -32,8 +32,6 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -72,7 +70,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Locale;
 
-public class GeckoViewActivity extends Activity {
+import com.lge.app.floating.FloatableActivity;
+import com.lge.app.floating.FloatingWindow;
+
+public class GeckoViewActivity extends FloatableActivity {
     private static final String LOGTAG = "GeckoViewActivity";
     private static final String USE_MULTIPROCESS_EXTRA = "use_multiprocess";
     private static final String FULL_ACCESSIBILITY_TREE_EXTRA = "full_accessibility_tree";
@@ -553,7 +554,8 @@ public class GeckoViewActivity extends Activity {
         if (requestCode == REQUEST_FILE_PICKER) {
             final BasicGeckoViewPrompt prompt = (BasicGeckoViewPrompt)
                     mTabSessionManager.getCurrentSession().getPromptDelegate();
-            prompt.onFileCallbackResult(resultCode, data);
+            prompt.onFileCallbackResult(resultCode, data); //TODO fileCallback
+
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -1324,5 +1326,25 @@ public class GeckoViewActivity extends Activity {
         public void onStringScalar(final @NonNull RuntimeTelemetry.Metric<String> scalar) {
             Log.d(LOGTAG, "onStringScalar " + scalar);
         }
+    }
+    //TODO Qslide feature
+    @Override
+    public void onAttachedToFloatingWindow(FloatingWindow floatingWindow) {
+        Log.d("WindowFlow","onAttachedToFloatingWindow.");
+        /* all resources should be reinitialized once again
+         * if you set new layout for the floating mode setContentViewForFloatingMode()*/
+
+
+        // and also listeners a should be added once again to the buttons in floating mode
+
+
+        floatingWindow.setSize(700,1100);
+    }
+
+    @Override
+    public boolean onDetachedFromFloatingWindow(FloatingWindow w, boolean isReturningToFullScreen) {
+        Log.d("WindowFlow","onDetachedFromFloatingWindow. Returning to Fullscreen: " + isReturningToFullScreen);
+
+        return true;
     }
 }

@@ -5,7 +5,7 @@
 
 package com.jw.studio.geckodevmaster;
 
-import android.annotation.TargetApi;
+//import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -692,7 +692,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     }
 
     @Override
-    @TargetApi(19)
+    //@TargetApi(19)
     public GeckoResult<PromptResponse> onFilePrompt(GeckoSession session, FilePrompt prompt)
     {
         final Activity activity = mActivity;

@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
@@ -43,6 +44,25 @@
                 <data android:scheme="javascript"/>
             </intent-filter>
         </activity>
+        <activity-alias
+            android:name=".GeckoViewActivity"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:targetActivity=".GeckoViewActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="com.lge.intent.category.QSLIDE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="cleartask"
+                android:value="false" />
+            <meta-data
+                android:name="min version"
+                android:value="2.5" />
+        </activity-alias>
+
         <activity
             android:name=".SessionActivity"
             android:label="GeckoView Example"
@@ -55,5 +75,7 @@
             android:exported="false"
             android:process=":crash">
         </service>
+        <service
+            android:name="com.lge.app.floating.FloatingWindowService" />
     </application>
 </manifest>
