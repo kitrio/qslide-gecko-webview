@@ -210,8 +210,6 @@ public class GeckoViewActivity extends Activity {
 //                        ActionBar.LayoutParams.WRAP_CONTENT));
 //        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 
-
-
         mUseMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
         mEnableRemoteDebugging = true;
         mFullAccessibilityTree = getIntent().getBooleanExtra(FULL_ACCESSIBILITY_TREE_EXTRA, false);
@@ -464,81 +462,6 @@ public class GeckoViewActivity extends Activity {
 
         super.onBackPressed();
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.actions, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_e10s).setChecked(mUseMultiprocess);
-        menu.findItem(R.id.action_tp).setChecked(mUseTrackingProtection);
-        menu.findItem(R.id.action_pb).setChecked(mUsePrivateBrowsing);
-        menu.findItem(R.id.desktop_mode).setChecked(mDesktopMode);
-        menu.findItem(R.id.action_remote_debugging).setChecked(mEnableRemoteDebugging);
-        menu.findItem(R.id.action_forward).setEnabled(mCanGoForward);
-        return true;
-    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        GeckoSession session = mTabSessionManager.getCurrentSession();
-//        switch (item.getItemId()) {
-//            case R.id.action_reload:
-//                session.reload();
-//                break;
-//            case R.id.action_forward:
-//                session.goForward();
-//                break;
-//            case R.id.action_e10s:
-//                mUseMultiprocess = !mUseMultiprocess;
-//                recreateSession();
-//                break;
-//            case R.id.action_tp:
-//                mUseTrackingProtection = !mUseTrackingProtection;
-//                updateTrackingProtection(session);
-//                session.reload();
-//                break;
-//            case R.id.action_tpe:
-//                sGeckoRuntime.getContentBlockingController().checkException(session).accept(value -> {
-//                    if (value.booleanValue()) {
-//                        sGeckoRuntime.getContentBlockingController().removeException(session);
-//                        item.setTitle(R.string.tracking_protection_ex);
-//                    } else {
-//                        sGeckoRuntime.getContentBlockingController().addException(session);
-//                        item.setTitle(R.string.tracking_protection_ex2);
-//                    }
-//                    session.reload();
-//                });
-//                break;
-//            case R.id.desktop_mode:
-//                mDesktopMode = !mDesktopMode;
-//                updateDesktopMode(session);
-//                session.reload();
-//                break;
-//            case R.id.action_pb:
-//                mUsePrivateBrowsing = !mUsePrivateBrowsing;
-//                recreateSession();
-//                break;
-//            case R.id.action_new_tab:
-//                createNewTab();
-//                break;
-//            case R.id.action_close_tab:
-//                closeTab((TabSession)session);
-//                break;
-//            case R.id.action_remote_debugging:
-//                mEnableRemoteDebugging = !mEnableRemoteDebugging;
-//                sGeckoRuntime.getSettings().setRemoteDebuggingEnabled(mEnableRemoteDebugging);
-//                break;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//
-//        return true;
-//    }
 
     private void createNewTab() {
         TabSession newSession = createSession();
