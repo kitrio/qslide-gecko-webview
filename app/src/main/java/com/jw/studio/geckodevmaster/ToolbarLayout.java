@@ -26,10 +26,10 @@ public class ToolbarLayout extends LinearLayout {
     }
 
     private void initView() {
-        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1.0f));
+        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1.0f));
         setOrientation(LinearLayout.HORIZONTAL);
         mLocationView = new LocationView(getContext());
-        mLocationView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1.0f));
+        mLocationView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f));//notice
         mLocationView.setId(R.id.url_bar);
         addView(mLocationView);
 

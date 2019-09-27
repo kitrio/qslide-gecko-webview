@@ -24,19 +24,22 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+
 import android.widget.ProgressBar;
+
 
 import org.json.JSONObject;
 import org.mozilla.geckoview.AllowOrDeny;
@@ -69,7 +72,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Locale;
 
-public class GeckoViewActivity extends AppCompatActivity {
+public class GeckoViewActivity extends Activity {
     private static final String LOGTAG = "GeckoViewActivity";
     private static final String USE_MULTIPROCESS_EXTRA = "use_multiprocess";
     private static final String FULL_ACCESSIBILITY_TREE_EXTRA = "full_accessibility_tree";
@@ -128,19 +131,86 @@ public class GeckoViewActivity extends AppCompatActivity {
         createNotificationChannel();
         setContentView(R.layout.geckoview_activity);
         mGeckoView = findViewById(R.id.gecko_view);
-
         mTabSessionManager = new TabSessionManager();
 
-        setSupportActionBar(findViewById(R.id.toolbar));
+        //setSupportActionBar(findViewById(R.id.toolbar));
 
         mToolbarView = new ToolbarLayout(this, mTabSessionManager);
         mToolbarView.setId(R.id.toolbar_layout);
         mToolbarView.setTabListener(this::switchToSessionAtIndex);
 
-        getSupportActionBar().setCustomView(mToolbarView,
-                new ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT,
-                        ActionBar.LayoutParams.WRAP_CONTENT));
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        ConstraintLayout applayout = findViewById(R.id.main);
+        ConstraintSet set = new ConstraintSet();
+        applayout.addView(mToolbarView);
+//        set.connect(R.id.main, ConstraintSet.TOP,R.id.toolbar,ConstraintSet.TOP);
+//        set.connect(R.id.toolbar, ConstraintSet.BOTTOM,R.id.main,ConstraintSet.BOTTOM);
+//        set.applyTo(applayout);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.actions);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() { //TODO make menu
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                GeckoSession session = mTabSessionManager.getCurrentSession();
+                switch (item.getItemId()) {
+                    case R.id.action_reload:
+                        session.reload();
+                        break;
+                    case R.id.action_forward:
+                        session.goForward();
+                        break;
+                    case R.id.action_e10s:
+                        mUseMultiprocess = !mUseMultiprocess;
+                        recreateSession();
+                        break;
+                    case R.id.action_tp:
+                        mUseTrackingProtection = !mUseTrackingProtection;
+                        updateTrackingProtection(session);
+                        session.reload();
+                        break;
+                    case R.id.action_tpe:
+                        sGeckoRuntime.getContentBlockingController().checkException(session).accept(value -> {
+                            if (value.booleanValue()) {
+                                sGeckoRuntime.getContentBlockingController().removeException(session);
+                                item.setTitle(R.string.tracking_protection_ex);
+                            } else {
+                                sGeckoRuntime.getContentBlockingController().addException(session);
+                                item.setTitle(R.string.tracking_protection_ex2);
+                            }
+                            session.reload();
+                        });
+                        break;
+                    case R.id.desktop_mode:
+                        mDesktopMode = !mDesktopMode;
+                        updateDesktopMode(session);
+                        session.reload();
+                        break;
+                    case R.id.action_pb:
+                        mUsePrivateBrowsing = !mUsePrivateBrowsing;
+                        recreateSession();
+                        break;
+                    case R.id.action_new_tab:
+                        createNewTab();
+                        break;
+                    case R.id.action_close_tab:
+                        closeTab((TabSession)session);
+                        break;
+                    case R.id.action_remote_debugging:
+                        mEnableRemoteDebugging = !mEnableRemoteDebugging;
+                        sGeckoRuntime.getSettings().setRemoteDebuggingEnabled(mEnableRemoteDebugging);
+                        break;
+                    default:
+                        return onMenuItemClick(item);
+                }
+
+                return true;
+            }
+        });
+//        getSupportActionBar().setCustomView(mToolbarView,
+//                new ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT,
+//                        ActionBar.LayoutParams.WRAP_CONTENT));
+//        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+
+
 
         mUseMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
         mEnableRemoteDebugging = true;
@@ -412,63 +482,63 @@ public class GeckoViewActivity extends AppCompatActivity {
         menu.findItem(R.id.action_forward).setEnabled(mCanGoForward);
         return true;
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        GeckoSession session = mTabSessionManager.getCurrentSession();
-        switch (item.getItemId()) {
-            case R.id.action_reload:
-                session.reload();
-                break;
-            case R.id.action_forward:
-                session.goForward();
-                break;
-            case R.id.action_e10s:
-                mUseMultiprocess = !mUseMultiprocess;
-                recreateSession();
-                break;
-            case R.id.action_tp:
-                mUseTrackingProtection = !mUseTrackingProtection;
-                updateTrackingProtection(session);
-                session.reload();
-                break;
-            case R.id.action_tpe:
-                sGeckoRuntime.getContentBlockingController().checkException(session).accept(value -> {
-                    if (value.booleanValue()) {
-                        sGeckoRuntime.getContentBlockingController().removeException(session);
-                        item.setTitle(R.string.tracking_protection_ex);
-                    } else {
-                        sGeckoRuntime.getContentBlockingController().addException(session);
-                        item.setTitle(R.string.tracking_protection_ex2);
-                    }
-                    session.reload();
-                });
-                break;
-            case R.id.desktop_mode:
-                mDesktopMode = !mDesktopMode;
-                updateDesktopMode(session);
-                session.reload();
-                break;
-            case R.id.action_pb:
-                mUsePrivateBrowsing = !mUsePrivateBrowsing;
-                recreateSession();
-                break;
-            case R.id.action_new_tab:
-                createNewTab();
-                break;
-            case R.id.action_close_tab:
-                closeTab((TabSession)session);
-                break;
-            case R.id.action_remote_debugging:
-                mEnableRemoteDebugging = !mEnableRemoteDebugging;
-                sGeckoRuntime.getSettings().setRemoteDebuggingEnabled(mEnableRemoteDebugging);
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
-        return true;
-    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        GeckoSession session = mTabSessionManager.getCurrentSession();
+//        switch (item.getItemId()) {
+//            case R.id.action_reload:
+//                session.reload();
+//                break;
+//            case R.id.action_forward:
+//                session.goForward();
+//                break;
+//            case R.id.action_e10s:
+//                mUseMultiprocess = !mUseMultiprocess;
+//                recreateSession();
+//                break;
+//            case R.id.action_tp:
+//                mUseTrackingProtection = !mUseTrackingProtection;
+//                updateTrackingProtection(session);
+//                session.reload();
+//                break;
+//            case R.id.action_tpe:
+//                sGeckoRuntime.getContentBlockingController().checkException(session).accept(value -> {
+//                    if (value.booleanValue()) {
+//                        sGeckoRuntime.getContentBlockingController().removeException(session);
+//                        item.setTitle(R.string.tracking_protection_ex);
+//                    } else {
+//                        sGeckoRuntime.getContentBlockingController().addException(session);
+//                        item.setTitle(R.string.tracking_protection_ex2);
+//                    }
+//                    session.reload();
+//                });
+//                break;
+//            case R.id.desktop_mode:
+//                mDesktopMode = !mDesktopMode;
+//                updateDesktopMode(session);
+//                session.reload();
+//                break;
+//            case R.id.action_pb:
+//                mUsePrivateBrowsing = !mUsePrivateBrowsing;
+//                recreateSession();
+//                break;
+//            case R.id.action_new_tab:
+//                createNewTab();
+//                break;
+//            case R.id.action_close_tab:
+//                closeTab((TabSession)session);
+//                break;
+//            case R.id.action_remote_debugging:
+//                mEnableRemoteDebugging = !mEnableRemoteDebugging;
+//                sGeckoRuntime.getSettings().setRemoteDebuggingEnabled(mEnableRemoteDebugging);
+//                break;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//
+//        return true;
+//    }
 
     private void createNewTab() {
         TabSession newSession = createSession();
@@ -712,9 +782,9 @@ public class GeckoViewActivity extends AppCompatActivity {
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
             mFullScreen = fullScreen;
             if (fullScreen) {
-                getSupportActionBar().hide();
+                //getSupportActionBar().hide();
             } else {
-                getSupportActionBar().show();
+                //getSupportActionBar().show();
             }
         }
 
