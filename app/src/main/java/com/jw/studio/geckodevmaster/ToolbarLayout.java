@@ -1,8 +1,8 @@
 package com.jw.studio.geckodevmaster;
 
 import android.content.Context;
-import android.graphics.Typeface;
-import android.support.v4.content.ContextCompat;
+import android.graphics.Color;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -26,24 +26,31 @@ public class ToolbarLayout extends LinearLayout {
     }
 
     private void initView() {
-        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1.0f));
+
+        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+        setPadding(0,0,60,0);
         setOrientation(LinearLayout.HORIZONTAL);
+
         mLocationView = new LocationView(getContext());
         mLocationView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f));//notice
+        mLocationView.setBackgroundColor(Color.TRANSPARENT);
+        mLocationView.setPadding(20,0,20,20);
         mLocationView.setId(R.id.url_bar);
         addView(mLocationView);
 
         mTabsCountButton = getTabsCountButton();
+
         addView(mTabsCountButton);
+
     }
 
     private Button getTabsCountButton() {
         Button button = new Button(getContext());
-        button.setLayoutParams(new LayoutParams(150, LayoutParams.MATCH_PARENT));
+        button.setLayoutParams(new LayoutParams(100, LayoutParams.WRAP_CONTENT));
         button.setId(R.id.tabs_button);
         button.setOnClickListener(this::onTabButtonClicked);
-        button.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.tab_number_background));
-        button.setTypeface(button.getTypeface(), Typeface.BOLD);
+        button.setBackgroundResource(R.drawable.tab_number_background);
+        //button.setBackgroundColor(Color.TRANSPARENT);
         return button;
     }
 
@@ -60,7 +67,7 @@ public class ToolbarLayout extends LinearLayout {
     }
 
     public void onTabButtonClicked(View view) {
-        PopupMenu tabButtonMenu = new PopupMenu(getContext(), mTabsCountButton);
+        PopupMenu tabButtonMenu = new PopupMenu(view.getContext(), mTabsCountButton);
         for(int idx = 0; idx < mSessionManager.sessionCount(); ++idx) {
             tabButtonMenu.getMenu().add(0, idx, idx,
                     mSessionManager.getSession(idx).getTitle());

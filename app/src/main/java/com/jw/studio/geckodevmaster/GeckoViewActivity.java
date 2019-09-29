@@ -26,14 +26,17 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
+import android.support.constraint.Constraints;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import android.widget.ProgressBar;
@@ -76,7 +79,6 @@ import com.lge.app.floating.FloatingWindow;
 public class GeckoViewActivity extends FloatableActivity {
     private static final String LOGTAG = "GeckoViewActivity";
     private static final String USE_MULTIPROCESS_EXTRA = "use_multiprocess";
-    private static final String FULL_ACCESSIBILITY_TREE_EXTRA = "full_accessibility_tree";
     private static final String SEARCH_URI_BASE = "https://www.google.com/search?q=";
     private static final String ACTION_SHUTDOWN = "org.mozilla.geckoview_example.SHUTDOWN";
     private static final String CHANNEL_ID = "GeckoViewExample";
@@ -88,7 +90,6 @@ public class GeckoViewActivity extends FloatableActivity {
     private TabSessionManager mTabSessionManager;
     private GeckoView mGeckoView;
     private boolean mUseMultiprocess;
-    private boolean mFullAccessibilityTree;
     private boolean mUseTrackingProtection;
     private boolean mUsePrivateBrowsing;
     private boolean mEnableRemoteDebugging;
@@ -134,86 +135,98 @@ public class GeckoViewActivity extends FloatableActivity {
         mGeckoView = findViewById(R.id.gecko_view);
         mTabSessionManager = new TabSessionManager();
 
-        //setSupportActionBar(findViewById(R.id.toolbar));
-
         mToolbarView = new ToolbarLayout(this, mTabSessionManager);
         mToolbarView.setId(R.id.toolbar_layout);
         mToolbarView.setTabListener(this::switchToSessionAtIndex);
 
-        ConstraintLayout applayout = findViewById(R.id.main);
-        ConstraintSet set = new ConstraintSet();
-        applayout.addView(mToolbarView);
-//        set.connect(R.id.main, ConstraintSet.TOP,R.id.toolbar,ConstraintSet.TOP);
-//        set.connect(R.id.toolbar, ConstraintSet.BOTTOM,R.id.main,ConstraintSet.BOTTOM);
-//        set.applyTo(applayout);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        toolbar.inflateMenu(R.menu.actions);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() { //TODO make menu
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                GeckoSession session = mTabSessionManager.getCurrentSession();
-                switch (item.getItemId()) {
-                    case R.id.action_reload:
-                        session.reload();
-                        break;
-                    case R.id.action_forward:
-                        session.goForward();
-                        break;
-                    case R.id.action_e10s:
-                        mUseMultiprocess = !mUseMultiprocess;
-                        recreateSession();
-                        break;
-                    case R.id.action_tp:
-                        mUseTrackingProtection = !mUseTrackingProtection;
-                        updateTrackingProtection(session);
-                        session.reload();
-                        break;
-                    case R.id.action_tpe:
-                        sGeckoRuntime.getContentBlockingController().checkException(session).accept(value -> {
-                            if (value.booleanValue()) {
-                                sGeckoRuntime.getContentBlockingController().removeException(session);
-                                item.setTitle(R.string.tracking_protection_ex);
-                            } else {
-                                sGeckoRuntime.getContentBlockingController().addException(session);
-                                item.setTitle(R.string.tracking_protection_ex2);
-                            }
-                            session.reload();
-                        });
-                        break;
-                    case R.id.desktop_mode:
-                        mDesktopMode = !mDesktopMode;
-                        updateDesktopMode(session);
-                        session.reload();
-                        break;
-                    case R.id.action_pb:
-                        mUsePrivateBrowsing = !mUsePrivateBrowsing;
-                        recreateSession();
-                        break;
-                    case R.id.action_new_tab:
-                        createNewTab();
-                        break;
-                    case R.id.action_close_tab:
-                        closeTab((TabSession)session);
-                        break;
-                    case R.id.action_remote_debugging:
-                        mEnableRemoteDebugging = !mEnableRemoteDebugging;
-                        sGeckoRuntime.getSettings().setRemoteDebuggingEnabled(mEnableRemoteDebugging);
-                        break;
-                    default:
-                        return onMenuItemClick(item);
-                }
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setLayoutParams(new Constraints.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,80));
 
-                return true;
-            }
+        toolbar.setBackgroundResource(R.drawable.ic_menu);
+        toolbar.setPadding(30,50,10,0);
+
+        ConstraintLayout appLayout = findViewById(R.id.main);
+        ConstraintSet set = new ConstraintSet();
+        appLayout.addView(mToolbarView,1);
+        set.clone(appLayout);
+        set.connect(R.id.gecko_view,ConstraintSet.TOP, ConstraintSet.PARENT_ID,ConstraintSet.TOP);
+        set.connect(R.id.gecko_view,ConstraintSet.BOTTOM, R.id.toolbar_layout,ConstraintSet.TOP);
+
+        set.connect(R.id.toolbar, ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
+        set.connect(R.id.toolbar, ConstraintSet.RIGHT,R.id.main,ConstraintSet.RIGHT);
+        set.connect(R.id.toolbar, ConstraintSet.BOTTOM, R.id.toolbar_layout,ConstraintSet.BOTTOM);
+
+        set.connect(R.id.toolbar_layout,ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
+        set.connect(R.id.toolbar_layout,ConstraintSet.BOTTOM,R.id.main,ConstraintSet.BOTTOM);
+        set.applyTo(appLayout);
+
+        toolbar.setOnClickListener((view)->{
+            PopupMenu popupMenu = new PopupMenu(this, view);
+            popupMenu.inflate(R.menu.actions);
+
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() { //TODO modify menu
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    GeckoSession session = mTabSessionManager.getCurrentSession();
+                    switch (item.getItemId()) {
+                        case R.id.action_reload:
+                            session.reload();
+                            break;
+                        case R.id.action_forward:
+                            session.goForward();
+                            break;
+                        case R.id.action_e10s:
+                            mUseMultiprocess = !mUseMultiprocess;
+                            recreateSession();
+                            break;
+                        case R.id.action_tp:
+                            mUseTrackingProtection = !mUseTrackingProtection;
+                            updateTrackingProtection(session);
+                            session.reload();
+                            break;
+                        case R.id.action_tpe:
+                            sGeckoRuntime.getContentBlockingController().checkException(session).accept(value -> {
+                                if (value) {
+                                    sGeckoRuntime.getContentBlockingController().removeException(session);
+                                    item.setTitle(R.string.tracking_protection_ex);
+                                } else {
+                                    sGeckoRuntime.getContentBlockingController().addException(session);
+                                    item.setTitle(R.string.tracking_protection_ex2);
+                                }
+                                session.reload();
+                            });
+                            break;
+                        case R.id.desktop_mode:
+                            mDesktopMode = !mDesktopMode;
+                            updateDesktopMode(session);
+                            session.reload();
+                            break;
+                        case R.id.action_pb:
+                            mUsePrivateBrowsing = !mUsePrivateBrowsing;
+                            recreateSession();
+                            break;
+                        case R.id.action_new_tab:
+                            createNewTab();
+                            break;
+                        case R.id.action_close_tab:
+                            closeTab((TabSession)session);
+                            break;
+                        case R.id.action_remote_debugging:
+                            mEnableRemoteDebugging = !mEnableRemoteDebugging;
+                            sGeckoRuntime.getSettings().setRemoteDebuggingEnabled(mEnableRemoteDebugging);
+                            break;
+                        default:
+                            return onMenuItemClick(item);
+                    }
+
+                    return true;
+                }
+            });
+            popupMenu.show();
         });
-//        getSupportActionBar().setCustomView(mToolbarView,
-//                new ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT,
-//                        ActionBar.LayoutParams.WRAP_CONTENT));
-//        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 
         mUseMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
         mEnableRemoteDebugging = true;
-        mFullAccessibilityTree = getIntent().getBooleanExtra(FULL_ACCESSIBILITY_TREE_EXTRA, false);
         mProgressView = findViewById(R.id.page_progress);
 
         if (sGeckoRuntime == null) {
@@ -263,7 +276,7 @@ public class GeckoViewActivity extends FloatableActivity {
             });
 
             // `getSystemService` call requires API level 23
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 sGeckoRuntime.setWebNotificationDelegate(new WebNotificationDelegate() {
                     NotificationManager notificationManager = getSystemService(NotificationManager.class);
                     @Override
@@ -312,7 +325,7 @@ public class GeckoViewActivity extends FloatableActivity {
                 });
 
 
-            }
+            //}
 
             sGeckoRuntime.setDelegate(() -> {
                 mKillProcessOnDestroy = true;
@@ -330,7 +343,6 @@ public class GeckoViewActivity extends FloatableActivity {
                 }
 
                 mUseMultiprocess = session.getSettings().getUseMultiprocess();
-                mFullAccessibilityTree = session.getSettings().getFullAccessibilityTree();
 
                 mTabSessionManager.addSession(session);
                 setGeckoViewSession(session);
@@ -342,7 +354,7 @@ public class GeckoViewActivity extends FloatableActivity {
             }
             loadFromIntent(getIntent());
         }
-
+        mTabSessionManager.getCurrentSession().loadUri("https://m.naver.com");
         mToolbarView.getLocationView().setCommitListener(mCommitListener);
         mToolbarView.updateTabCount();
     }
@@ -368,7 +380,6 @@ public class GeckoViewActivity extends FloatableActivity {
                 .useMultiprocess(mUseMultiprocess)
                 .usePrivateMode(mUsePrivateBrowsing)
                 .useTrackingProtection(mUseTrackingProtection)
-                .fullAccessibilityTree(mFullAccessibilityTree)
                 .viewportMode(mDesktopMode
                         ? GeckoSessionSettings.VIEWPORT_MODE_DESKTOP
                         : GeckoSessionSettings.VIEWPORT_MODE_MOBILE)
