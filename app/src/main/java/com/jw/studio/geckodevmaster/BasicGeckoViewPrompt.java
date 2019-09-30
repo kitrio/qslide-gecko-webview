@@ -57,7 +57,7 @@ import java.util.Locale;
 
 final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
 
-    public  static final int sdkVersion = Build.VERSION.SDK_INT;
+    private static final int sdkVersion = Build.VERSION.SDK_INT;
     protected static final String LOGTAG = "BasicGeckoViewPrompt";
     private final Activity mActivity;
     public int filePickerRequestCode = 1;
@@ -92,7 +92,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
         if (activity == null) {
             return GeckoResult.fromValue(prompt.dismiss());
         }
-        Dialog dialog = new Dialog(mActivity);
+        Dialog dialog = new Dialog(activity);
         if (sdkVersion <= 25) {
             dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_PHONE);
         }else {
