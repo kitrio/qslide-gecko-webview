@@ -718,9 +718,11 @@ public class GeckoViewActivity extends FloatableActivity {
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
             mFullScreen = fullScreen;
             if (fullScreen) {
-                //getSupportActionBar().hide();
+                mToolbarView.setVisibility(ConstraintLayout.GONE);
+                Log.d("Geckoview", "Fullscreen in");
             } else {
-                //getSupportActionBar().show();
+                mToolbarView.setVisibility(ConstraintLayout.VISIBLE);
+                Log.d("Geckoview", "Fullscreen out");
             }
         }
 
