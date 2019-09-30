@@ -76,12 +76,31 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
         if (activity == null) {
             return GeckoResult.fromValue(prompt.dismiss());
         }
-        final AlertDialog.Builder builder = new AlertDialog.Builder(activity)
-                .setTitle(prompt.title)
-                .setMessage(prompt.message)
-                .setPositiveButton(android.R.string.ok, /* onClickListener */ null);
+        final Dialog dialog = new Dialog(activity);
+        if(sdkVersion <=25){
+            dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_PHONE);
+        }else {
+            dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+        }
+        dialog.setContentView(R.layout.custom_dialog);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        final TextView tvTitle = dialog.findViewById(R.id.titleAlert);
+        final Button btnOK =  dialog.findViewById(R.id.button_ok);
+        final Button btnCancel = dialog.findViewById(R.id.button_cancel);
+        btnCancel.setVisibility(View.GONE);
+        tvTitle.setText(prompt.message);
+
         GeckoResult<PromptResponse> res = new GeckoResult<PromptResponse>();
-        createStandardDialog(builder, prompt, res).show();
+
+        btnOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                res.complete(prompt.dismiss());
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+        dialog.setCancelable(false);
         return res;
     }
 
