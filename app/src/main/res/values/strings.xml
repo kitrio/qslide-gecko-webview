@@ -39,4 +39,6 @@
     <string name="slow_script">A script on this page is causing your web browser to run slowly</string>
     <string name="wait">Wait</string>
     <string name="stop">Stop</string>
+    <string name="alertmsg_ok">OK</string>
+    <string name="alertmsg_cancel">Cancel</string>
 </resources>

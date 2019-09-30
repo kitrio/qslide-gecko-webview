@@ -8,6 +8,7 @@ package com.jw.studio.geckodevmaster;
 //import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.text.InputType;
@@ -25,8 +27,10 @@ import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -52,8 +56,9 @@ import java.util.Date;
 import java.util.Locale;
 
 final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
-    protected static final String LOGTAG = "BasicGeckoViewPrompt";
 
+    public  static final int sdkVersion = Build.VERSION.SDK_INT;
+    protected static final String LOGTAG = "BasicGeckoViewPrompt";
     private final Activity mActivity;
     public int filePickerRequestCode = 1;
     private int mFileType;
@@ -87,30 +92,36 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
         if (activity == null) {
             return GeckoResult.fromValue(prompt.dismiss());
         }
-        final AlertDialog.Builder builder = new AlertDialog.Builder(activity)
-                .setTitle(prompt.title)
-                .setMessage(prompt.message);
+        Dialog dialog = new Dialog(mActivity);
+        if (sdkVersion <= 25) {
+            dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_PHONE);
+        }else {
+            dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+        }
+        dialog.setContentView(R.layout.custom_dialog);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        final TextView tvTitle = dialog.findViewById(R.id.titleAlert);
+        final Button btnOK =  dialog.findViewById(R.id.button_ok);
+        final Button btnCancel = dialog.findViewById(R.id.button_cancel);
+        tvTitle.setText(prompt.message);
 
         GeckoResult<PromptResponse> res = new GeckoResult<PromptResponse>();
-
-        final DialogInterface.OnClickListener listener =
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        if (which == DialogInterface.BUTTON_POSITIVE) {
-                            res.complete(prompt.confirm(ButtonPrompt.Type.POSITIVE));
-                        } else if (which == DialogInterface.BUTTON_NEGATIVE) {
-                            res.complete(prompt.confirm(ButtonPrompt.Type.NEGATIVE));
-                        } else {
-                            res.complete(prompt.dismiss());
-                        }
-                    }
-                };
-
-        builder.setPositiveButton(android.R.string.ok, listener);
-        builder.setNegativeButton(android.R.string.cancel, listener);
-
-        createStandardDialog(builder, prompt, res).show();
+        btnOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                res.complete(prompt.confirm(ButtonPrompt.Type.POSITIVE));
+                dialog.dismiss();
+            }
+        });
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                res.complete(prompt.confirm(ButtonPrompt.Type.NEGATIVE));
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+        dialog.setCancelable(false);
         return res;
     }
 
