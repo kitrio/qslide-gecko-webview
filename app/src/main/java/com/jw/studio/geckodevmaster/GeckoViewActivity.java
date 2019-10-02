@@ -158,7 +158,7 @@ public class GeckoViewActivity extends FloatableActivity {
         set.applyTo(appLayout);
 
         mUseMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
-        mEnableRemoteDebugging = true;
+        mEnableRemoteDebugging = false;
         mProgressView = findViewById(R.id.page_progress);
 
         if (sGeckoRuntime == null) {
@@ -178,7 +178,7 @@ public class GeckoViewActivity extends FloatableActivity {
             runtimeSettingsBuilder
                     .useContentProcessHint(mUseMultiprocess)
                     .remoteDebuggingEnabled(mEnableRemoteDebugging)
-                    .consoleOutput(true)
+                    .consoleOutput(false)
                     .contentBlocking(new ContentBlocking.Settings.Builder()
                             .antiTracking(ContentBlocking.AntiTracking.DEFAULT |
                                     ContentBlocking.AntiTracking.STP)
@@ -255,8 +255,6 @@ public class GeckoViewActivity extends FloatableActivity {
                         }
                     }
                 });
-
-
             //}
 
             sGeckoRuntime.setDelegate(() -> {
@@ -304,10 +302,6 @@ public class GeckoViewActivity extends FloatableActivity {
                         case R.id.action_forward:
                             session.goForward();
                             break;
-                        case R.id.action_e10s:
-                            mUseMultiprocess = !mUseMultiprocess;
-                            recreateSession();
-                            break;
                         case R.id.action_tp:
                             mUseTrackingProtection = !mUseTrackingProtection;
                             updateTrackingProtection(session);
@@ -340,10 +334,6 @@ public class GeckoViewActivity extends FloatableActivity {
                         case R.id.action_close_tab:
                             closeTab((TabSession)session);
                             break;
-//                        case R.id.action_remote_debugging:
-//                            mEnableRemoteDebugging = !mEnableRemoteDebugging;
-//                            sGeckoRuntime.getSettings().setRemoteDebuggingEnabled(mEnableRemoteDebugging);
-//                            break;
                         default:
                             return onMenuItemClick(item);
                     }
