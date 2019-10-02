@@ -38,10 +38,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-
 import android.widget.ProgressBar;
-
-
 import org.json.JSONObject;
 import org.mozilla.geckoview.AllowOrDeny;
 import org.mozilla.geckoview.BasicSelectionActionDelegate;
@@ -159,71 +156,6 @@ public class GeckoViewActivity extends FloatableActivity {
         set.connect(R.id.toolbar_layout,ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
         set.connect(R.id.toolbar_layout,ConstraintSet.BOTTOM,R.id.main,ConstraintSet.BOTTOM);
         set.applyTo(appLayout);
-
-        toolbar.setOnClickListener((view)->{
-            PopupMenu popupMenu = new PopupMenu(this, view);
-            popupMenu.inflate(R.menu.actions);
-
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() { //TODO modify menu
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    GeckoSession session = mTabSessionManager.getCurrentSession();
-                    switch (item.getItemId()) {
-                        case R.id.action_reload:
-                            session.reload();
-                            break;
-                        case R.id.action_forward:
-                            session.goForward();
-                            break;
-                        case R.id.action_e10s:
-                            mUseMultiprocess = !mUseMultiprocess;
-                            recreateSession();
-                            break;
-                        case R.id.action_tp:
-                            mUseTrackingProtection = !mUseTrackingProtection;
-                            updateTrackingProtection(session);
-                            session.reload();
-                            break;
-                        case R.id.action_tpe:
-                            sGeckoRuntime.getContentBlockingController().checkException(session).accept(value -> {
-                                if (value) {
-                                    sGeckoRuntime.getContentBlockingController().removeException(session);
-                                    item.setTitle(R.string.tracking_protection_ex);
-                                } else {
-                                    sGeckoRuntime.getContentBlockingController().addException(session);
-                                    item.setTitle(R.string.tracking_protection_ex2);
-                                }
-                                session.reload();
-                            });
-                            break;
-                        case R.id.desktop_mode:
-                            mDesktopMode = !mDesktopMode;
-                            updateDesktopMode(session);
-                            session.reload();
-                            break;
-                        case R.id.action_pb:
-                            mUsePrivateBrowsing = !mUsePrivateBrowsing;
-                            recreateSession();
-                            break;
-                        case R.id.action_new_tab:
-                            createNewTab();
-                            break;
-                        case R.id.action_close_tab:
-                            closeTab((TabSession)session);
-                            break;
-                        case R.id.action_remote_debugging:
-                            mEnableRemoteDebugging = !mEnableRemoteDebugging;
-                            sGeckoRuntime.getSettings().setRemoteDebuggingEnabled(mEnableRemoteDebugging);
-                            break;
-                        default:
-                            return onMenuItemClick(item);
-                    }
-
-                    return true;
-                }
-            });
-            popupMenu.show();
-        });
 
         mUseMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
         mEnableRemoteDebugging = true;
@@ -343,7 +275,6 @@ public class GeckoViewActivity extends FloatableActivity {
                 }
 
                 mUseMultiprocess = session.getSettings().getUseMultiprocess();
-
                 mTabSessionManager.addSession(session);
                 setGeckoViewSession(session);
             } else {
@@ -357,6 +288,71 @@ public class GeckoViewActivity extends FloatableActivity {
         mTabSessionManager.getCurrentSession().loadUri("https://m.naver.com");
         mToolbarView.getLocationView().setCommitListener(mCommitListener);
         mToolbarView.updateTabCount();
+
+        toolbar.setOnClickListener((view)->{
+            PopupMenu popupMenu = new PopupMenu(this, view);
+            popupMenu.inflate(R.menu.actions);
+
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() { //TODO modify menu
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    GeckoSession session = mTabSessionManager.getCurrentSession();
+                    switch (item.getItemId()) {
+                        case R.id.action_reload:
+                            session.reload();
+                            break;
+                        case R.id.action_forward:
+                            session.goForward();
+                            break;
+                        case R.id.action_e10s:
+                            mUseMultiprocess = !mUseMultiprocess;
+                            recreateSession();
+                            break;
+                        case R.id.action_tp:
+                            mUseTrackingProtection = !mUseTrackingProtection;
+                            updateTrackingProtection(session);
+                            session.reload();
+                            break;
+                        case R.id.action_tpe:
+                            sGeckoRuntime.getContentBlockingController().checkException(session).accept(value -> {
+                                if (value) {
+                                    sGeckoRuntime.getContentBlockingController().removeException(session);
+                                    item.setTitle(R.string.tracking_protection_ex);
+                                } else {
+                                    sGeckoRuntime.getContentBlockingController().addException(session);
+                                    item.setTitle(R.string.tracking_protection_ex2);
+                                }
+                                session.reload();
+                            });
+                            break;
+                        case R.id.desktop_mode:
+                            mDesktopMode = !mDesktopMode;
+                            updateDesktopMode(session);
+                            session.reload();
+                            break;
+                        case R.id.action_pb:
+                            mUsePrivateBrowsing = !mUsePrivateBrowsing;
+                            recreateSession();
+                            break;
+                        case R.id.action_new_tab:
+                            createNewTab();
+                            break;
+                        case R.id.action_close_tab:
+                            closeTab((TabSession)session);
+                            break;
+//                        case R.id.action_remote_debugging:
+//                            mEnableRemoteDebugging = !mEnableRemoteDebugging;
+//                            sGeckoRuntime.getSettings().setRemoteDebuggingEnabled(mEnableRemoteDebugging);
+//                            break;
+                        default:
+                            return onMenuItemClick(item);
+                    }
+
+                    return true;
+                }
+            });
+            popupMenu.show();
+        });
     }
 
     private void createNotificationChannel() {
