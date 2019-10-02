@@ -137,12 +137,12 @@ public class GeckoViewActivity extends FloatableActivity {
         mToolbarView.setTabListener(this::switchToSessionAtIndex);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setLayoutParams(new Constraints.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,80));
-
+        toolbar.setLayoutParams(new Constraints.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,80));
         toolbar.setBackgroundResource(R.drawable.ic_menu);
-        toolbar.setPadding(30,50,10,0);
+
 
         ConstraintLayout appLayout = findViewById(R.id.main);
+
         ConstraintSet set = new ConstraintSet();
         appLayout.addView(mToolbarView,1);
         set.clone(appLayout);

@@ -27,19 +27,19 @@ public class ToolbarLayout extends LinearLayout {
 
     private void initView() {
 
-        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER));
-        setPadding(0,0,60,0);
+        setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f));
+        setPadding(20,0,20,0);
         setOrientation(LinearLayout.HORIZONTAL);
 
         mLocationView = new LocationView(getContext());
-        mLocationView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f));//notice
+        mLocationView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1.0f));//notice
         mLocationView.setBackgroundColor(Color.TRANSPARENT);
-        mLocationView.setPadding(20,0,20,20);
+        mLocationView.setPadding(20,0,10,0);
         mLocationView.setId(R.id.url_bar);
         addView(mLocationView);
 
         mTabsCountButton = getTabsCountButton();
-
+        mTabsCountButton.setPadding(0,0,0,0);
         addView(mTabsCountButton);
 
     }
@@ -47,6 +47,7 @@ public class ToolbarLayout extends LinearLayout {
     private Button getTabsCountButton() {
         Button button = new Button(getContext());
         button.setLayoutParams(new LayoutParams(100, LayoutParams.WRAP_CONTENT));
+        button.setPadding(10,10,10,10);
         button.setId(R.id.tabs_button);
         button.setOnClickListener(this::onTabButtonClicked);
         button.setBackgroundResource(R.drawable.tab_number_background);
