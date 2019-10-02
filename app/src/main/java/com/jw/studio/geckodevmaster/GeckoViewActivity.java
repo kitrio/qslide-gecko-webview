@@ -520,6 +520,10 @@ public class GeckoViewActivity extends FloatableActivity {
 
     @Override
     protected void onNewIntent(final Intent intent) {
+        if(intent.getBooleanExtra("com.lge.app.floating.returnFromFloating", false)){
+            Log.d("com.lge.app.floating.returnFromFloating", "false");
+            return;
+        }
         super.onNewIntent(intent);
 
         if (ACTION_SHUTDOWN.equals(intent.getAction())) {
