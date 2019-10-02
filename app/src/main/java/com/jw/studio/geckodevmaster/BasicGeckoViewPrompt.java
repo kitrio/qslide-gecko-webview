@@ -18,6 +18,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.text.InputType;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -733,7 +734,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
             }
         }
 
-        final Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        final Intent intent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType((mimeType != null ? mimeType : "*") + '/' +
                 (mimeSubtype != null ? mimeSubtype : "*"));
         intent.addCategory(Intent.CATEGORY_OPENABLE);
