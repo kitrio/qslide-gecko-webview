@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GeckoView dev view</string>
+    <string name="app_name">Q WebView</string>
     <string name="activity_label">Gecko WebView</string>
     <string name="location_hint">Enter URL or search keywords...</string>
     <string name="username">Username</string>
