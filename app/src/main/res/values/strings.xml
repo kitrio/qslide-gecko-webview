@@ -24,7 +24,7 @@
     <string name="tracking_protection_ex">Disable TP</string>
     <string name="tracking_protection_ex2">Reenable TP</string>
     <string name="private_browsing">Private Browsing</string>
-    <string name="remote_debugging">Remote Debugging</string>
+
     <string name="forward">Forward</string>
     <string name="reload">Reload</string>
     <string name="crashed_title">GeckoView Example Crashed</string>
@@ -39,6 +39,4 @@
     <string name="slow_script">A script on this page is causing your web browser to run slowly</string>
     <string name="wait">Wait</string>
     <string name="stop">Stop</string>
-    <string name="alertmsg_ok">OK</string>
-    <string name="alertmsg_cancel">Cancel</string>
 </resources>
