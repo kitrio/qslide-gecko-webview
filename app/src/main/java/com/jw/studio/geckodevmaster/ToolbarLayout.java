@@ -31,6 +31,8 @@ public class ToolbarLayout extends LinearLayout {
         setOrientation(LinearLayout.HORIZONTAL);
 
         mLocationView = new LocationView(getContext());
+        mLocationView.setId(R.id.url_bar);
+        mLocationView.setBackgroundColor(Color.TRANSPARENT);
         mLocationView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1));
         mLocationView.setBackgroundColor(Color.TRANSPARENT);
         mLocationView.setId(R.id.url_bar);

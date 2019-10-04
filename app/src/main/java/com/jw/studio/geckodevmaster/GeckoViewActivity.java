@@ -129,17 +129,17 @@ public class GeckoViewActivity extends FloatableActivity {
         createNotificationChannel();
         setContentView(R.layout.geckoview_activity);
         mGeckoView = findViewById(R.id.gecko_view);
-        mTabSessionManager = new TabSessionManager();
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        ConstraintLayout appLayout = findViewById(R.id.main);
 
+        mTabSessionManager = new TabSessionManager();
         mToolbarView = new ToolbarLayout(this, mTabSessionManager);
         mToolbarView.setId(R.id.toolbar_layout);
         mToolbarView.setTabListener(this::switchToSessionAtIndex);
         mToolbarView.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,ConstraintLayout.LayoutParams.WRAP_CONTENT));
-        Toolbar toolbar = findViewById(R.id.toolbar);
+
         toolbar.setLayoutParams(new Constraints.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,80));
         toolbar.setBackgroundResource(R.drawable.ic_menu);
-
-        ConstraintLayout appLayout = findViewById(R.id.main);
 
         ConstraintSet set = new ConstraintSet();
         appLayout.addView(mToolbarView);
@@ -160,7 +160,79 @@ public class GeckoViewActivity extends FloatableActivity {
 
         mUseMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
         mEnableRemoteDebugging = false;
-        mProgressView = findViewById(R.id.page_progress);
+        //mProgressView = findViewById(R.id.page_progress);
+        toolbar.setOnClickListener((view)->{
+            PopupMenu popupMenu = new PopupMenu(this, view);
+            popupMenu.inflate(R.menu.actions);
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() { //TODO modify menu
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    GeckoSession session = mTabSessionManager.getCurrentSession();
+                    switch (item.getItemId()) {
+                        case R.id.action_reload:
+                            session.reload();
+                            break;
+                        case R.id.action_forward:
+                            session.goForward();
+                            break;
+//                        case R.id.action_tp:
+//                            mUseTrackingProtection = !mUseTrackingProtection;
+//                            updateTrackingProtection(session);
+//                            session.reload();
+//                            break;
+//                        case R.id.action_tpe:
+//                            sGeckoRuntime.getContentBlockingController().checkException(session).accept(value -> {
+//                                if (value) {
+//                                    sGeckoRuntime.getContentBlockingController().removeException(session);
+//                                    item.setTitle(R.string.tracking_protection_ex);
+//                                } else {
+//                                    sGeckoRuntime.getContentBlockingController().addException(session);
+//                                    item.setTitle(R.string.tracking_protection_ex2);
+//                                }
+//                                session.reload();
+//                            });
+//                            break;
+                        case R.id.desktop_mode:
+                            mDesktopMode = !mDesktopMode;
+                            updateDesktopMode(session);
+                            session.reload();
+                            break;
+                        case R.id.action_pb:
+                            mUsePrivateBrowsing = !mUsePrivateBrowsing;
+                            //mUseTrackingProtection = !mUseTrackingProtection;
+                            //updateTrackingProtection(session);
+                            if(mUsePrivateBrowsing){
+                                Toast.makeText(GeckoViewActivity.this, getString(R.string.private_browsing_on), Toast.LENGTH_SHORT).show();
+                            }else{
+                                Toast.makeText(GeckoViewActivity.this, getString(R.string.private_browsing_off), Toast.LENGTH_SHORT).show();
+                            }
+                            recreateSession();
+                            break;
+                        case R.id.action_new_tab:
+                            createNewTab();
+                            break;
+                        case R.id.action_close_tab:
+                            closeTab((TabSession)session);
+                            break;
+                        case R.id.qslide_mode:
+                            switchToFloatingMode();
+                            break;
+                        default:
+                            return onMenuItemClick(item);
+                    }
+
+                    return true;
+                }
+            });
+            popupMenu.show();
+        });
+        mBackButton = findViewById(R.id.back_button);
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         if (sGeckoRuntime == null) {
             final GeckoRuntimeSettings.Builder runtimeSettingsBuilder =
@@ -288,62 +360,6 @@ public class GeckoViewActivity extends FloatableActivity {
         mToolbarView.getLocationView().setCommitListener(mCommitListener);
         mToolbarView.updateTabCount();
 
-        toolbar.setOnClickListener((view)->{
-            PopupMenu popupMenu = new PopupMenu(this, view);
-            popupMenu.inflate(R.menu.actions);
-
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() { //TODO modify menu
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    GeckoSession session = mTabSessionManager.getCurrentSession();
-                    switch (item.getItemId()) {
-                        case R.id.action_reload:
-                            session.reload();
-                            break;
-                        case R.id.action_forward:
-                            session.goForward();
-                            break;
-                        case R.id.action_tp:
-                            mUseTrackingProtection = !mUseTrackingProtection;
-                            updateTrackingProtection(session);
-                            session.reload();
-                            break;
-                        case R.id.action_tpe:
-                            sGeckoRuntime.getContentBlockingController().checkException(session).accept(value -> {
-                                if (value) {
-                                    sGeckoRuntime.getContentBlockingController().removeException(session);
-                                    item.setTitle(R.string.tracking_protection_ex);
-                                } else {
-                                    sGeckoRuntime.getContentBlockingController().addException(session);
-                                    item.setTitle(R.string.tracking_protection_ex2);
-                                }
-                                session.reload();
-                            });
-                            break;
-                        case R.id.desktop_mode:
-                            mDesktopMode = !mDesktopMode;
-                            updateDesktopMode(session);
-                            session.reload();
-                            break;
-                        case R.id.action_pb:
-                            mUsePrivateBrowsing = !mUsePrivateBrowsing;
-                            recreateSession();
-                            break;
-                        case R.id.action_new_tab:
-                            createNewTab();
-                            break;
-                        case R.id.action_close_tab:
-                            closeTab((TabSession)session);
-                            break;
-                        default:
-                            return onMenuItemClick(item);
-                    }
-
-                    return true;
-                }
-            });
-            popupMenu.show();
-        });
     }
 
     private void createNotificationChannel() {
