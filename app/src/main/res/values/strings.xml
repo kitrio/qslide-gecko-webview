@@ -24,6 +24,9 @@
     <string name="tracking_protection_ex">Disable TP</string>
     <string name="tracking_protection_ex2">Reenable TP</string>
     <string name="private_browsing">Private Browsing</string>
+    <string name="private_browsing_on">Private Browsing On</string>
+    <string name="private_browsing_off">Private Browsing On</string>
+    <string name="qslide_mode">Q floating mode</string>
 
     <string name="forward">Forward</string>
     <string name="reload">Reload</string>
@@ -39,4 +42,5 @@
     <string name="slow_script">A script on this page is causing your web browser to run slowly</string>
     <string name="wait">Wait</string>
     <string name="stop">Stop</string>
+    <string name="initurl">https://www.google.com</string>
 </resources>

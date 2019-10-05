@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">Q 웹뷰 2</string>
+    <string name="activity_label">Q WebView</string>
+    <string name="location_hint">주소입력</string>
+    <string name="username">아이디</string>
+    <string name="password">비밀번호</string>
+    <string name="clear_field">Clear</string>
+    <string name="request_storage">Allow access to device storage for "%1$s"?</string>
+    <string name="request_geolocation">"%1$s"에 위치정보를 허용하시겠습니까 ?</string>
+    <string name="request_notification">"%1$s" 에서 알림을 받으시겠습니까?</string>
+    <string name="request_video">Share video with "%1$s"</string>
+    <string name="request_audio">Share audio with "%1$s"</string>
+    <string name="request_media">Share video and audio with "%1$s"</string>
+    <string name="media_back_camera">뒷면 카메라</string>
+    <string name="media_front_camera">전면 카메라</string>
+    <string name="media_microphone">마이크</string>
+    <string name="media_other">Unknown source</string>
+
+    <string name="crash_native">Native</string>
+    <string name="crash_java">Java</string>
+    <string name="crash_content_native">Content (Native)</string>
+    <string name="multiprocess">멀티프로세스</string>
+    <string name="tracking_protection">추적 방지</string>
+    <string name="tracking_protection_ex">TP 끄기</string>
+    <string name="tracking_protection_ex2">TP 켜기</string>
+    <string name="private_browsing">사생활보호 모드</string>
+    <string name="qslide_mode">Q 슬라이드 모드</string>
+
+    <string name="forward">-></string>
+    <string name="reload">새로고침</string>
+    <string name="crashed_title">Q웹뷰 오류</string>
+    <string name="crashed_text">오류 전송보고 하기</string>
+    <string name="crashed_ignore">무시</string>
+    <string name="device_sharing_microphone">Microphone is on</string>
+    <string name="device_sharing_camera">Camera is on</string>
+    <string name="device_sharing_camera_and_mic">Camera and microphone are on</string>
+    <string name="new_tab">새 탭</string>
+    <string name="close_tab">탭 닫기</string>
+    <string name="desktop_mode">PC 화면보기</string>
+    <string name="slow_script">이 사이트의 스크립트로 인해 웹브라우저가 느리게 실행 되고 있습니다.</string>
+    <string name="wait">Wait</string>
+    <string name="stop">Stop</string>
+    <string name="initurl">https://m.naver.com</string>
+    <string name="private_browsing_on">사생활 보호모드 켜짐</string>
+    <string name="private_browsing_off">사생활 보호모드가 꺼졌습니다.</string>
+</resources>

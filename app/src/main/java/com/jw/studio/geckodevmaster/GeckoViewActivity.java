@@ -40,6 +40,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+
 import org.json.JSONObject;
 import org.mozilla.geckoview.AllowOrDeny;
 import org.mozilla.geckoview.BasicSelectionActionDelegate;
@@ -243,7 +245,8 @@ public class GeckoViewActivity extends FloatableActivity {
             if (BuildConfig.DEBUG) {
                 // In debug builds, we want to load JavaScript resources fresh with
                 // each build.
-                runtimeSettingsBuilder.arguments(new String[] { "-purgecaches" });
+                //runtimeSettingsBuilder.arguments(new String[] { "-purgecaches" });
+
             }
 
             final Bundle extras = getIntent().getExtras();
