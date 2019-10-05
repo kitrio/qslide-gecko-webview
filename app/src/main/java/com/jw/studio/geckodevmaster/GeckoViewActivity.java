@@ -36,7 +36,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import org.json.JSONObject;
 import org.mozilla.geckoview.AllowOrDeny;
@@ -97,10 +99,10 @@ public class GeckoViewActivity extends FloatableActivity {
 
     private ToolbarLayout mToolbarView;
     private String mCurrentUri;
+    private ImageButton mBackButton;
     private boolean mCanGoBack;
     private boolean mCanGoForward;
     private boolean mFullScreen;
-
     private HashMap<String, Integer> mNotificationIDMap = new HashMap<>();
     private HashMap<Integer, WebNotification> mNotificationMap = new HashMap<>();
     private int mLastID = 100;
@@ -482,8 +484,8 @@ public class GeckoViewActivity extends FloatableActivity {
             session.goBack();
             return;
         }
-
-        super.onBackPressed();
+        Log.d(LOGTAG,"backbutton pressed");
+        //super.onBackPressed();
     }
 
     private void createNewTab() {

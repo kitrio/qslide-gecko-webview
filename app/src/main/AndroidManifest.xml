@@ -79,4 +79,11 @@
         <service
             android:name="com.lge.app.floating.FloatingWindowService" />
     </application>
+    <supports-screens
+        android:resizeable="true"
+        android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:xlargeScreens="true"
+        android:anyDensity="true"/>
 </manifest>

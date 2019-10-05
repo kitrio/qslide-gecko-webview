@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
@@ -17,6 +18,7 @@ public class ToolbarLayout extends LinearLayout {
     private Button mTabsCountButton;
     private TabListener mTabListener;
     private TabSessionManager mSessionManager;
+    private ImageButton mBackButtoon;
 
     public ToolbarLayout(Context context, TabSessionManager sessionManager) {
         super(context);
@@ -27,15 +29,21 @@ public class ToolbarLayout extends LinearLayout {
     private void initView() {
 
         setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
-        setPadding(40,0,20,0);
+        setPadding(30,0,20,0);
         setOrientation(LinearLayout.HORIZONTAL);
+
+        mBackButtoon = new ImageButton(getContext());
+        mBackButtoon.setId(R.id.back_button);
+        mBackButtoon.setImageResource(R.drawable.ic_toolbar);
+        mBackButtoon.setBackgroundColor(Color.TRANSPARENT);
+        mBackButtoon.setPadding(10,0,10,0);
+        mBackButtoon.setLayoutParams(new LayoutParams(100, LayoutParams.MATCH_PARENT));
+        addView(mBackButtoon);
 
         mLocationView = new LocationView(getContext());
         mLocationView.setId(R.id.url_bar);
         mLocationView.setBackgroundColor(Color.TRANSPARENT);
         mLocationView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1));
-        mLocationView.setBackgroundColor(Color.TRANSPARENT);
-        mLocationView.setId(R.id.url_bar);
         addView(mLocationView);
 
         mTabsCountButton = getTabsCountButton();
@@ -45,7 +53,7 @@ public class ToolbarLayout extends LinearLayout {
 
     private Button getTabsCountButton() {
         Button button = new Button(getContext());
-        button.setLayoutParams(new LayoutParams(100, LayoutParams.WRAP_CONTENT));
+        button.setLayoutParams(new LayoutParams(100, LayoutParams.MATCH_PARENT));
         button.setId(R.id.tabs_button);
         button.setOnClickListener(this::onTabButtonClicked);
         button.setBackgroundResource(R.drawable.tab_number_background);
