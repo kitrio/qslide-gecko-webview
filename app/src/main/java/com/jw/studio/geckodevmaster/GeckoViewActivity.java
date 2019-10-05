@@ -260,7 +260,7 @@ public class GeckoViewActivity extends FloatableActivity {
                             .enhancedTrackingProtectionLevel(ContentBlocking.EtpLevel.DEFAULT)
                             .build())
                     .crashHandler(ExampleCrashHandler.class)
-                    .telemetryDelegate(new ExampleTelemetryDelegate())
+                    //.telemetryDelegate(new ExampleTelemetryDelegate())
                     .aboutConfigEnabled(true);
 
             sGeckoRuntime = GeckoRuntime.create(this, runtimeSettingsBuilder.build());
@@ -359,6 +359,14 @@ public class GeckoViewActivity extends FloatableActivity {
         mTabSessionManager.getCurrentSession().loadUri("https://m.naver.com");
         mToolbarView.getLocationView().setCommitListener(mCommitListener);
         mToolbarView.updateTabCount();
+
+        if (ContextCompat.checkSelfPermission(GeckoViewActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(GeckoViewActivity.this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_WRITE_EXTERNAL_STORAGE);
+            return;
+        }
 
     }
 
