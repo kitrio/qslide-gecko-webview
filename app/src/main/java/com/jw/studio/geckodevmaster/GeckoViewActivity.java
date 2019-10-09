@@ -164,7 +164,7 @@ public class GeckoViewActivity extends FloatableActivity {
 
         mUseMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
         mEnableRemoteDebugging = false;
-        //mProgressView = findViewById(R.id.page_progress);
+        mProgressView = findViewById(R.id.page_progress);
         toolbar.setOnClickListener((view)->{
             PopupMenu popupMenu = new PopupMenu(this, view);
             popupMenu.inflate(R.menu.actions);

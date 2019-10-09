@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.jw.studio.geckowebview"
+        applicationId "com.jw.studio.geckodevmaster"
         minSdkVersion 24
         targetSdkVersion 28
         versionCode 2
