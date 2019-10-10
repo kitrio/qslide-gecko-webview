@@ -642,7 +642,7 @@ public class GeckoViewActivity extends FloatableActivity {
         DownloadManager.Request req = new DownloadManager.Request(uri);
         req.setMimeType(response.contentType);
         req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
-        req.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
+        req.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         req.addRequestHeader("User-Agent", userAgent);
         manager.enqueue(req);
     }
