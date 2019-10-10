@@ -41,7 +41,6 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -110,8 +109,6 @@ public class GeckoViewActivity extends FloatableActivity {
     private HashMap<Integer, WebNotification> mNotificationMap = new HashMap<>();
     private int mLastID = 100;
 
-    //private ProgressBar mProgressView;
-
     private LinkedList<GeckoSession.WebResponseInfo> mPendingDownloads = new LinkedList<>();
 
     private LocationView.CommitListener mCommitListener = new LocationView.CommitListener() {
@@ -169,7 +166,6 @@ public class GeckoViewActivity extends FloatableActivity {
         set.applyTo(appLayout);
 
         mUseMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
-        //mProgressView = findViewById(R.id.page_progress);
         toolbar.setOnClickListener((view)->{
             PopupMenu popupMenu = new PopupMenu(this, view);
             popupMenu.inflate(R.menu.actions);
@@ -844,19 +840,6 @@ public class GeckoViewActivity extends FloatableActivity {
                     " - page load stop");
             mCb.logCounters();
         }
-
-//        @Override
-//        public void onProgressChange(GeckoSession session, int progress) {
-//            Log.i(LOGTAG, "onProgressChange " + progress);
-//
-//            mProgressView.setProgress(progress);
-//
-//            if (progress > 0 && progress < 100) {
-//                mProgressView.setVisibility(View.VISIBLE);
-//            } else {
-//                mProgressView.setVisibility(View.GONE);
-//            }
-//        }
 
         @Override
         public void onSecurityChange(GeckoSession session, SecurityInformation securityInfo) {
