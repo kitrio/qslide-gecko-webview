@@ -23,16 +23,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
-import android.support.constraint.Constraints;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+//import androidx.constraintlayout.Constraints;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -54,7 +54,7 @@ import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoSessionSettings;
 import org.mozilla.geckoview.GeckoView;
 import org.mozilla.geckoview.GeckoWebExecutor;
-import org.mozilla.geckoview.RuntimeTelemetry;
+//import org.mozilla.geckoview.RuntimeTelemetry;
 import org.mozilla.geckoview.SlowScriptResponse;
 import org.mozilla.geckoview.WebExtension;
 import org.mozilla.geckoview.WebExtensionController;
@@ -145,7 +145,7 @@ public class GeckoViewActivity extends FloatableActivity {
         mToolbarView.setTabListener(this::switchToSessionAtIndex);
         mToolbarView.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,ConstraintLayout.LayoutParams.WRAP_CONTENT));
 
-        toolbar.setLayoutParams(new Constraints.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,80));
+        toolbar.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,80));
         toolbar.setBackgroundResource(R.drawable.ic_menu);
 
         ConstraintSet set = new ConstraintSet();
@@ -1327,25 +1327,25 @@ public class GeckoViewActivity extends FloatableActivity {
         }
     }
 
-    private final class ExampleTelemetryDelegate
-            implements RuntimeTelemetry.Delegate {
-        @Override
-        public void onHistogram(final @NonNull RuntimeTelemetry.Histogram histogram) {
-            Log.d(LOGTAG, "onHistogram " + histogram);
-        }
-        @Override
-        public void onBooleanScalar(final @NonNull RuntimeTelemetry.Metric<Boolean> scalar) {
-            Log.d(LOGTAG, "onBooleanScalar " + scalar);
-        }
-        @Override
-        public void onLongScalar(final @NonNull RuntimeTelemetry.Metric<Long> scalar) {
-            Log.d(LOGTAG, "onLongScalar " + scalar);
-        }
-        @Override
-        public void onStringScalar(final @NonNull RuntimeTelemetry.Metric<String> scalar) {
-            Log.d(LOGTAG, "onStringScalar " + scalar);
-        }
-    }
+//    private final class ExampleTelemetryDelegate
+//            implements RuntimeTelemetry.Delegate {
+//        @Override
+//        public void onHistogram(final @NonNull RuntimeTelemetry.Histogram histogram) {
+//            Log.d(LOGTAG, "onHistogram " + histogram);
+//        }
+//        @Override
+//        public void onBooleanScalar(final @NonNull RuntimeTelemetry.Metric<Boolean> scalar) {
+//            Log.d(LOGTAG, "onBooleanScalar " + scalar);
+//        }
+//        @Override
+//        public void onLongScalar(final @NonNull RuntimeTelemetry.Metric<Long> scalar) {
+//            Log.d(LOGTAG, "onLongScalar " + scalar);
+//        }
+//        @Override
+//        public void onStringScalar(final @NonNull RuntimeTelemetry.Metric<String> scalar) {
+//            Log.d(LOGTAG, "onStringScalar " + scalar);
+//        }
+//    }
     //TODO Qslide feature
     @Override
     public void onAttachedToFloatingWindow(FloatingWindow floatingWindow) {

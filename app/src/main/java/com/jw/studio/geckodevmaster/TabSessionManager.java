@@ -1,6 +1,6 @@
 package com.jw.studio.geckodevmaster;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoSessionSettings;
