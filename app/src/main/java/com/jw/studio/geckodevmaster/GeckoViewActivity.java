@@ -38,6 +38,8 @@ import android.view.MenuItem;
 
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -122,6 +124,11 @@ public class GeckoViewActivity extends FloatableActivity {
                 mTabSessionManager.getCurrentSession().loadUri(SEARCH_URI_BASE + text);
             }
             mGeckoView.requestFocus();
+
+            InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+            EditText urlEdit = findViewById(mToolbarView.getLocationView().getId());
+
+            imm.hideSoftInputFromWindow(urlEdit.getWindowToken(), 0);
         }
     };
 
