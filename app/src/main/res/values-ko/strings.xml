@@ -19,7 +19,6 @@
     <string name="crash_native">Native</string>
     <string name="crash_java">Java</string>
     <string name="crash_content_native">Content (Native)</string>
-    <string name="multiprocess">멀티프로세스</string>
     <string name="tracking_protection">추적 방지</string>
     <string name="tracking_protection_ex">TP 끄기</string>
     <string name="tracking_protection_ex2">TP 켜기</string>

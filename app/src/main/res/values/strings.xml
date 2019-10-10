@@ -19,14 +19,13 @@
     <string name="crash_native">Native</string>
     <string name="crash_java">Java</string>
     <string name="crash_content_native">Content (Native)</string>
-    <string name="multiprocess">Multiprocess</string>
     <string name="tracking_protection">Tracking Protection</string>
     <string name="tracking_protection_ex">Disable TP</string>
     <string name="tracking_protection_ex2">Reenable TP</string>
     <string name="private_browsing">Private Browsing</string>
     <string name="private_browsing_on">Private Browsing On</string>
     <string name="private_browsing_off">Private Browsing On</string>
-    <string name="qslide_mode">Q floating mode</string>
+    <string name="qslide_mode">Q slide mode</string>
 
     <string name="forward">Forward</string>
     <string name="reload">Reload</string>
