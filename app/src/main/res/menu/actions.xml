@@ -9,6 +9,6 @@
     <item android:title="@string/desktop_mode" android:id="@+id/desktop_mode"
         app:showAsAction="never" />
     <item android:title="@string/private_browsing" android:id="@+id/action_pb" app:showAsAction="ifRoom"/>
-    <item android:title="@string/qslide_mode" android:id="@+id/qslide_mode"></item>
+    <item android:title="@string/qslide_mode" android:id="@+id/qslide_mode"/>
 
 </menu>

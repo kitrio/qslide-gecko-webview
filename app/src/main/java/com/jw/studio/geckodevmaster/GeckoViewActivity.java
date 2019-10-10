@@ -94,7 +94,6 @@ public class GeckoViewActivity extends FloatableActivity {
     private boolean mUseMultiprocess;
     private boolean mUseTrackingProtection;
     private boolean mUsePrivateBrowsing;
-    private boolean mEnableRemoteDebugging;
     private boolean mKillProcessOnDestroy;
     private boolean mDesktopMode;
 
@@ -111,7 +110,7 @@ public class GeckoViewActivity extends FloatableActivity {
     private HashMap<Integer, WebNotification> mNotificationMap = new HashMap<>();
     private int mLastID = 100;
 
-    private ProgressBar mProgressView;
+    //private ProgressBar mProgressView;
 
     private LinkedList<GeckoSession.WebResponseInfo> mPendingDownloads = new LinkedList<>();
 
@@ -170,8 +169,7 @@ public class GeckoViewActivity extends FloatableActivity {
         set.applyTo(appLayout);
 
         mUseMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
-        mEnableRemoteDebugging = false;
-        mProgressView = findViewById(R.id.page_progress);
+        //mProgressView = findViewById(R.id.page_progress);
         toolbar.setOnClickListener((view)->{
             PopupMenu popupMenu = new PopupMenu(this, view);
             popupMenu.inflate(R.menu.actions);
@@ -249,12 +247,12 @@ public class GeckoViewActivity extends FloatableActivity {
             final GeckoRuntimeSettings.Builder runtimeSettingsBuilder =
                     new GeckoRuntimeSettings.Builder();
 
-            if (BuildConfig.DEBUG) {
-                // In debug builds, we want to load JavaScript resources fresh with
-                // each build.
-                //runtimeSettingsBuilder.arguments(new String[] { "-purgecaches" });
-
-            }
+//            if (BuildConfig.DEBUG) {
+//                // In debug builds, we want to load JavaScript resources fresh with
+//                // each build.
+//                //runtimeSettingsBuilder.arguments(new String[] { "-purgecaches" });
+//
+//            }
 
             final Bundle extras = getIntent().getExtras();
             if (extras != null) {
@@ -262,7 +260,7 @@ public class GeckoViewActivity extends FloatableActivity {
             }
             runtimeSettingsBuilder
                     .useContentProcessHint(mUseMultiprocess)
-                    .remoteDebuggingEnabled(mEnableRemoteDebugging)
+                    .remoteDebuggingEnabled(false)
                     .consoleOutput(false)
                     .contentBlocking(new ContentBlocking.Settings.Builder()
                             .antiTracking(ContentBlocking.AntiTracking.DEFAULT |
@@ -272,7 +270,6 @@ public class GeckoViewActivity extends FloatableActivity {
                             .enhancedTrackingProtectionLevel(ContentBlocking.EtpLevel.DEFAULT)
                             .build())
                     .crashHandler(ExampleCrashHandler.class)
-                    //.telemetryDelegate(new ExampleTelemetryDelegate())
                     .aboutConfigEnabled(true);
 
             sGeckoRuntime = GeckoRuntime.create(this, runtimeSettingsBuilder.build());
@@ -305,7 +302,7 @@ public class GeckoViewActivity extends FloatableActivity {
                         Notification.Builder builder = new Notification.Builder(GeckoViewActivity.this)
                                 .setContentTitle(notification.title)
                                 .setContentText(notification.text)
-                                .setSmallIcon(R.drawable.ic_status_logo) //noti logo
+                                .setSmallIcon(R.drawable.ic_launcher_foreground) //noti logo
                                 .setContentIntent(dismissIntent)
                                 .setAutoCancel(true);
 
@@ -368,7 +365,7 @@ public class GeckoViewActivity extends FloatableActivity {
             }
             loadFromIntent(getIntent());
         }
-        mTabSessionManager.getCurrentSession().loadUri("https://m.naver.com");
+        mTabSessionManager.getCurrentSession().loadUri("https://www.google.com");
         mToolbarView.getLocationView().setCommitListener(mCommitListener);
         mToolbarView.updateTabCount();
 
@@ -495,7 +492,6 @@ public class GeckoViewActivity extends FloatableActivity {
             return;
         }
         Log.d(LOGTAG,"backbutton pressed");
-        //super.onBackPressed();
     }
 
     private void createNewTab() {
@@ -548,7 +544,7 @@ public class GeckoViewActivity extends FloatableActivity {
     @Override
     protected void onNewIntent(final Intent intent) {
         if(intent.getBooleanExtra("com.lge.app.floating.returnFromFloating", false)){
-            Log.d("com.lge.app.floating.returnFromFloating", "false");
+            Log.d("returnFromFloating", "false");
             return;
         }
         super.onNewIntent(intent);
@@ -849,18 +845,18 @@ public class GeckoViewActivity extends FloatableActivity {
             mCb.logCounters();
         }
 
-        @Override
-        public void onProgressChange(GeckoSession session, int progress) {
-            Log.i(LOGTAG, "onProgressChange " + progress);
-
-            mProgressView.setProgress(progress);
-
-            if (progress > 0 && progress < 100) {
-                mProgressView.setVisibility(View.VISIBLE);
-            } else {
-                mProgressView.setVisibility(View.GONE);
-            }
-        }
+//        @Override
+//        public void onProgressChange(GeckoSession session, int progress) {
+//            Log.i(LOGTAG, "onProgressChange " + progress);
+//
+//            mProgressView.setProgress(progress);
+//
+//            if (progress > 0 && progress < 100) {
+//                mProgressView.setVisibility(View.VISIBLE);
+//            } else {
+//                mProgressView.setVisibility(View.GONE);
+//            }
+//        }
 
         @Override
         public void onSecurityChange(GeckoSession session, SecurityInformation securityInfo) {
