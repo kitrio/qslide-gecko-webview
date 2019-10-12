@@ -30,8 +30,8 @@ android {
 
 dependencies {
     implementation files('libs/LGQSlideAPIs.jar')
-    implementation 'androidx.annotation:annotation:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.annotation:annotation:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation "org.mozilla.components:browser-toolbar:0.56.0"
 
     aarch64Implementation "org.mozilla.geckoview:geckoview-nightly-arm64-v8a:71.0.20190927094817"
