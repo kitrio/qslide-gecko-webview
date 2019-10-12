@@ -26,6 +26,7 @@ import android.os.SystemClock;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -150,7 +151,7 @@ public class GeckoViewActivity extends FloatableActivity {
         ConstraintSet set = new ConstraintSet();
         appLayout.addView(mToolbarView);
         set.clone(appLayout);
-        set.connect(R.id.gecko_view,ConstraintSet.TOP, ConstraintSet.PARENT_ID,ConstraintSet.TOP);
+        set.connect(R.id.gecko_view,ConstraintSet.TOP, R.id.main,ConstraintSet.TOP);
         set.connect(R.id.gecko_view,ConstraintSet.BOTTOM, R.id.toolbar_layout,ConstraintSet.TOP);
 
         set.connect(R.id.toolbar, ConstraintSet.LEFT,R.id.toolbar_layout,ConstraintSet.RIGHT);
@@ -284,8 +285,6 @@ public class GeckoViewActivity extends FloatableActivity {
                 }
             });
 
-            // `getSystemService` call requires API level 23
-            //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 sGeckoRuntime.setWebNotificationDelegate(new WebNotificationDelegate() {
                     NotificationManager notificationManager = getSystemService(NotificationManager.class);
                     @Override
@@ -297,7 +296,7 @@ public class GeckoViewActivity extends FloatableActivity {
                         Notification.Builder builder = new Notification.Builder(GeckoViewActivity.this)
                                 .setContentTitle(notification.title)
                                 .setContentText(notification.text)
-                                .setSmallIcon(R.drawable.ic_launcher_foreground) //noti logo
+                                .setSmallIcon(R.drawable.ic_launcher_foreground)
                                 .setContentIntent(dismissIntent)
                                 .setAutoCancel(true);
 
@@ -332,7 +331,6 @@ public class GeckoViewActivity extends FloatableActivity {
                         }
                     }
                 });
-            //}
 
             sGeckoRuntime.setDelegate(() -> {
                 mKillProcessOnDestroy = true;
