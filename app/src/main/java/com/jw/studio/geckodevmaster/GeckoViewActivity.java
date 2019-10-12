@@ -393,6 +393,7 @@ public class GeckoViewActivity extends FloatableActivity {
                 .useMultiprocess(mUseMultiprocess)
                 .usePrivateMode(mUsePrivateBrowsing)
                 .useTrackingProtection(mUseTrackingProtection)
+                .userAgentOverride("Mozilla/5.0 (Linux; Android 8.0.0; ) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Firefox/71 Mobile Safari/537.36")
                 .viewportMode(mDesktopMode
                         ? GeckoSessionSettings.VIEWPORT_MODE_DESKTOP
                         : GeckoSessionSettings.VIEWPORT_MODE_MOBILE)
