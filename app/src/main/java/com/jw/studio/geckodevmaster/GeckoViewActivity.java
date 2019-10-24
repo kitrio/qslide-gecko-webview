@@ -104,7 +104,7 @@ public class GeckoViewActivity extends FloatableActivity {
     private ImageButton mBackButton;
     private boolean mCanGoBack;
     private boolean mCanGoForward;
-    private boolean mFullScreen;
+    private static boolean mFullScreen;
     private HashMap<String, Integer> mNotificationIDMap = new HashMap<>();
     private HashMap<Integer, WebNotification> mNotificationMap = new HashMap<>();
     private int mLastID = 100;
@@ -121,7 +121,7 @@ public class GeckoViewActivity extends FloatableActivity {
             }
             mGeckoView.requestFocus();
 
-            InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             EditText urlEdit = findViewById(mToolbarView.getLocationView().getId());
 
             imm.hideSoftInputFromWindow(urlEdit.getWindowToken(), 0);
