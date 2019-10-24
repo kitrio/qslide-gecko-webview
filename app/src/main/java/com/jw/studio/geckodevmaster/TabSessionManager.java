@@ -1,14 +1,15 @@
 package com.jw.studio.geckodevmaster;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoSessionSettings;
-
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class TabSessionManager {
-    private static ArrayList<TabSession> mTabSessions = new ArrayList<TabSession>();
+    private static LinkedList<TabSession> mTabSessions = new LinkedList<>();
     private int mCurrentSessionIndex = 0;
 
     public TabSessionManager() {
@@ -19,6 +20,10 @@ public class TabSessionManager {
     }
 
     public TabSession getSession(int index) {
+        Log.d("tabsize geckoview","size:"+mTabSessions.size() + " index:"+ index);
+        if((mTabSessions.size()) <= index){
+            return  mTabSessions.get(--index);
+        }
         return mTabSessions.get(index);
     }
 
@@ -65,9 +70,5 @@ public class TabSessionManager {
 
     public int sessionCount() {
         return mTabSessions.size();
-    }
-
-    public ArrayList<TabSession> getSessions() {
-        return mTabSessions;
     }
 }
