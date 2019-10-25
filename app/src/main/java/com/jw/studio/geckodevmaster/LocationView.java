@@ -24,7 +24,8 @@ public class LocationView extends AppCompatEditText {
     public LocationView(Context context) {
         super(context);
 
-        this.setInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_URI);
+        this.setInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_URI );
+        this.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         this.setSingleLine(true);
         this.setSelectAllOnFocus(true);
         this.setHint(R.string.location_hint);

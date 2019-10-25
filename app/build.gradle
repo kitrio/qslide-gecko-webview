@@ -7,14 +7,19 @@ android {
         applicationId "com.jw.studio.geckodevmaster"
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 2
-        versionName "2.0"
+        versionName "2.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     flavorDimensions "abi"
     productFlavors {
-        arm { dimension "abi" }
-        aarch64 { dimension "abi" }
+        arm {
+            dimension "abi"
+            versionCode 2332005
+        }
+        aarch64 {
+            dimension "abi"
+            versionCode 2364005
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -32,10 +37,13 @@ dependencies {
     implementation files('libs/LGQSlideAPIs.jar')
     implementation 'androidx.annotation:annotation:1.0.2'
     implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation "org.mozilla.components:browser-toolbar:0.56.0"
+    //implementation "org.mozilla.components:browser-toolbar:0.56.0"
 
-    aarch64Implementation "org.mozilla.geckoview:geckoview-nightly-arm64-v8a:71.0.20190927094817"
-    armImplementation "org.mozilla.geckoview:geckoview-nightly-armeabi-v7a:71.0.20190927094817"
+    //aarch64Implementation "org.mozilla.geckoview:geckoview-nightly-arm64-v8a:71.0.20190927094817"
+    aarch64Implementation "org.mozilla.geckoview:geckoview-nightly-arm64-v8a:71.0.20191018095340"
+    //aarch64Implementation "org.mozilla.geckoview:geckoview-beta-arm64-v8a:71.0.20191018143025"
+    //aarch64Implementation "org.mozilla.geckoview:geckoview-beta-arm64-v8a:71.0.20191024095932"
+    armImplementation "org.mozilla.geckoview:geckoview-beta-armeabi-v7a:71.0.20191024095932"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'

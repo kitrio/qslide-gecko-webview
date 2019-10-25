@@ -42,4 +42,5 @@
     <string name="initurl">https://m.naver.com</string>
     <string name="private_browsing_on">사생활 보호 모드 켜짐</string>
     <string name="private_browsing_off">사생활 보호 모드가 꺼졌습니다.</string>
+    <string name="notsupport">이 앱은 LG 스마트폰만 지원합니다.</string>
 </resources>
