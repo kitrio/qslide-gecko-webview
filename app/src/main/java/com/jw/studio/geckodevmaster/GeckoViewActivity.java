@@ -391,6 +391,7 @@ public class GeckoViewActivity extends FloatableActivity {
 
     private TabSession createSession() {
         TabSession session = mTabSessionManager.newSession(new GeckoSessionSettings.Builder()
+                .suspendMediaWhenInactive(true)
                 .useMultiprocess(mUseMultiprocess)
                 .usePrivateMode(mUsePrivateBrowsing)
                 .useTrackingProtection(mUseTrackingProtection)
