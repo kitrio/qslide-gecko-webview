@@ -13,6 +13,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -645,47 +646,6 @@ public class GeckoViewActivity extends FloatableActivity {
         manager.enqueue(req);
     }
 
-    private String mErrorTemplate;
-    private String createErrorPage(final String error) {
-        if (mErrorTemplate == null) {
-            InputStream stream = null;
-            BufferedReader reader = null;
-            StringBuilder builder = new StringBuilder();
-            try {
-                stream = getResources().getAssets().open("error.html");
-                reader = new BufferedReader(new InputStreamReader(stream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    builder.append(line);
-                    builder.append("\n");
-                }
-
-                mErrorTemplate = builder.toString();
-            } catch (IOException e) {
-                Log.d(LOGTAG, "Failed to open error page template", e);
-                return null;
-            } finally {
-                if (stream != null) {
-                    try {
-                        stream.close();
-                    } catch (IOException e) {
-                        Log.e(LOGTAG, "Failed to close error page template stream", e);
-                    }
-                }
-
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        Log.e(LOGTAG, "Failed to close error page template reader", e);
-                    }
-                }
-            }
-        }
-
-        return mErrorTemplate.replace("$ERROR", error);
-    }
 
     private class ExampleHistoryDelegate implements GeckoSession.HistoryDelegate {
         private final HashSet<String> mVisitedURLs;
@@ -1055,94 +1015,18 @@ public class GeckoViewActivity extends FloatableActivity {
             // which prevents the session from being garbage-collected.
             return GeckoResult.fromValue(newSession);
         }
-
-        private String categoryToString(final int category) {
-            switch (category) {
-                case WebRequestError.ERROR_CATEGORY_UNKNOWN:
-                    return "ERROR_CATEGORY_UNKNOWN";
-                case WebRequestError.ERROR_CATEGORY_SECURITY:
-                    return "ERROR_CATEGORY_SECURITY";
-                case WebRequestError.ERROR_CATEGORY_NETWORK:
-                    return "ERROR_CATEGORY_NETWORK";
-                case WebRequestError.ERROR_CATEGORY_CONTENT:
-                    return "ERROR_CATEGORY_CONTENT";
-                case WebRequestError.ERROR_CATEGORY_URI:
-                    return "ERROR_CATEGORY_URI";
-                case WebRequestError.ERROR_CATEGORY_PROXY:
-                    return "ERROR_CATEGORY_PROXY";
-                case WebRequestError.ERROR_CATEGORY_SAFEBROWSING:
-                    return "ERROR_CATEGORY_SAFEBROWSING";
-                default:
-                    return "UNKNOWN";
-            }
-        }
-
-        private String errorToString(final int error) {
-            switch (error) {
-                case WebRequestError.ERROR_UNKNOWN:
-                    return "ERROR_UNKNOWN";
-                case WebRequestError.ERROR_SECURITY_SSL:
-                    return "ERROR_SECURITY_SSL";
-                case WebRequestError.ERROR_SECURITY_BAD_CERT:
-                    return "ERROR_SECURITY_BAD_CERT";
-                case WebRequestError.ERROR_NET_RESET:
-                    return "ERROR_NET_RESET";
-                case WebRequestError.ERROR_NET_INTERRUPT:
-                    return "ERROR_NET_INTERRUPT";
-                case WebRequestError.ERROR_NET_TIMEOUT:
-                    return "ERROR_NET_TIMEOUT";
-                case WebRequestError.ERROR_CONNECTION_REFUSED:
-                    return "ERROR_CONNECTION_REFUSED";
-                case WebRequestError.ERROR_UNKNOWN_PROTOCOL:
-                    return "ERROR_UNKNOWN_PROTOCOL";
-                case WebRequestError.ERROR_UNKNOWN_HOST:
-                    return "ERROR_UNKNOWN_HOST";
-                case WebRequestError.ERROR_UNKNOWN_SOCKET_TYPE:
-                    return "ERROR_UNKNOWN_SOCKET_TYPE";
-                case WebRequestError.ERROR_UNKNOWN_PROXY_HOST:
-                    return "ERROR_UNKNOWN_PROXY_HOST";
-                case WebRequestError.ERROR_MALFORMED_URI:
-                    return "ERROR_MALFORMED_URI";
-                case WebRequestError.ERROR_REDIRECT_LOOP:
-                    return "ERROR_REDIRECT_LOOP";
-                case WebRequestError.ERROR_SAFEBROWSING_PHISHING_URI:
-                    return "ERROR_SAFEBROWSING_PHISHING_URI";
-                case WebRequestError.ERROR_SAFEBROWSING_MALWARE_URI:
-                    return "ERROR_SAFEBROWSING_MALWARE_URI";
-                case WebRequestError.ERROR_SAFEBROWSING_UNWANTED_URI:
-                    return "ERROR_SAFEBROWSING_UNWANTED_URI";
-                case WebRequestError.ERROR_SAFEBROWSING_HARMFUL_URI:
-                    return "ERROR_SAFEBROWSING_HARMFUL_URI";
-                case WebRequestError.ERROR_CONTENT_CRASHED:
-                    return "ERROR_CONTENT_CRASHED";
-                case WebRequestError.ERROR_OFFLINE:
-                    return "ERROR_OFFLINE";
-                case WebRequestError.ERROR_PORT_BLOCKED:
-                    return "ERROR_PORT_BLOCKED";
-                case WebRequestError.ERROR_PROXY_CONNECTION_REFUSED:
-                    return "ERROR_PROXY_CONNECTION_REFUSED";
-                case WebRequestError.ERROR_FILE_NOT_FOUND:
-                    return "ERROR_FILE_NOT_FOUND";
-                case WebRequestError.ERROR_FILE_ACCESS_DENIED:
-                    return "ERROR_FILE_ACCESS_DENIED";
-                case WebRequestError.ERROR_INVALID_CONTENT_ENCODING:
-                    return "ERROR_INVALID_CONTENT_ENCODING";
-                case WebRequestError.ERROR_UNSAFE_CONTENT_TYPE:
-                    return "ERROR_UNSAFE_CONTENT_TYPE";
-                case WebRequestError.ERROR_CORRUPTED_CONTENT:
-                    return "ERROR_CORRUPTED_CONTENT";
-                default:
-                    return "UNKNOWN";
-            }
-        }
-
-        private String createErrorPage(final int category, final int error) {
-            if (mErrorTemplate == null) {
+        
+        private String createErrorPage() {
+            String errorPageTemplate;
                 InputStream stream = null;
                 BufferedReader reader = null;
                 StringBuilder builder = new StringBuilder();
                 try {
-                    stream = getResources().getAssets().open("error.html");
+                    if (Locale.getDefault().getLanguage() == "ko") {
+                        stream = getResources().getAssets().open("error_ko.html");
+                    }else{
+                        stream = getResources().getAssets().open("error_en.html");
+                    }
                     reader = new BufferedReader(new InputStreamReader(stream));
 
                     String line;
@@ -1151,7 +1035,7 @@ public class GeckoViewActivity extends FloatableActivity {
                         builder.append("\n");
                     }
 
-                    mErrorTemplate = builder.toString();
+                    errorPageTemplate = builder.toString();
                 } catch (IOException e) {
                     Log.d(LOGTAG, "Failed to open error page template", e);
                     return null;
@@ -1172,9 +1056,8 @@ public class GeckoViewActivity extends FloatableActivity {
                         }
                     }
                 }
-            }
 
-            return GeckoViewActivity.this.createErrorPage(categoryToString(category) + " : " + errorToString(error));
+            return errorPageTemplate;
         }
 
         @Override
@@ -1184,7 +1067,7 @@ public class GeckoViewActivity extends FloatableActivity {
                     " error category=" + error.category +
                     " error=" + error.code);
 
-            return GeckoResult.fromValue("data:text/html," + createErrorPage(error.category, error.code));
+            return GeckoResult.fromValue("data:text/html," + createErrorPage());
         }
     }
 
