@@ -7,18 +7,18 @@ android {
         applicationId "com.jw.studio.geckodevmaster"
         minSdkVersion 23
         targetSdkVersion 28
-        versionName "2.0.2"
+        versionName "2.0.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     flavorDimensions "abi"
     productFlavors {
         arm {
             dimension "abi"
-            versionCode 2332005
+            versionCode 2332007
         }
         aarch64 {
             dimension "abi"
-            versionCode 2364005
+            versionCode 2364007
         }
     }
     compileOptions {
@@ -39,11 +39,9 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.2'
     //implementation "org.mozilla.components:browser-toolbar:0.56.0"
 
-    //aarch64Implementation "org.mozilla.geckoview:geckoview-nightly-arm64-v8a:71.0.20190927094817"
+
     aarch64Implementation "org.mozilla.geckoview:geckoview-nightly-arm64-v8a:71.0.20191018095340"
-    //aarch64Implementation "org.mozilla.geckoview:geckoview-beta-arm64-v8a:71.0.20191018143025"
-    //aarch64Implementation "org.mozilla.geckoview:geckoview-beta-arm64-v8a:71.0.20191024095932"
-    armImplementation "org.mozilla.geckoview:geckoview-beta-armeabi-v7a:71.0.20191024095932"
+    armImplementation "org.mozilla.geckoview:geckoview-beta-armeabi-v7a:71.0.20191018095340"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
