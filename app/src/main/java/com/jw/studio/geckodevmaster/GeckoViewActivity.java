@@ -60,7 +60,6 @@ import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoSessionSettings;
 import org.mozilla.geckoview.GeckoView;
 import org.mozilla.geckoview.GeckoWebExecutor;
-//import org.mozilla.geckoview.RuntimeTelemetry;
 import org.mozilla.geckoview.SlowScriptResponse;
 import org.mozilla.geckoview.WebExtension;
 import org.mozilla.geckoview.WebExtensionController;
@@ -1257,25 +1256,6 @@ public class GeckoViewActivity extends FloatableActivity {
         }
     }
 
-//    private final class ExampleTelemetryDelegate
-//            implements RuntimeTelemetry.Delegate {
-//        @Override
-//        public void onHistogram(final @NonNull RuntimeTelemetry.Histogram histogram) {
-//            Log.d(LOGTAG, "onHistogram " + histogram);
-//        }
-//        @Override
-//        public void onBooleanScalar(final @NonNull RuntimeTelemetry.Metric<Boolean> scalar) {
-//            Log.d(LOGTAG, "onBooleanScalar " + scalar);
-//        }
-//        @Override
-//        public void onLongScalar(final @NonNull RuntimeTelemetry.Metric<Long> scalar) {
-//            Log.d(LOGTAG, "onLongScalar " + scalar);
-//        }
-//        @Override
-//        public void onStringScalar(final @NonNull RuntimeTelemetry.Metric<String> scalar) {
-//            Log.d(LOGTAG, "onStringScalar " + scalar);
-//        }
-//    }
     //TODO Qslide feature
     @Override
     public void onAttachedToFloatingWindow(FloatingWindow floatingWindow) {
@@ -1283,9 +1263,7 @@ public class GeckoViewActivity extends FloatableActivity {
         /* all resources should be reinitialized once again
          * if you set new layout for the floating mode setContentViewForFloatingMode()*/
 
-
         // and also listeners a should be added once again to the buttons in floating mode
-
 
         floatingWindow.setSize(700,1100);
     }
