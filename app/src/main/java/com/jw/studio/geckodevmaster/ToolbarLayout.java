@@ -46,18 +46,13 @@ public class ToolbarLayout extends LinearLayout {
         mLocationView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1));
         addView(mLocationView);
 
-        mTabsCountButton = getTabsCountButton();
+        mTabsCountButton = new Button(getContext());
+        mTabsCountButton.setLayoutParams(new LayoutParams(100, LayoutParams.MATCH_PARENT));
+        mTabsCountButton.setId(R.id.tabs_button);
+        mTabsCountButton.setOnClickListener(this::onTabButtonClicked);
+        mTabsCountButton.setBackgroundResource(R.drawable.tab_number_background);
         addView(mTabsCountButton);
 
-    }
-
-    private Button getTabsCountButton() {
-        Button button = new Button(getContext());
-        button.setLayoutParams(new LayoutParams(100, LayoutParams.MATCH_PARENT));
-        button.setId(R.id.tabs_button);
-        button.setOnClickListener(this::onTabButtonClicked);
-        button.setBackgroundResource(R.drawable.tab_number_background);
-        return button;
     }
 
     public LocationView getLocationView() {
