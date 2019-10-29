@@ -17,8 +17,22 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".CompatibilityActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme"
+            android:autoRemoveFromRecents="true"
+            android:noHistory="true"
+        >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
 
+                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".GeckoViewActivity"
             android:label="@string/app_name"
@@ -27,12 +41,9 @@
             android:windowSoftInputMode="stateUnspecified|adjustResize"
             android:configChanges="keyboard|keyboardHidden|mcc|mnc|orientation|screenSize|locale|layoutDirection|smallestScreenSize|screenLayout">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
                 <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
                 <category android:name="android.intent.category.APP_BROWSER"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
