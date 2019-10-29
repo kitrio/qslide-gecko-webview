@@ -7,12 +7,15 @@ package com.jw.studio.geckodevmaster;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -40,8 +43,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -489,6 +494,14 @@ public class GeckoViewActivity extends FloatableActivity {
         Log.d(LOGTAG,"backbutton pressed");
     }
 
+    private void createNewTab(String url) {
+        TabSession newSession = createSession();
+        newSession.open(sGeckoRuntime);
+        setGeckoViewSession(newSession);
+        newSession.loadUri(url);
+        mToolbarView.updateTabCount();
+    }
+
     private void createNewTab() {
         TabSession newSession = createSession();
         newSession.open(sGeckoRuntime);
@@ -501,7 +514,6 @@ public class GeckoViewActivity extends FloatableActivity {
             mTabSessionManager.closeSession(session);
             TabSession tabSession = mTabSessionManager.getCurrentSession();
             setGeckoViewSession(tabSession);
-            tabSession.reload();
             mToolbarView.updateTabCount();
         } else {
             recreateSession(session);
@@ -726,6 +738,43 @@ public class GeckoViewActivity extends FloatableActivity {
                     " title=" + element.title +
                     " alt=" + element.altText +
                     " srcUri=" + element.srcUri);
+            String contextUrl = element.linkUri;
+            if(contextUrl == null){
+                contextUrl = element.srcUri;
+            }
+            String clipboardID = "qwebview";
+
+            Dialog dialog = new Dialog(GeckoViewActivity.this);
+            dialog.setContentView(R.layout.contextmenu_dialog);
+            dialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.boarder));
+            if(Build.VERSION.SDK_INT <=25){
+                dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_PHONE);
+            }else {
+                dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+            }
+            final TextView tvTitle = dialog.findViewById(R.id.title_textview);
+            final String finalUrl = contextUrl;
+
+            Button btnUrl = dialog.findViewById(R.id.link_button);
+            Button btnCopy = dialog.findViewById(R.id.copy_button);
+
+            tvTitle.setText(element.linkUri);
+            btnUrl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("contextmenu","clicked"+finalUrl);
+                    createNewTab(finalUrl);
+                    dialog.dismiss();
+                }
+            });
+            btnCopy.setOnClickListener(v -> {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText(clipboardID, finalUrl);
+                clipboard.setPrimaryClip(clip);
+                dialog.dismiss();
+            });
+            dialog.show();
+
         }
 
         @Override

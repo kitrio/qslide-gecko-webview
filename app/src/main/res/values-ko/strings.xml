@@ -43,4 +43,6 @@
     <string name="private_browsing_on">사생활 보호 모드 켜짐</string>
     <string name="private_browsing_off">사생활 보호 모드가 꺼졌습니다.</string>
     <string name="notsupport_qslide">Q슬라이드 지원 앱입니다. LG 폰만 지원 됩니다.</string>
+    <string name="copy_contextmenu">링크 주소복사하기</string>
+    <string name="new_tab_contextmenu">새탭에서 열기</string>
 </resources>

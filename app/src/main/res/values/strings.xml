@@ -43,4 +43,7 @@
     <string name="stop">Stop</string>
     <string name="initurl">https://www.google.com</string>
     <string name="notsupport_qslide">This app is only support LG smartphone due to Qslidefeature</string>
+
+    <string name="copy_contextmenu">Copy link</string>
+    <string name="new_tab_contextmenu">Open link in new tab</string>
 </resources>
