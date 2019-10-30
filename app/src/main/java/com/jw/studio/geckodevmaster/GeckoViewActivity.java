@@ -19,6 +19,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Icon;
@@ -159,12 +160,12 @@ public class GeckoViewActivity extends FloatableActivity {
         set.connect(R.id.gecko_view,ConstraintSet.TOP, R.id.main,ConstraintSet.TOP);
         set.connect(R.id.gecko_view,ConstraintSet.BOTTOM, R.id.toolbar_layout,ConstraintSet.TOP);
 
-        set.connect(R.id.toolbar, ConstraintSet.LEFT,R.id.toolbar_layout,ConstraintSet.RIGHT);
-        set.connect(R.id.toolbar, ConstraintSet.RIGHT,R.id.main,ConstraintSet.RIGHT);
+        set.connect(R.id.toolbar, ConstraintSet.LEFT,R.id.toolbar_layout,ConstraintSet.RIGHT,20);
+        set.connect(R.id.toolbar, ConstraintSet.RIGHT,R.id.main,ConstraintSet.RIGHT,20);
         set.connect(R.id.toolbar, ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
         set.connect(R.id.toolbar, ConstraintSet.BOTTOM, R.id.toolbar_layout,ConstraintSet.BOTTOM);
 
-        set.connect(R.id.toolbar_layout,ConstraintSet.LEFT,R.id.main,ConstraintSet.LEFT);
+        set.connect(R.id.toolbar_layout,ConstraintSet.LEFT,R.id.main,ConstraintSet.LEFT,30);
         set.connect(R.id.toolbar_layout,ConstraintSet.RIGHT,R.id.toolbar,ConstraintSet.LEFT);
         set.connect(R.id.toolbar_layout,ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
         set.connect(R.id.toolbar_layout,ConstraintSet.BOTTOM,R.id.main,ConstraintSet.BOTTOM);
