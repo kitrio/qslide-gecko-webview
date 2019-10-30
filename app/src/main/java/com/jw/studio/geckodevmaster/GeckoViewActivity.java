@@ -1257,6 +1257,10 @@ public class GeckoViewActivity extends FloatableActivity {
         }
     }
 
+    public static int dpToPx(int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
+
     //TODO Qslide feature
     @Override
     public void onAttachedToFloatingWindow(FloatingWindow floatingWindow) {
@@ -1265,8 +1269,9 @@ public class GeckoViewActivity extends FloatableActivity {
          * if you set new layout for the floating mode setContentViewForFloatingMode()*/
 
         // and also listeners a should be added once again to the buttons in floating mode
-
-        floatingWindow.setSize(700,1100);
+        int width = dpToPx(324);
+        int height = dpToPx(356);
+        floatingWindow.setSize(width,height);
     }
 
     @Override
