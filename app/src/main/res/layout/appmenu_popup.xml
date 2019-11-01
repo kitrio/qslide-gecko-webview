@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="activitythis"
+            type="com.jw.studio.geckodevmaster.GeckoViewActivity" />
+    </data>
+    <LinearLayout
+        android:id="@+id/LinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/menu_boarder"
+        android:focusable="false"
+        android:minWidth="170dp"
+        android:orientation="vertical"
+        android:gravity="right">
+
+        <Button
+            android:id="@+id/button_qslide"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:background="@color/menuBackground"
+            android:text="@string/qslide_mode" />
+
+        <Button
+            android:id="@+id/newtab_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boarder"
+            android:text="@string/new_tab" />
+
+        <Button
+            android:id="@+id/emptybutton"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            />
+
+        <Button
+            android:id="@+id/closetab_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boarder"
+            android:text="@string/close_tab" />
+
+        <Switch
+            android:id="@+id/switch_desktop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/desktop_mode" />
+
+        <Switch
+            android:id="@+id/switch_private"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="@string/private_browsing"
+            />
+        <Switch
+            android:id="@+id/switch_tracking"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="@string/tracking_protection" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/buttonLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp">
+
+            <Button
+                android:id="@+id/refresh_button"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/ic_refresh"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <Button
+                android:id="@+id/forward_button"
+                android:layout_width="36dp"
+                android:layout_height="32dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+
+                android:background="@drawable/ic_arrow_forward"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/refresh_button"
+                app:layout_constraintRight_toRightOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+</layout>

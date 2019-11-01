@@ -31,25 +31,23 @@ import android.os.SystemClock;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
-
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
+import androidx.databinding.DataBindingUtil;
 import android.util.Log;
-import android.view.MenuItem;
-
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import org.json.JSONObject;
 import org.mozilla.geckoview.AllowOrDeny;
 import org.mozilla.geckoview.BasicSelectionActionDelegate;
@@ -80,6 +78,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Locale;
 
+import com.jw.studio.geckodevmaster.databinding.AppmenuPopupBinding;
 import com.lge.app.floating.FloatableActivity;
 import com.lge.app.floating.FloatingWindow;
 
@@ -105,6 +104,7 @@ public class GeckoViewActivity extends FloatableActivity {
     private boolean mShowNotificationsRejected;
     private ArrayList<String> mAcceptedPersistentStorage = new ArrayList<String>();
 
+    private PopupWindow popupWindow;
     private ToolbarLayout mToolbarView;
     private String mCurrentUri;
     private ImageButton mBackButton;
@@ -172,78 +172,6 @@ public class GeckoViewActivity extends FloatableActivity {
         set.applyTo(appLayout);
 
         mUseMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
-        toolbar.setOnClickListener((view)->{
-            PopupMenu popupMenu = new PopupMenu(this, view);
-            popupMenu.inflate(R.menu.actions);
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() { //TODO modify menu
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    GeckoSession session = mTabSessionManager.getCurrentSession();
-                    switch (item.getItemId()) {
-                        case R.id.action_reload:
-                            session.reload();
-                            break;
-                        case R.id.action_forward:
-                            session.goForward();
-                            break;
-//                        case R.id.action_tp:
-//                            mUseTrackingProtection = !mUseTrackingProtection;
-//                            updateTrackingProtection(session);
-//                            session.reload();
-//                            break;
-//                        case R.id.action_tpe:
-//                            sGeckoRuntime.getContentBlockingController().checkException(session).accept(value -> {
-//                                if (value) {
-//                                    sGeckoRuntime.getContentBlockingController().removeException(session);
-//                                    item.setTitle(R.string.tracking_protection_ex);
-//                                } else {
-//                                    sGeckoRuntime.getContentBlockingController().addException(session);
-//                                    item.setTitle(R.string.tracking_protection_ex2);
-//                                }
-//                                session.reload();
-//                            });
-//                            break;
-                        case R.id.desktop_mode:
-                            mDesktopMode = !mDesktopMode;
-                            updateDesktopMode(session);
-                            session.reload();
-                            break;
-                        case R.id.action_pb:
-                            mUsePrivateBrowsing = !mUsePrivateBrowsing;
-                            //mUseTrackingProtection = !mUseTrackingProtection;
-                            //updateTrackingProtection(session);
-                            if(mUsePrivateBrowsing){
-                                Toast.makeText(GeckoViewActivity.this, getString(R.string.private_browsing_on), Toast.LENGTH_SHORT).show();
-                            }else{
-                                Toast.makeText(GeckoViewActivity.this, getString(R.string.private_browsing_off), Toast.LENGTH_SHORT).show();
-                            }
-                            recreateSession();
-                            break;
-                        case R.id.action_new_tab:
-                            createNewTab();
-                            break;
-                        case R.id.action_close_tab:
-                            closeTab((TabSession)session);
-                            break;
-                        case R.id.qslide_mode:
-                            switchToFloatingMode();
-                            break;
-                        default:
-                            return onMenuItemClick(item);
-                    }
-
-                    return true;
-                }
-            });
-            popupMenu.show();
-        });
-        mBackButton = findViewById(R.id.back_button);
-        mBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
 
         if (sGeckoRuntime == null) {
             final GeckoRuntimeSettings.Builder runtimeSettingsBuilder =
@@ -366,7 +294,79 @@ public class GeckoViewActivity extends FloatableActivity {
         }
         mTabSessionManager.getCurrentSession().loadUri("https://www.google.com");
         mToolbarView.getLocationView().setCommitListener(mCommitListener);
-        mToolbarView.updateTabCount();
+
+        toolbar.setOnClickListener((view)->{
+            AppmenuPopupBinding menu = DataBindingUtil.inflate(getLayoutInflater(),R.layout.appmenu_popup,null,false);
+            GeckoSession session = mTabSessionManager.getCurrentSession();
+            popupWindow = new PopupWindow(menu.getRoot(), ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            popupWindow.setFocusable(true);
+            int menu_height = dpToPx(260);
+            //popupWindow.showAtLocation(toolbar, Gravity.RIGHT, toolbar.getCurrentContentInsetLeft(), mGeckoView.getPaddingBottom());
+            //popupWindow.showAtLocation(toolbar,Gravity.RIGHT,toolbar.getCurrentContentInsetLeft(),-40);
+            menu.newtabButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popupWindow.dismiss();
+                    createNewTab();
+                    homeshortcut();
+                }
+            });
+            menu.forwardButton.setOnClickListener((v -> {
+                session.goForward();
+            }));
+            menu.refreshButton.setOnClickListener((v)->{
+                session.reload();
+            });
+            menu.closetabButton.setOnClickListener(v->{
+                popupWindow.dismiss();
+                closeTab((TabSession)session);
+                removeFragmentbyTag();
+            });
+            if(this.isSwitchingToFloatingMode()){
+                menu.buttonQslide.setVisibility(View.GONE);
+            }else {
+                menu.buttonQslide.setVisibility(View.VISIBLE);
+                menu_height = dpToPx(280);
+                menu.buttonQslide.setOnClickListener(v -> {
+                    switchToFloatingMode();
+                });
+            }
+            menu.switchDesktop.setChecked(mDesktopMode);
+            menu.switchDesktop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    mDesktopMode =!mDesktopMode;
+                    updateDesktopMode(session);
+                    session.reload();
+                }
+            });
+            menu.switchPrivate.setChecked(mUsePrivateBrowsing);
+            menu.switchPrivate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    mUsePrivateBrowsing = !mUsePrivateBrowsing;
+                    recreateSession();
+                }
+            });
+            menu.switchTracking.setChecked(mUseTrackingProtection);
+            menu.switchTracking.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    mUseTrackingProtection = !mUseTrackingProtection;
+                    updateTrackingProtection(session);
+                    session.reload();
+                }
+            });
+            popupWindow.showAsDropDown(toolbar,toolbar.getContentInsetEnd(), -menu_height, mGeckoView.getPaddingBottom());
+
+        });
+        mBackButton = findViewById(R.id.back_button);
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         if (ContextCompat.checkSelfPermission(GeckoViewActivity.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
