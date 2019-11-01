@@ -29,21 +29,20 @@ public class ToolbarLayout extends LinearLayout {
     private void initView() {
 
         setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
-        setPadding(30,0,20,0);
         setOrientation(LinearLayout.HORIZONTAL);
 
         mBackButtoon = new ImageButton(getContext());
         mBackButtoon.setId(R.id.back_button);
         mBackButtoon.setImageResource(R.drawable.ic_toolbar);
         mBackButtoon.setBackgroundColor(Color.TRANSPARENT);
-        mBackButtoon.setPadding(10,0,10,0);
+        mBackButtoon.setPadding(0,0,14,0);
         mBackButtoon.setLayoutParams(new LayoutParams(100, LayoutParams.MATCH_PARENT));
         addView(mBackButtoon);
 
         mLocationView = new LocationView(getContext());
         mLocationView.setId(R.id.url_bar);
         mLocationView.setBackgroundColor(Color.TRANSPARENT);
-        mLocationView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1));
+        mLocationView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT,1));
         addView(mLocationView);
 
         mTabsCountButton = new Button(getContext());
