@@ -11,7 +11,7 @@
         android:id="@+id/LinearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/menu_boarder"
+        android:background="@drawable/menu_border"
         android:focusable="false"
         android:minWidth="170dp"
         android:orientation="vertical"
