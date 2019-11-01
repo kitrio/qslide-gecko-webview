@@ -97,18 +97,18 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
         GeckoResult<PromptResponse> res = new GeckoResult<PromptResponse>();
 
         final DialogInterface.OnClickListener listener =
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        if (which == DialogInterface.BUTTON_POSITIVE) {
-                            res.complete(prompt.confirm(ButtonPrompt.Type.POSITIVE));
-                        } else if (which == DialogInterface.BUTTON_NEGATIVE) {
-                            res.complete(prompt.confirm(ButtonPrompt.Type.NEGATIVE));
-                        } else {
-                            res.complete(prompt.dismiss());
-                        }
+            new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(final DialogInterface dialog, final int which) {
+                    if (which == DialogInterface.BUTTON_POSITIVE) {
+                        res.complete(prompt.confirm(ButtonPrompt.Type.POSITIVE));
+                    } else if (which == DialogInterface.BUTTON_NEGATIVE) {
+                        res.complete(prompt.confirm(ButtonPrompt.Type.NEGATIVE));
+                    } else {
+                        res.complete(prompt.dismiss());
                     }
-                };
+                }
+            };
 
         builder.setPositiveButton(android.R.string.ok, listener);
         builder.setNegativeButton(android.R.string.cancel, listener);
@@ -227,19 +227,19 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
         GeckoResult<PromptResponse> res = new GeckoResult<PromptResponse>();
 
         builder.setNegativeButton(android.R.string.cancel, /* listener */ null)
-                .setPositiveButton(android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(final DialogInterface dialog, final int which) {
-                                if ((flags & AuthPrompt.AuthOptions.Flags.ONLY_PASSWORD) == 0) {
-                                    res.complete(prompt.confirm(username.getText().toString(),
-                                            password.getText().toString()));
+            .setPositiveButton(android.R.string.ok,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            if ((flags & AuthPrompt.AuthOptions.Flags.ONLY_PASSWORD) == 0) {
+                                res.complete(prompt.confirm(username.getText().toString(),
+                                        password.getText().toString()));
 
-                                } else {
-                                    res.complete(prompt.confirm(password.getText().toString()));
-                                }
+                            } else {
+                                res.complete(prompt.confirm(password.getText().toString()));
                             }
-                        });
+                        }
+                    });
         createStandardDialog(builder, prompt, res).show();
 
         return res;
