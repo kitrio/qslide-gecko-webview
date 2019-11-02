@@ -9,6 +9,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DownloadManager;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -92,8 +94,8 @@ public class GeckoViewActivity extends FloatableActivity {
     private static final int REQUEST_PERMISSIONS = 2;
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 3;
 
+    public TabSessionManager mTabSessionManager;
     private static GeckoRuntime sGeckoRuntime;
-    private TabSessionManager mTabSessionManager;
     private GeckoView mGeckoView;
     private boolean mUseMultiprocess;
     private boolean mUseTrackingProtection;
@@ -114,6 +116,9 @@ public class GeckoViewActivity extends FloatableActivity {
     private HashMap<String, Integer> mNotificationIDMap = new HashMap<>();
     private HashMap<Integer, WebNotification> mNotificationMap = new HashMap<>();
     private int mLastID = 100;
+
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
 
     private LinkedList<GeckoSession.WebResponseInfo> mPendingDownloads = new LinkedList<>();
 
@@ -285,6 +290,7 @@ public class GeckoViewActivity extends FloatableActivity {
                 mTabSessionManager.addSession(session);
                 setGeckoViewSession(session);
             } else {
+                homeshortcut();
                 session = createSession();
                 session.open(sGeckoRuntime);
                 mTabSessionManager.setCurrentSession(session);
@@ -292,7 +298,7 @@ public class GeckoViewActivity extends FloatableActivity {
             }
             loadFromIntent(getIntent());
         }
-        mTabSessionManager.getCurrentSession().loadUri("https://www.google.com");
+        mToolbarView.updateTabCount();
         mToolbarView.getLocationView().setCommitListener(mCommitListener);
 
         toolbar.setOnClickListener((view)->{
@@ -376,6 +382,13 @@ public class GeckoViewActivity extends FloatableActivity {
             return;
         }
 
+    }
+    private void homeshortcut(){
+        HomeFragment homeFragment = new HomeFragment();
+        fragmentManager = getFragmentManager();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,android.R.animator.fade_out);
+        fragmentTransaction.replace(R.id.gecko_view, homeFragment,"homeFrag_tag").addToBackStack(null).commitAllowingStateLoss();
     }
 
     private void createNotificationChannel() {
@@ -494,7 +507,7 @@ public class GeckoViewActivity extends FloatableActivity {
         Log.d(LOGTAG,"backbutton pressed");
     }
 
-    private void createNewTab(String url) {
+    public void createNewTab(String url) {
         TabSession newSession = createSession();
         newSession.open(sGeckoRuntime);
         setGeckoViewSession(newSession);
@@ -517,7 +530,9 @@ public class GeckoViewActivity extends FloatableActivity {
             mToolbarView.getLocationView().setText(tabSession.getUri());
             mToolbarView.updateTabCount();
         } else {
-            recreateSession(session);
+            mCurrentUri = "about:blank";
+            recreateSession();
+            homeshortcut();
         }
     }
 

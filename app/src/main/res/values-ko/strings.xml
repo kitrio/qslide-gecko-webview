@@ -39,6 +39,7 @@
     <string name="slow_script">이 사이트의 스크립트로 인해 웹브라우저가 느리게 실행 되고 있습니다.</string>
     <string name="wait">Wait</string>
     <string name="stop">Stop</string>
+    <string name="urlname">네이버</string>
     <string name="initurl">https://m.naver.com</string>
     <string name="private_browsing_on">사생활 보호 모드 켜짐</string>
     <string name="private_browsing_off">사생활 보호 모드가 꺼졌습니다.</string>
