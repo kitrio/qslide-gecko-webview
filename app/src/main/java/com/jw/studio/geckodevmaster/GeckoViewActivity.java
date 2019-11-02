@@ -509,11 +509,12 @@ public class GeckoViewActivity extends FloatableActivity {
         mToolbarView.updateTabCount();
     }
 
-    private void closeTab(TabSession session) {
+    public void closeTab(TabSession session) {
         if(mTabSessionManager.sessionCount() > 1) {
             mTabSessionManager.closeSession(session);
             TabSession tabSession = mTabSessionManager.getCurrentSession();
             setGeckoViewSession(tabSession);
+            mToolbarView.getLocationView().setText(tabSession.getUri());
             mToolbarView.updateTabCount();
         } else {
             recreateSession(session);
