@@ -179,6 +179,7 @@ public class GeckoViewActivity extends FloatableActivity {
         set.connect(R.id.toolbar_layout,ConstraintSet.LEFT,R.id.main,ConstraintSet.LEFT,30);
         set.connect(R.id.toolbar_layout,ConstraintSet.RIGHT,R.id.toolbar,ConstraintSet.LEFT);
         set.connect(R.id.toolbar_layout,ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
+//    set.connect(R.id.toolbar_layout,ConstraintSet.TOP,R.id.progress_bar,ConstraintSet.BOTTOM);
         set.connect(R.id.toolbar_layout,ConstraintSet.BOTTOM,R.id.main,ConstraintSet.BOTTOM);
         set.applyTo(appLayout);
 
@@ -230,52 +231,53 @@ public class GeckoViewActivity extends FloatableActivity {
                 }
             });
 
-                sGeckoRuntime.setWebNotificationDelegate(new WebNotificationDelegate() {
-                    NotificationManager notificationManager = getSystemService(NotificationManager.class);
-                    @Override
-                    public void onShowNotification(@NonNull WebNotification notification) {
-                        Intent clickIntent = new Intent(GeckoViewActivity.this, GeckoViewActivity.class);
-                        clickIntent.putExtra("onClick",notification.tag);
-                        PendingIntent dismissIntent = PendingIntent.getActivity(GeckoViewActivity.this, mLastID, clickIntent, 0);
+            sGeckoRuntime.setWebNotificationDelegate(new WebNotificationDelegate() {
+                NotificationManager notificationManager = getSystemService(NotificationManager.class);
 
-                        Notification.Builder builder = new Notification.Builder(GeckoViewActivity.this)
-                                .setContentTitle(notification.title)
-                                .setContentText(notification.text)
-                                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                                .setContentIntent(dismissIntent)
-                                .setAutoCancel(true);
+                @Override
+                public void onShowNotification(@NonNull WebNotification notification) {
+                    Intent clickIntent = new Intent(GeckoViewActivity.this, GeckoViewActivity.class);
+                    clickIntent.putExtra("onClick", notification.tag);
+                    PendingIntent dismissIntent = PendingIntent.getActivity(GeckoViewActivity.this, mLastID, clickIntent, 0);
 
-                        mNotificationIDMap.put(notification.tag, mLastID);
-                        mNotificationMap.put(mLastID, notification);
+                    Notification.Builder builder = new Notification.Builder(GeckoViewActivity.this)
+                            .setContentTitle(notification.title)
+                            .setContentText(notification.text)
+                            .setSmallIcon(R.drawable.ic_launcher_foreground)
+                            .setContentIntent(dismissIntent)
+                            .setAutoCancel(true);
 
-                        if (notification.imageUrl != null && notification.imageUrl.length() > 0) {
-                            final GeckoWebExecutor executor = new GeckoWebExecutor(sGeckoRuntime);
+                    mNotificationIDMap.put(notification.tag, mLastID);
+                    mNotificationMap.put(mLastID, notification);
 
-                            GeckoResult<WebResponse> response = executor.fetch(
-                                    new WebRequest.Builder(notification.imageUrl)
-                                            .addHeader("Accept", "image")
-                                            .build());
-                            response.accept(value -> {
-                                Bitmap bitmap = BitmapFactory.decodeStream(value.body);
-                                builder.setLargeIcon(Icon.createWithBitmap(bitmap));
-                                notificationManager.notify(mLastID++, builder.build());
-                            });
-                        } else {
+                    if (notification.imageUrl != null && notification.imageUrl.length() > 0) {
+                        final GeckoWebExecutor executor = new GeckoWebExecutor(sGeckoRuntime);
+
+                        GeckoResult<WebResponse> response = executor.fetch(
+                                new WebRequest.Builder(notification.imageUrl)
+                                        .addHeader("Accept", "image")
+                                        .build());
+                        response.accept(value -> {
+                            Bitmap bitmap = BitmapFactory.decodeStream(value.body);
+                            builder.setLargeIcon(Icon.createWithBitmap(bitmap));
                             notificationManager.notify(mLastID++, builder.build());
-                        }
-
+                        });
+                    } else {
+                        notificationManager.notify(mLastID++, builder.build());
                     }
 
-                    @Override
-                    public void onCloseNotification(@NonNull WebNotification notification) {
-                        if (mNotificationIDMap.containsKey(notification.tag)) {
-                            int id = mNotificationIDMap.get(notification.tag);
-                            notificationManager.cancel(id);
-                            mNotificationMap.remove(id);
-                            mNotificationIDMap.remove(notification.tag);
-                        }
+                }
+
+                @Override
+                public void onCloseNotification(@NonNull WebNotification notification) {
+                    if (mNotificationIDMap.containsKey(notification.tag)) {
+                        int id = mNotificationIDMap.get(notification.tag);
+                        notificationManager.cancel(id);
+                        mNotificationMap.remove(id);
+                        mNotificationIDMap.remove(notification.tag);
                     }
-                });
+                }
+            });
 
             sGeckoRuntime.setDelegate(() -> {
                 mKillProcessOnDestroy = true;
@@ -463,7 +465,6 @@ public class GeckoViewActivity extends FloatableActivity {
         if(session != null) {
             mTabSessionManager.closeSession(session);
         }
-
         session = createSession();
         session.open(sGeckoRuntime);
         mTabSessionManager.setCurrentSession(session);
@@ -767,6 +768,7 @@ public class GeckoViewActivity extends FloatableActivity {
                     " title=" + element.title +
                     " alt=" + element.altText +
                     " srcUri=" + element.srcUri);
+
             String contextUrl = element.linkUri;
             if(contextUrl == null){
                 contextUrl = element.srcUri;

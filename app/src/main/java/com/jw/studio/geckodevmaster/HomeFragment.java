@@ -46,7 +46,6 @@ public class HomeFragment extends Fragment {
         youtubeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 activity.mTabSessionManager.getCurrentSession().loadUri("https://m.youtube.com");
                 fragmentManager.beginTransaction().remove(HomeFragment.this).commitAllowingStateLoss();
             }
