@@ -138,6 +138,12 @@ public class GeckoViewActivity extends FloatableActivity {
             imm.hideSoftInputFromWindow(urlEdit.getWindowToken(), 0);
         }
     };
+    private void removeFragmentbyTag(){
+        String fragmentName = "homeFrag_tag";
+        if(fragmentManager.findFragmentByTag(fragmentName).isVisible()){
+            fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(fragmentName)).commitAllowingStateLoss();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -537,11 +543,18 @@ public class GeckoViewActivity extends FloatableActivity {
     }
 
     private void switchToSessionAtIndex(int index) {
-        TabSession nextSession = mTabSessionManager.getSession(index);
+        removeFragmentbyTag();
         TabSession currentSession = mTabSessionManager.getCurrentSession();
+        TabSession nextSession = mTabSessionManager.getSession(index);
+
         if(nextSession != currentSession) {
             setGeckoViewSession(nextSession);
             mCurrentUri = nextSession.getUri();
+            if(mCurrentUri == null) {
+                mCurrentUri = "about:blank";
+                Log.d("geckoview location=", mCurrentUri);
+                homeshortcut();
+            }
             mToolbarView.getLocationView().setText(mCurrentUri);
         }
     }
@@ -790,7 +803,6 @@ public class GeckoViewActivity extends FloatableActivity {
                 dialog.dismiss();
             });
             dialog.show();
-
         }
 
         @Override
@@ -853,7 +865,10 @@ public class GeckoViewActivity extends FloatableActivity {
             Log.i(LOGTAG, "Starting to load page at " + url);
             Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
                     " - page load start");
-            mCb.clearCounters();
+            //mCb.clearCounters();
+            if(!url.equals("about:blank")){
+                removeFragmentbyTag();
+            }
         }
 
         @Override
@@ -861,7 +876,7 @@ public class GeckoViewActivity extends FloatableActivity {
             Log.i(LOGTAG, "Stopping page load " + (success ? "successfully" : "unsuccessfully"));
             Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
                     " - page load stop");
-            mCb.logCounters();
+            //mCb.logCounters();
         }
 
         @Override
@@ -1047,8 +1062,8 @@ public class GeckoViewActivity extends FloatableActivity {
     private class ExampleNavigationDelegate implements GeckoSession.NavigationDelegate {
         @Override
         public void onLocationChange(GeckoSession session, final String url) {
-            mToolbarView.getLocationView().setText(url);
             mCurrentUri = url;
+            mToolbarView.getLocationView().setText(mCurrentUri);
         }
 
         @Override
@@ -1276,14 +1291,12 @@ public class GeckoViewActivity extends FloatableActivity {
     public static int dpToPx(int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
-
     //TODO Qslide feature
     @Override
     public void onAttachedToFloatingWindow(FloatingWindow floatingWindow) {
         Log.d("WindowFlow","onAttachedToFloatingWindow.");
         /* all resources should be reinitialized once again
          * if you set new layout for the floating mode setContentViewForFloatingMode()*/
-
         // and also listeners a should be added once again to the buttons in floating mode
         int width = dpToPx(320);
         int height = dpToPx(364);
