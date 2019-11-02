@@ -39,7 +39,7 @@
             android:layout_height="100dp"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:drawableTop="@drawable/favicon_y"
+            android:drawableTop="@drawable/fav_youtube"
             android:drawablePadding="-5sp"
             android:paddingTop="10sp"
             android:singleLine="true"
