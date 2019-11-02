@@ -1270,8 +1270,8 @@ public class GeckoViewActivity extends FloatableActivity {
          * if you set new layout for the floating mode setContentViewForFloatingMode()*/
 
         // and also listeners a should be added once again to the buttons in floating mode
-        int width = dpToPx(324);
-        int height = dpToPx(356);
+        int width = dpToPx(320);
+        int height = dpToPx(364);
         floatingWindow.setSize(width,height);
     }
 
