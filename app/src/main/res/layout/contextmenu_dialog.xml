@@ -6,8 +6,6 @@
     android:layout_height="wrap_content"
     android:minWidth="200dp"
     android:orientation="vertical">
-
-
     <TextView
         android:id="@+id/title_textview"
         android:layout_width="wrap_content"
@@ -30,7 +28,7 @@
         android:layout_marginEnd="5dp"
         android:background="@android:color/transparent"
         android:text="@string/new_tab_contextmenu"
-        android:textAllCaps="false"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_textview" />
@@ -44,7 +42,7 @@
         android:layout_marginEnd="5dp"
         android:background="@android:color/transparent"
         android:text="@string/copy_contextmenu"
-        android:textAllCaps="false"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/link_button" />
