@@ -551,7 +551,7 @@ public class GeckoViewActivity extends FloatableActivity {
         if(nextSession != currentSession) {
             setGeckoViewSession(nextSession);
             mCurrentUri = nextSession.getUri();
-            if(mCurrentUri == null) {
+            if(mCurrentUri == null && !currentSession.getTitle().equals("about:blank")) {
                 mCurrentUri = "about:blank";
                 Log.d("geckoview location=", mCurrentUri);
                 homeshortcut();
