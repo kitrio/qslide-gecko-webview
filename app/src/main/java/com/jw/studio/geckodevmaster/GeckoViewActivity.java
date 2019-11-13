@@ -155,6 +155,7 @@ public class GeckoViewActivity extends FloatableActivity {
         mGeckoView = findViewById(R.id.gecko_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
         ConstraintLayout appLayout = findViewById(R.id.main);
+        //ProgressBar bar  = findViewById(R.id.progress_bar);
 
         mTabSessionManager = new TabSessionManager();
         mToolbarView = new ToolbarLayout(this, mTabSessionManager);
@@ -170,10 +171,16 @@ public class GeckoViewActivity extends FloatableActivity {
         set.clone(appLayout);
         set.connect(R.id.gecko_view,ConstraintSet.TOP, R.id.main,ConstraintSet.TOP);
         set.connect(R.id.gecko_view,ConstraintSet.BOTTOM, R.id.toolbar_layout,ConstraintSet.TOP);
+        //set.connect(R.id.gecko_view,ConstraintSet.BOTTOM, R.id.progress_bar,ConstraintSet.TOP);
+//        set.connect(R.id.progress_bar,ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
+//        set.connect(R.id.progress_bar,ConstraintSet.BOTTOM,R.id.toolbar,ConstraintSet.TOP);
+//        set.connect(R.id.progress_bar,ConstraintSet.BOTTOM,R.id.toolbar_layout,ConstraintSet.TOP);
+
 
         set.connect(R.id.toolbar, ConstraintSet.LEFT,R.id.toolbar_layout,ConstraintSet.RIGHT,20);
-        set.connect(R.id.toolbar, ConstraintSet.RIGHT,R.id.main,ConstraintSet.RIGHT,20);
+        set.connect(R.id.toolbar, ConstraintSet.RIGHT,R.id.main,ConstraintSet.RIGHT, 20);
         set.connect(R.id.toolbar, ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
+//        set.connect(R.id.toolbar, ConstraintSet.TOP,R.id.progress_bar,ConstraintSet.BOTTOM);
         set.connect(R.id.toolbar, ConstraintSet.BOTTOM, R.id.toolbar_layout,ConstraintSet.BOTTOM);
 
         set.connect(R.id.toolbar_layout,ConstraintSet.LEFT,R.id.main,ConstraintSet.LEFT,30);
@@ -298,7 +305,7 @@ public class GeckoViewActivity extends FloatableActivity {
                 mTabSessionManager.addSession(session);
                 setGeckoViewSession(session);
             } else {
-                homeshortcut();
+                showHome();
                 session = createSession();
                 session.open(sGeckoRuntime);
                 mTabSessionManager.setCurrentSession(session);
@@ -322,7 +329,7 @@ public class GeckoViewActivity extends FloatableActivity {
                 public void onClick(View v) {
                     popupWindow.dismiss();
                     createNewTab();
-                    homeshortcut();
+                    showHome();
                 }
             });
             menu.forwardButton.setOnClickListener((v -> {
@@ -391,7 +398,7 @@ public class GeckoViewActivity extends FloatableActivity {
         }
 
     }
-    private void homeshortcut(){
+    private void showHome(){
         HomeFragment homeFragment = new HomeFragment();
         fragmentManager = getFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
@@ -440,7 +447,6 @@ public class GeckoViewActivity extends FloatableActivity {
         session.setContentBlockingDelegate(cb);
         session.setProgressDelegate(new ExampleProgressDelegate(cb));
         session.setNavigationDelegate(new ExampleNavigationDelegate());
-
         final BasicGeckoViewPrompt prompt = new BasicGeckoViewPrompt(this);
         prompt.filePickerRequestCode = REQUEST_FILE_PICKER;
         session.setPromptDelegate(prompt);
@@ -492,7 +498,6 @@ public class GeckoViewActivity extends FloatableActivity {
                 ? GeckoSessionSettings.USER_AGENT_MODE_DESKTOP
                 : GeckoSessionSettings.USER_AGENT_MODE_MOBILE);
     }
-
     private void updateTrackingProtection(GeckoSession session) {
         session.getSettings().setUseTrackingProtection(mUseTrackingProtection);
         sGeckoRuntime.getSettings().getContentBlocking()
@@ -539,7 +544,7 @@ public class GeckoViewActivity extends FloatableActivity {
         } else {
             mCurrentUri = "about:blank";
             recreateSession();
-            homeshortcut();
+            showHome();
         }
     }
 
@@ -554,7 +559,7 @@ public class GeckoViewActivity extends FloatableActivity {
             if(mCurrentUri == null && !currentSession.getTitle().equals("about:blank")) {
                 mCurrentUri = "about:blank";
                 Log.d("geckoview location=", mCurrentUri);
-                homeshortcut();
+                showHome();
             }
             mToolbarView.getLocationView().setText(mCurrentUri);
         }

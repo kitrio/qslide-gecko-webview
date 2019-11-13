@@ -14,11 +14,11 @@ android {
     productFlavors {
         arm {
             dimension "abi"
-            versionCode 2332008
+            versionCode 2332009
         }
         aarch64 {
             dimension "abi"
-            versionCode 2364008
+            versionCode 2364009
         }
     }
     compileOptions {
@@ -44,10 +44,9 @@ dependencies {
     implementation files('libs/LGQSlideAPIs.jar')
     implementation 'androidx.annotation:annotation:1.0.2'
     implementation 'androidx.appcompat:appcompat:1.0.2'
-    //implementation "org.mozilla.components:browser-toolbar:0.56.0"
 
-    aarch64Implementation "org.mozilla.geckoview:geckoview-beta-arm64-v8a:71.0.20191103151245"
-    armImplementation "org.mozilla.geckoview:geckoview-beta-armeabi-v7a:71.0.20191103151245"
+    aarch64Implementation "org.mozilla.geckoview:geckoview-nightly-arm64-v8a:71.0.20191106230619"
+    armImplementation "org.mozilla.geckoview:geckoview-beta-armeabi-v7a:71.0.20191106230619"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
