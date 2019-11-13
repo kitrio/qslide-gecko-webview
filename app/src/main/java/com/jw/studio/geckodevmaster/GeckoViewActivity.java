@@ -626,7 +626,7 @@ public class GeckoViewActivity extends FloatableActivity {
             final BasicGeckoViewPrompt prompt = (BasicGeckoViewPrompt)
                     mTabSessionManager.getCurrentSession().getPromptDelegate();
             prompt.onFileCallbackResult(resultCode, data); //TODO fileCallback
-
+            super.onActivityResult(requestCode, resultCode, data);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }

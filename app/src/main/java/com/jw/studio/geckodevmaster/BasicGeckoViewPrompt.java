@@ -18,6 +18,8 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.InputType;
 import android.text.format.DateFormat;
@@ -40,6 +42,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import androidx.core.content.ContextCompat;
+
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,6 +57,10 @@ import org.mozilla.geckoview.GeckoResult;
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoSession.PermissionDelegate.MediaSource;
 import org.mozilla.geckoview.SlowScriptResponse;
+
+import static android.content.Intent.ACTION_GET_CONTENT;
+import static android.content.Intent.CATEGORY_OPENABLE;
+import static android.content.Intent.EXTRA_LOCAL_ONLY;
 
 final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     private static final int sdkVersion = Build.VERSION.SDK_INT;
@@ -700,7 +709,6 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     }
 
     @Override
-    //@TargetApi(19)
     public GeckoResult<PromptResponse> onFilePrompt(GeckoSession session, FilePrompt prompt)
     {
         final Activity activity = mActivity;
@@ -734,11 +742,12 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
             }
         }
 
-        final Intent intent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        final Intent intent = new Intent(ACTION_GET_CONTENT);
         intent.setType((mimeType != null ? mimeType : "*") + '/' +
                 (mimeSubtype != null ? mimeSubtype : "*"));
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+
+        intent.addCategory(CATEGORY_OPENABLE);
+        intent.putExtra(EXTRA_LOCAL_ONLY, true);
         if (prompt.type == FilePrompt.Type.MULTIPLE) {
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
@@ -776,7 +785,13 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
             return;
         }
 
-        final Uri uri = data.getData();
+        Uri uri = data.getData();
+        Log.d("BasicGeckoview","file uri=" +uri.toString());
+        String contentPath = getRealContentPathFromURI(mActivity.getApplication(),uri);
+        mActivity.getBaseContext().grantUriPermission(mActivity.getPackageName(), uri, Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        uri = Uri.parse(contentPath);
+
+        Log.d("BasicGeckoview","file uri content path=" +uri.toString());
         final ClipData clip = data.getClipData();
 
         if (prompt.type == FilePrompt.Type.SINGLE ||
@@ -941,4 +956,75 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
                                                      final PopupPrompt prompt) {
         return GeckoResult.fromValue(prompt.confirm(AllowOrDeny.ALLOW));
     }
+
+    public static String getRealContentPathFromURI(final Context context, final Uri uri) {
+
+        if (DocumentsContract.isDocumentUri(context, uri)) {
+            // ExternalStorageProvider
+            if (isExternalStorageDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+                if ("primary".equalsIgnoreCase(type)) {
+                    return Environment.getExternalStorageDirectory() + "/"
+                            + split[1];
+                } else {
+                    String SDcardpath = getRemovableSDCardPath(context).split("/Android")[0];
+                    return SDcardpath +"/"+ split[1];
+                }
+            }
+            // MediaProvider
+            else if (isMediaDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+
+                Uri contentUri = null;
+                if ("image".equals(type)) {
+                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                }
+
+                final String[] selectionArgs = new String[] { split[1] };
+
+                return contentUri+ "/" +selectionArgs[0];
+            }
+        } else if ("content".equalsIgnoreCase(uri.getScheme())) {
+            // Return the remote address
+            if (isGooglePhotosUri(uri))
+                return uri.getLastPathSegment();
+            return uri.toString();
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            return uri.toString();
+        }
+        return uri.toString();
+    }
+
+
+    public static String getRemovableSDCardPath(Context context) {
+        File[] storages = ContextCompat.getExternalFilesDirs(context, null);
+        if (storages.length > 1 && storages[0] != null && storages[1] != null)
+            return storages[1].toString();
+        else
+            return "";
+    }
+
+    public static boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri
+                .getAuthority());
+    }
+
+    public static boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri
+                .getAuthority());
+    }
+
+    public static boolean isGooglePhotosUri(Uri uri) {
+        return "com.google.android.apps.photos.content".equals(uri
+                .getAuthority());
+    }
+
 }
