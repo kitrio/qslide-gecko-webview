@@ -138,13 +138,6 @@ public class GeckoViewActivity extends FloatableActivity {
             imm.hideSoftInputFromWindow(urlEdit.getWindowToken(), 0);
         }
     };
-    private void removeFragmentbyTag(){
-        String fragmentName = "homeFrag_tag";
-        if(fragmentManager.findFragmentByTag(fragmentName).isVisible()){
-            fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(fragmentName)).commitAllowingStateLoss();
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -196,12 +189,12 @@ public class GeckoViewActivity extends FloatableActivity {
             final GeckoRuntimeSettings.Builder runtimeSettingsBuilder =
                     new GeckoRuntimeSettings.Builder();
 
-//            if (BuildConfig.DEBUG) {
-//                // In debug builds, we want to load JavaScript resources fresh with
-//                // each build.
-//                //runtimeSettingsBuilder.arguments(new String[] { "-purgecaches" });
-//
-//            }
+            if (BuildConfig.DEBUG) {
+                // In debug builds, we want to load JavaScript resources fresh with
+                // each build.
+                runtimeSettingsBuilder.arguments(new String[] { "-purgecaches" });
+
+            }
 
             final Bundle extras = getIntent().getExtras();
             if (extras != null) {
@@ -321,9 +314,9 @@ public class GeckoViewActivity extends FloatableActivity {
             GeckoSession session = mTabSessionManager.getCurrentSession();
             popupWindow = new PopupWindow(menu.getRoot(), ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             popupWindow.setFocusable(true);
+
             int menu_height = dpToPx(260);
-            //popupWindow.showAtLocation(toolbar, Gravity.RIGHT, toolbar.getCurrentContentInsetLeft(), mGeckoView.getPaddingBottom());
-            //popupWindow.showAtLocation(toolbar,Gravity.RIGHT,toolbar.getCurrentContentInsetLeft(),-40);
+
             menu.newtabButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -398,12 +391,20 @@ public class GeckoViewActivity extends FloatableActivity {
         }
 
     }
+
     private void showHome(){
         HomeFragment homeFragment = new HomeFragment();
         fragmentManager = getFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,android.R.animator.fade_out);
         fragmentTransaction.replace(R.id.gecko_view, homeFragment,"homeFrag_tag").addToBackStack(null).commitAllowingStateLoss();
+    }
+
+    private void removeFragmentbyTag(){
+        String fragmentName = "homeFrag_tag";
+        if(fragmentManager.findFragmentByTag(fragmentName).isVisible()){
+            fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(fragmentName)).commitAllowingStateLoss();
+        }
     }
 
     private void createNotificationChannel() {
@@ -454,9 +455,7 @@ public class GeckoViewActivity extends FloatableActivity {
         final ExamplePermissionDelegate permission = new ExamplePermissionDelegate();
         permission.androidPermissionRequestCode = REQUEST_PERMISSIONS;
         session.setPermissionDelegate(permission);
-
         session.setMediaDelegate(new ExampleMediaDelegate(this));
-
         session.setSelectionActionDelegate(new BasicSelectionActionDelegate(this));
 
         updateTrackingProtection(session);
@@ -630,7 +629,7 @@ public class GeckoViewActivity extends FloatableActivity {
         if (requestCode == REQUEST_FILE_PICKER) {
             final BasicGeckoViewPrompt prompt = (BasicGeckoViewPrompt)
                     mTabSessionManager.getCurrentSession().getPromptDelegate();
-            prompt.onFileCallbackResult(resultCode, data); //TODO fileCallback
+            prompt.onFileCallbackResult(resultCode, data);
             super.onActivityResult(requestCode, resultCode, data);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -1298,7 +1297,7 @@ public class GeckoViewActivity extends FloatableActivity {
     public static int dpToPx(int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
-    //TODO Qslide feature
+    //Qslide feature
     @Override
     public void onAttachedToFloatingWindow(FloatingWindow floatingWindow) {
         Log.d("WindowFlow","onAttachedToFloatingWindow.");
