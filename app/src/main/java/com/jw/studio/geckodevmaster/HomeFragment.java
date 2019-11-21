@@ -26,12 +26,12 @@ public class HomeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.home_fragment , container, false);
+        View rootView = inflater.inflate(R.layout.home_fragment , container, false);
         Button googleBtn = rootView.findViewById(R.id.button_google);
         Button youtubeBtn = rootView.findViewById(R.id.button_youtube);
         Button localBtn = rootView.findViewById(R.id.button_localurl);
 
-        FragmentManager fragmentManager = getActivity().getFragmentManager();
+        FragmentManager fragmentManager = activity.getFragmentManager();
 
         googleBtn.setText("Google");
         googleBtn.setOnClickListener(new View.OnClickListener() {
