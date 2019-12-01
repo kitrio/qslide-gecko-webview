@@ -28,7 +28,7 @@
             android:id="@+id/newtab_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/boarder"
+            android:background="@drawable/border"
             android:text="@string/new_tab" />
 
         <Button
@@ -41,7 +41,7 @@
             android:id="@+id/closetab_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/boarder"
+            android:background="@drawable/border"
             android:text="@string/close_tab" />
 
         <Switch

@@ -780,7 +780,7 @@ public class GeckoViewActivity extends FloatableActivity {
 
             Dialog dialog = new Dialog(GeckoViewActivity.this);
             dialog.setContentView(R.layout.contextmenu_dialog);
-            dialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.boarder));
+            dialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.border));
             if(Build.VERSION.SDK_INT <=25){
                 dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_PHONE);
             }else {
