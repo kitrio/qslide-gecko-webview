@@ -165,22 +165,15 @@ public class GeckoViewActivity extends FloatableActivity {
         set.clone(appLayout);
         set.connect(R.id.gecko_view,ConstraintSet.TOP, R.id.main,ConstraintSet.TOP);
         set.connect(R.id.gecko_view,ConstraintSet.BOTTOM, R.id.toolbar_layout,ConstraintSet.TOP);
-        //set.connect(R.id.gecko_view,ConstraintSet.BOTTOM, R.id.progress_bar,ConstraintSet.TOP);
-//        set.connect(R.id.progress_bar,ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
-//        set.connect(R.id.progress_bar,ConstraintSet.BOTTOM,R.id.toolbar,ConstraintSet.TOP);
-//        set.connect(R.id.progress_bar,ConstraintSet.BOTTOM,R.id.toolbar_layout,ConstraintSet.TOP);
-
 
         set.connect(R.id.toolbar, ConstraintSet.LEFT,R.id.toolbar_layout,ConstraintSet.RIGHT,20);
         set.connect(R.id.toolbar, ConstraintSet.RIGHT,R.id.main,ConstraintSet.RIGHT, 20);
         set.connect(R.id.toolbar, ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
-//        set.connect(R.id.toolbar, ConstraintSet.TOP,R.id.progress_bar,ConstraintSet.BOTTOM);
         set.connect(R.id.toolbar, ConstraintSet.BOTTOM, R.id.toolbar_layout,ConstraintSet.BOTTOM);
 
         set.connect(R.id.toolbar_layout,ConstraintSet.LEFT,R.id.main,ConstraintSet.LEFT,30);
         set.connect(R.id.toolbar_layout,ConstraintSet.RIGHT,R.id.toolbar,ConstraintSet.LEFT);
         set.connect(R.id.toolbar_layout,ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
-//    set.connect(R.id.toolbar_layout,ConstraintSet.TOP,R.id.progress_bar,ConstraintSet.BOTTOM);
         set.connect(R.id.toolbar_layout,ConstraintSet.BOTTOM,R.id.main,ConstraintSet.BOTTOM);
         set.applyTo(appLayout);
 
