@@ -335,7 +335,7 @@ public class GeckoViewActivity extends FloatableActivity {
             menu.closetabButton.setOnClickListener(v->{
                 popupWindow.dismiss();
                 closeTab((TabSession)session);
-                removeFragmentbyTag();
+                hideHome();
             });
             if(this.isSwitchingToFloatingMode()){
                 menu.buttonQslide.setVisibility(View.GONE);
@@ -406,10 +406,10 @@ public class GeckoViewActivity extends FloatableActivity {
 
     }
 
-    private void removeFragmentbyTag(){
-        String fragmentName = "homeFrag_tag";
-        if(fragmentManager.findFragmentByTag(fragmentName).isVisible()){
-            fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(fragmentName)).commitAllowingStateLoss();
+    private void hideHome(){
+        fragmentManager = getFragmentManager();
+        if(homeFragment.isVisible()){
+            fragmentManager.beginTransaction().hide(homeFragment).commitAllowingStateLoss();
         }
     }
 
@@ -554,7 +554,7 @@ public class GeckoViewActivity extends FloatableActivity {
     }
 
     private void switchToSessionAtIndex(int index) {
-        removeFragmentbyTag();
+        hideHome();
         TabSession currentSession = mTabSessionManager.getCurrentSession();
         TabSession nextSession = mTabSessionManager.getSession(index);
 
@@ -877,9 +877,9 @@ public class GeckoViewActivity extends FloatableActivity {
             Log.i(LOGTAG, "Starting to load page at " + url);
             Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
                     " - page load start");
-            //mCb.clearCounters();
-            if(!url.equals("about:blank")){
-                removeFragmentbyTag();
+            mCb.clearCounters();
+            if(!url.trim().equals("about:blank")){
+                hideHome();
             }
         }
 
@@ -888,7 +888,7 @@ public class GeckoViewActivity extends FloatableActivity {
             Log.i(LOGTAG, "Stopping page load " + (success ? "successfully" : "unsuccessfully"));
             Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
                     " - page load stop");
-            //mCb.logCounters();
+            mCb.logCounters();
         }
 
         @Override
