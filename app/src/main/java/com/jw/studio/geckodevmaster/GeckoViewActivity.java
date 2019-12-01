@@ -9,6 +9,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DownloadManager;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.Notification;
@@ -116,7 +117,7 @@ public class GeckoViewActivity extends FloatableActivity {
     private HashMap<String, Integer> mNotificationIDMap = new HashMap<>();
     private HashMap<Integer, WebNotification> mNotificationMap = new HashMap<>();
     private int mLastID = 100;
-
+    private Fragment homeFragment;
     private FragmentManager fragmentManager;
     private FragmentTransaction fragmentTransaction;
 
@@ -393,11 +394,16 @@ public class GeckoViewActivity extends FloatableActivity {
     }
 
     private void showHome(){
-        HomeFragment homeFragment = new HomeFragment();
+        homeFragment = new HomeFragment();
         fragmentManager = getFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,android.R.animator.fade_out);
-        fragmentTransaction.replace(R.id.gecko_view, homeFragment,"homeFrag_tag").addToBackStack(null).commitAllowingStateLoss();
+        if(homeFragment.isAdded()){
+            fragmentTransaction.show(homeFragment);
+        }else {
+            fragmentTransaction.replace(R.id.gecko_view, homeFragment, "homeFrag_tag").addToBackStack(null).commitAllowingStateLoss();
+        }
+
     }
 
     private void removeFragmentbyTag(){
