@@ -20,6 +20,8 @@
 # hide the original source file name.
 -renamesourcefileattribute SourceFile
 -keep public class * extends androidx.versionedparcelable
+-keep class androidx.core.app.CoreComponentFactory{*;}
+-keep class androidx.lifecycle.ProcessLifecycleOwnerInitializer{*;}
 -dontshrink
 -dontobfuscate
 -assumenosideeffects class android.util.Log {
