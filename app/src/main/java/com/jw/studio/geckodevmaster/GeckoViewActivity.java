@@ -1315,9 +1315,7 @@ public class GeckoViewActivity extends FloatableActivity {
     }
     @Override
     public void switchToFloatingMode() {
-        if (onStartedAsFloatingMode()) {
-            setDontFinishOnFloatingMode(true);
-        }
         super.switchToFloatingMode();
+            setDontFinishOnFloatingMode(true);
     }
 }
