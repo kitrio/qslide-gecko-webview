@@ -123,7 +123,7 @@ public class GeckoViewActivity extends FloatableActivity {
 
     private LinkedList<GeckoSession.WebResponseInfo> mPendingDownloads = new LinkedList<>();
 
-    private LocationView.CommitListener mCommitListener = new LocationView.CommitListener() {
+    private final LocationView.CommitListener mCommitListener = new LocationView.CommitListener() {
         @Override
         public void onCommit(String text) {
             if ((text.contains(".") || text.contains(":")) && !text.contains(" ")) {
@@ -1313,6 +1313,7 @@ public class GeckoViewActivity extends FloatableActivity {
 
         return true;
     }
+
     @Override
     public void switchToFloatingMode() {
         super.switchToFloatingMode();
