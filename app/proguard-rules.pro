@@ -22,6 +22,7 @@
 -keep public class * extends androidx.versionedparcelable
 -keep class androidx.core.app.CoreComponentFactory{*;}
 -keep class androidx.lifecycle.ProcessLifecycleOwnerInitializer{*;}
+-keep class com.jw.studio.geckodevmaster** {*;}
 -dontshrink
 -dontobfuscate
 -assumenosideeffects class android.util.Log {

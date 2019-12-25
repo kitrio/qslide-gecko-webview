@@ -7,18 +7,18 @@ android {
         applicationId "com.jw.studio.geckodevmaster"
         minSdkVersion 23
         targetSdkVersion 28
-        versionName "2.0.6"
+        versionName "2.0.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     flavorDimensions "abi"
     productFlavors {
         arm {
             dimension "abi"
-            versionCode 2332011
+            versionCode 2332013
         }
         aarch64 {
             dimension "abi"
-            versionCode 2364011
+            versionCode 2364013
         }
     }
     compileOptions {
