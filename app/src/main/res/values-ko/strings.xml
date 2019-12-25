@@ -25,8 +25,6 @@
     <string name="private_browsing">사생활 보호 모드</string>
     <string name="qslide_mode">Q 슬라이드 모드</string>
 
-    <string name="forward">-></string>
-    <string name="reload">새로고침</string>
     <string name="crashed_title">Q웹뷰 오류</string>
     <string name="crashed_text">오류 전송보고 하기</string>
     <string name="crashed_ignore">무시</string>
@@ -41,8 +39,6 @@
     <string name="stop">Stop</string>
     <string name="urlname">네이버</string>
     <string name="initurl">https://m.naver.com</string>
-    <string name="private_browsing_on">사생활 보호 모드 켜짐</string>
-    <string name="private_browsing_off">사생활 보호 모드가 꺼졌습니다.</string>
     <string name="notsupport_qslide">Q슬라이드 지원 앱입니다. LG 폰만 지원 됩니다.</string>
     <string name="copy_contextmenu">링크 주소복사하기</string>
     <string name="new_tab_contextmenu">새탭에서 열기</string>

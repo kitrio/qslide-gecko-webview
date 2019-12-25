@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Q WebView</string>
     <string name="activity_label">Gecko WebView</string>
-    <string name="location_hint">Enter URL or search keywords...</string>
+    <string name="location_hint">Enter URL or search keywords.</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="clear_field">Clear</string>
@@ -23,12 +23,8 @@
     <string name="tracking_protection_ex">Disable TP</string>
     <string name="tracking_protection_ex2">Reenable TP</string>
     <string name="private_browsing">Private Browsing</string>
-    <string name="private_browsing_on">Private Browsing On</string>
-    <string name="private_browsing_off">Private Browsing On</string>
     <string name="qslide_mode">Q slide mode</string>
 
-    <string name="forward">Forward</string>
-    <string name="reload">Reload</string>
     <string name="crashed_title">GeckoView Example Crashed</string>
     <string name="crashed_text">Tap to report to Mozilla.</string>
     <string name="crashed_ignore">Ignore</string>
