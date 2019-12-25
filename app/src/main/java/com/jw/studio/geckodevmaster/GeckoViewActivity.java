@@ -381,7 +381,6 @@ public class GeckoViewActivity extends FloatableActivity {
             ActivityCompat.requestPermissions(GeckoViewActivity.this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     REQUEST_WRITE_EXTERNAL_STORAGE);
-            return;
         }
 
     }

@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 public class CompatibilityActivity extends Activity {
-    public String MANUFACTURE;
+
+    private String MANUFACTURE;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
