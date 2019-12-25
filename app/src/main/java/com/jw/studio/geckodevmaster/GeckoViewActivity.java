@@ -309,7 +309,7 @@ public class GeckoViewActivity extends FloatableActivity {
             popupWindow = new PopupWindow(menu.getRoot(), ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             popupWindow.setFocusable(true);
 
-            int menu_height = dpToPx(260);
+            int menu_height = dpToPx(258);
 
             menu.newtabButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -334,7 +334,7 @@ public class GeckoViewActivity extends FloatableActivity {
                 menu.buttonQslide.setVisibility(View.GONE);
             }else {
                 menu.buttonQslide.setVisibility(View.VISIBLE);
-                menu_height = dpToPx(280);
+                menu_height = dpToPx(288);
                 menu.buttonQslide.setOnClickListener(v -> {
                     switchToFloatingMode();
                 });
