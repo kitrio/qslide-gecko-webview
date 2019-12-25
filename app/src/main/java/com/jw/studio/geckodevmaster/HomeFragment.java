@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.util.Locale;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
@@ -52,12 +53,12 @@ public class HomeFragment extends Fragment {
         });
 
         Drawable topdrawable;
-        if (Locale.getDefault().getLanguage() == "ko") {
+        if (Locale.getDefault().getLanguage().equals("ko")) {
             topdrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.fav_naver, null);
         }else{
             topdrawable = ResourcesCompat.getDrawable(getResources(),R.drawable.fav_duckduckgo,null);
         }
-        topdrawable.setBounds(0,-5,0,0);
+        Objects.requireNonNull(topdrawable).setBounds(0,-5,0,0);
         localBtn.setCompoundDrawablesWithIntrinsicBounds(null,topdrawable,null,null);
         localBtn.setText(getString(R.string.urlname));
         localBtn.setOnClickListener(new View.OnClickListener() {

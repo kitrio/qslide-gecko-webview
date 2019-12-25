@@ -1107,7 +1107,7 @@ public class GeckoViewActivity extends FloatableActivity {
                 BufferedReader reader = null;
                 StringBuilder builder = new StringBuilder();
                 try {
-                    if (Locale.getDefault().getLanguage() == "ko") {
+                    if (Locale.getDefault().getLanguage().equals("ko")) {
                         stream = getResources().getAssets().open("error_ko.html");
                     }else{
                         stream = getResources().getAssets().open("error_en.html");
