@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.mozilla.geckoview.BuildConfig;
 import org.mozilla.geckoview.CrashReporter;
 import org.mozilla.geckoview.GeckoRuntime;
@@ -40,6 +42,7 @@ public class ExampleCrashHandler extends Service {
 
         if (GeckoRuntime.ACTION_CRASHED.equals(intent.getAction())) {
             mCrashIntent = intent;
+            Crashlytics.log("error occur , notification make");
 
             Log.d(LOGTAG, "Dump File: " +
                     mCrashIntent.getStringExtra(GeckoRuntime.EXTRA_MINIDUMP_PATH));

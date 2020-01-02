@@ -22,9 +22,11 @@
 -keep public class * extends androidx.versionedparcelable
 -keep class androidx.core.app.CoreComponentFactory{*;}
 -keep class androidx.lifecycle.ProcessLifecycleOwnerInitializer{*;}
--keep class com.jw.studio.geckodevmaster** {*;}
+-keep class com.lge.app.floating**
 -dontshrink
 -dontobfuscate
+-printconfiguration /tmp/full-r8-config.txt
+-printusage /tmp/usagewebview.txt
 -assumenosideeffects class android.util.Log {
 
     public static int v (...);

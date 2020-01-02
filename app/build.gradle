@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'io.fabric'
+apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 28
     buildToolsVersion "29.0.2"
@@ -14,11 +15,11 @@ android {
     productFlavors {
         arm {
             dimension "abi"
-            versionCode 2332013
+            versionCode 2332015
         }
         aarch64 {
             dimension "abi"
-            versionCode 2364013
+            versionCode 2364015
         }
     }
     compileOptions {
@@ -27,11 +28,12 @@ android {
     }
     buildTypes {
         release {
+            shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -42,13 +44,19 @@ android {
 
 dependencies {
     implementation files('libs/LGQSlideAPIs.jar')
+    aarch64Implementation "org.mozilla.geckoview:geckoview-arm64-v8a:71.0.20191208234333"
+    armImplementation "org.mozilla.geckoview:geckoview-armeabi-v7a:71.0.20191208234333"
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
-    aarch64Implementation "org.mozilla.geckoview:geckoview-nightly-arm64-v8a:71.0.20191106230619"
-    armImplementation "org.mozilla.geckoview:geckoview-beta-armeabi-v7a:71.0.20191106230619"
+    //crashytics
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
+    implementation 'com.google.firebase:firebase-analytics:17.2.0'
+
+    //test
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+
 }

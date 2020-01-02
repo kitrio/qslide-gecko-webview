@@ -119,7 +119,6 @@ public class GeckoViewActivity extends FloatableActivity {
     private int mLastID = 100;
     private Fragment homeFragment;
     private FragmentManager fragmentManager;
-    private FragmentTransaction fragmentTransaction;
 
     private LinkedList<GeckoSession.WebResponseInfo> mPendingDownloads = new LinkedList<>();
 
@@ -388,12 +387,12 @@ public class GeckoViewActivity extends FloatableActivity {
     private void showHome(){
         homeFragment = new HomeFragment();
         fragmentManager = getFragmentManager();
-        fragmentTransaction = fragmentManager.beginTransaction();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,android.R.animator.fade_out);
         if(homeFragment.isAdded()){
             fragmentTransaction.show(homeFragment);
         }else {
-            fragmentTransaction.replace(R.id.gecko_view, homeFragment, "homeFrag_tag").addToBackStack(null).commitAllowingStateLoss();
+            fragmentTransaction.replace(R.id.gecko_view, homeFragment, "homeFrag_tag").commitAllowingStateLoss();
         }
 
     }
@@ -1320,7 +1319,7 @@ public class GeckoViewActivity extends FloatableActivity {
 
     @Override
     public void switchToFloatingMode() {
-        super.switchToFloatingMode();
         setDontFinishOnFloatingMode(true);
+        super.switchToFloatingMode();
     }
 }
