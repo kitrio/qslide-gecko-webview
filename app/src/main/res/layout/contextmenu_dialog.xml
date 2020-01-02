@@ -25,7 +25,6 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="5dp"
-        android:background="@android:color/transparent"
         android:text="@string/new_tab_contextmenu"
 
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,12 +35,13 @@
         android:id="@+id/copy_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="5dp"
-        android:background="@android:color/transparent"
-        android:text="@string/copy_contextmenu"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="8dp"
 
+        android:text="@string/copy_contextmenu"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/link_button" />
