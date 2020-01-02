@@ -535,6 +535,9 @@ public class GeckoViewActivity extends FloatableActivity {
         if(mTabSessionManager.sessionCount() > 1) {
             mTabSessionManager.closeSession(session);
             TabSession tabSession = mTabSessionManager.getCurrentSession();
+            if(tabSession.getTitle().equals("about:blank")){
+                showHome();
+            }
             setGeckoViewSession(tabSession);
             mToolbarView.getLocationView().setText(tabSession.getUri());
             mToolbarView.updateTabCount();
