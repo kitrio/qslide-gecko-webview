@@ -20,9 +20,9 @@ import org.mozilla.geckoview.CrashReporter;
 import org.mozilla.geckoview.GeckoRuntime;
 
 public class ExampleCrashHandler extends Service {
-    private static final String LOGTAG = "ExampleCrashHandler";
+    private static final String LOGTAG = "Qwebview CrashHandler";
 
-    private static final String CHANNEL_ID = "geckoview_example_crashes";
+    private static final String CHANNEL_ID = "qwebview_crashes";
     private static final int NOTIFY_ID = 42;
 
     private static final String ACTION_REPORT_CRASH = "org.mozilla.geckoview_example.ACTION_REPORT_CRASH";
@@ -114,7 +114,7 @@ public class ExampleCrashHandler extends Service {
 
     private String createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "GeckoView Example Crashes", NotificationManager.IMPORTANCE_LOW);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "QWebview Crashes", NotificationManager.IMPORTANCE_LOW);
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
             return CHANNEL_ID;

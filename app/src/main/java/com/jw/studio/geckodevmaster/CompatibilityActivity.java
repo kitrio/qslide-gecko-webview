@@ -13,12 +13,10 @@ import android.util.Log;
 
 public class CompatibilityActivity extends Activity {
 
-    private String MANUFACTURE;
-
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        MANUFACTURE = Build.MANUFACTURER;
+        String MANUFACTURE = Build.MANUFACTURER;
 
         if(MANUFACTURE.contains("LGE")){
 //            if (ContextCompat.checkSelfPermission(this,
@@ -27,12 +25,12 @@ public class CompatibilityActivity extends Activity {
 //                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
 //                        3);
 //            }
-            Log.d("phone MANUFACTURE="+MANUFACTURE,"intent start");
+            Log.d("phone MANUFACTURE="+ MANUFACTURE,"intent start");
             Intent intent = new Intent(getApplicationContext(), GeckoViewActivity.class);
             intent.putExtra("com.lge.app.floating.launchAsFloating", true);
             startActivity(intent);
         }else{
-            Log.d("phone MANUFACTURE"+MANUFACTURE,"not LG");
+            Log.d("phone MANUFACTURE"+ MANUFACTURE,"not LG");
 
         }setContentView(R.layout.compatibility_activity);
 

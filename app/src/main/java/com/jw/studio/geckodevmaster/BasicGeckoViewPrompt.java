@@ -87,7 +87,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
                 .setTitle(prompt.title)
                 .setMessage(prompt.message)
                 .setPositiveButton(android.R.string.ok, /* onClickListener */ null);
-        GeckoResult<PromptResponse> res = new GeckoResult<PromptResponse>();
+        GeckoResult<PromptResponse> res = new GeckoResult<>();
         createStandardDialog(builder, prompt, res).show();
         return res;
     }
@@ -103,7 +103,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
                 .setTitle(prompt.title)
                 .setMessage(prompt.message);
 
-        GeckoResult<PromptResponse> res = new GeckoResult<PromptResponse>();
+        GeckoResult<PromptResponse> res = new GeckoResult<>();
 
         final DialogInterface.OnClickListener listener =
             new DialogInterface.OnClickListener() {
@@ -183,7 +183,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
         editText.setText(prompt.defaultValue);
         container.addView(editText);
 
-        GeckoResult<PromptResponse> res = new GeckoResult<PromptResponse>();
+        GeckoResult<PromptResponse> res = new GeckoResult<>();
 
         builder.setNegativeButton(android.R.string.cancel, /* listener */ null)
                 .setPositiveButton(android.R.string.ok,
@@ -233,7 +233,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
             container.addView(secure);
         }
 
-        GeckoResult<PromptResponse> res = new GeckoResult<PromptResponse>();
+        GeckoResult<PromptResponse> res = new GeckoResult<>();
 
         builder.setNegativeButton(android.R.string.cancel, /* listener */ null)
             .setPositiveButton(android.R.string.ok,
@@ -475,7 +475,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     @Override
     public GeckoResult<PromptResponse> onChoicePrompt(final GeckoSession session,
                                                       final ChoicePrompt prompt) {
-        final GeckoResult<PromptResponse> res = new GeckoResult<PromptResponse>();
+        final GeckoResult<PromptResponse> res = new GeckoResult<>();
         onChoicePromptImpl(session, prompt.title, prompt.message, prompt.type, prompt.choices,
                 prompt, res);
         return res;
@@ -550,7 +550,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
         list.setAdapter(adapter);
         builder.setView(list);
 
-        GeckoResult<PromptResponse> res = new GeckoResult<PromptResponse>();
+        GeckoResult<PromptResponse> res = new GeckoResult<>();
 
         final AlertDialog dialog = createStandardDialog(builder, prompt, res);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -679,7 +679,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
             container.addView(timePicker);
         }
 
-        GeckoResult<PromptResponse> res = new GeckoResult<PromptResponse>();
+        GeckoResult<PromptResponse> res = new GeckoResult<>();
 
         final DialogInterface.OnClickListener listener =
                 new DialogInterface.OnClickListener() {
@@ -755,7 +755,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
             intent.putExtra(Intent.EXTRA_MIME_TYPES, prompt.mimeTypes);
         }
 
-        GeckoResult<PromptResponse> res = new GeckoResult<PromptResponse>();
+        GeckoResult<PromptResponse> res = new GeckoResult<>();
 
         try {
             mFileResponse = res;

@@ -89,8 +89,7 @@ public class GeckoViewActivity extends FloatableActivity {
     private static final String LOGTAG = "GeckoViewActivity";
     private static final String USE_MULTIPROCESS_EXTRA = "use_multiprocess";
     private static final String SEARCH_URI_BASE = "https://www.google.com/search?q=";
-    private static final String ACTION_SHUTDOWN = "org.mozilla.geckoview_example.SHUTDOWN";
-    private static final String CHANNEL_ID = "GeckoViewExample";
+    private static final String CHANNEL_ID = "Qwebview_GeckoView";
     private static final int REQUEST_FILE_PICKER = 1;
     private static final int REQUEST_PERMISSIONS = 2;
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 3;
@@ -105,7 +104,7 @@ public class GeckoViewActivity extends FloatableActivity {
     private boolean mDesktopMode;
 
     private boolean mShowNotificationsRejected;
-    private ArrayList<String> mAcceptedPersistentStorage = new ArrayList<String>();
+    private ArrayList<String> mAcceptedPersistentStorage = new ArrayList<>();
 
     private PopupWindow popupWindow;
     private ToolbarLayout mToolbarView;
@@ -512,7 +511,6 @@ public class GeckoViewActivity extends FloatableActivity {
             session.goBack();
             return;
         }
-        Log.d(LOGTAG,"backbutton pressed");
     }
 
     public void createNewTab(String url) {
@@ -557,7 +555,7 @@ public class GeckoViewActivity extends FloatableActivity {
             mCurrentUri = nextSession.getUri();
             if(nextSession.getTitle().equals("about:blank")) {
                 mCurrentUri = "about:blank";
-                Log.d("geckoview location=", mCurrentUri);
+//                Log.d("geckoview location=", mCurrentUri);
                 showHome();
             }
             mToolbarView.getLocationView().setText(mCurrentUri);
@@ -589,15 +587,6 @@ public class GeckoViewActivity extends FloatableActivity {
             return;
         }
         super.onNewIntent(intent);
-
-        if (ACTION_SHUTDOWN.equals(intent.getAction())) {
-            mKillProcessOnDestroy = true;
-            if (sGeckoRuntime != null) {
-                sGeckoRuntime.shutdown();
-            }
-            finish();
-            return;
-        }
 
         if (intent.hasExtra("onClick")) {
             int key = intent.getExtras().getInt("onClick");
@@ -697,7 +686,7 @@ public class GeckoViewActivity extends FloatableActivity {
         private final HashSet<String> mVisitedURLs;
 
         private ExampleHistoryDelegate() {
-            mVisitedURLs = new HashSet<String>();
+            mVisitedURLs = new HashSet<>();
         }
 
         @Override
@@ -797,7 +786,6 @@ public class GeckoViewActivity extends FloatableActivity {
             btnUrl.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("contextmenu","clicked"+finalUrl);
                     createNewTab(finalUrl);
                     dialog.dismiss();
                 }
@@ -845,7 +833,7 @@ public class GeckoViewActivity extends FloatableActivity {
                                                             final String scriptFileName) {
             BasicGeckoViewPrompt prompt = (BasicGeckoViewPrompt) mTabSessionManager.getCurrentSession().getPromptDelegate();
             if (prompt != null) {
-                GeckoResult<SlowScriptResponse> result = new GeckoResult<SlowScriptResponse>();
+                GeckoResult<SlowScriptResponse> result = new GeckoResult<>();
                 if (!activeAlert) {
                     activeAlert = true;
                     prompt.onSlowScriptPrompt(geckoSession, getString(R.string.slow_script), result);

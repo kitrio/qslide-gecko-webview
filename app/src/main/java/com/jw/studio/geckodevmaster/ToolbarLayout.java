@@ -18,7 +18,7 @@ public class ToolbarLayout extends LinearLayout {
     private Button mTabsCountButton;
     private TabListener mTabListener;
     private TabSessionManager mSessionManager;
-    private ImageButton mBackButon;
+
 
     public ToolbarLayout(Context context, TabSessionManager sessionManager) {
         super(context);
@@ -31,13 +31,13 @@ public class ToolbarLayout extends LinearLayout {
         setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
         setOrientation(LinearLayout.HORIZONTAL);
 
-        mBackButon = new ImageButton(getContext());
-        mBackButon.setId(R.id.back_button);
-        mBackButon.setImageResource(R.drawable.ic_toolbar);
-        mBackButon.setBackgroundColor(Color.TRANSPARENT);
-        mBackButon.setPadding(0,0,14,0);
-        mBackButon.setLayoutParams(new LayoutParams(100, LayoutParams.MATCH_PARENT));
-        addView(mBackButon);
+        ImageButton mBackButton = new ImageButton(getContext());
+        mBackButton.setId(R.id.back_button);
+        mBackButton.setImageResource(R.drawable.ic_toolbar);
+        mBackButton.setBackgroundColor(Color.TRANSPARENT);
+        mBackButton.setPadding(0,0,14,0);
+        mBackButton.setLayoutParams(new LayoutParams(100, LayoutParams.MATCH_PARENT));
+        addView(mBackButton);
 
         mLocationView = new LocationView(getContext());
         mLocationView.setId(R.id.url_bar);
