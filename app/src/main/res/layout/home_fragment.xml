@@ -5,7 +5,8 @@
     android:id="@+id/home_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorPrimary">
+    android:background="?android:attr/colorPrimary"
+    android:focusable="true">
     <LinearLayout
         android:id="@+id/webshortcut_row"
         android:layout_width="match_parent"
@@ -14,7 +15,7 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent" >
 
         <Button
             android:id="@+id/button_google"
