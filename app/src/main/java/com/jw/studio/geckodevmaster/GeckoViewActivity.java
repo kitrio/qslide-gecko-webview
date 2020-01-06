@@ -387,15 +387,18 @@ public class GeckoViewActivity extends FloatableActivity {
         if(homeFragment.isAdded()){
             fragmentTransaction.show(homeFragment);
         }else {
-            fragmentTransaction.replace(R.id.gecko_view, homeFragment, "homeFrag_tag").commitAllowingStateLoss();
+            fragmentTransaction.replace(R.id.gecko_view, homeFragment,"home_fragment").commitAllowingStateLoss();
         }
 
     }
 
     private void hideHome(){
         fragmentManager = getFragmentManager();
-        if(homeFragment.isVisible()){
-            fragmentManager.beginTransaction().hide(homeFragment).commitAllowingStateLoss();
+        if(homeFragment == null){
+            homeFragment = new HomeFragment();
+        }
+        if(homeFragment.isVisible()) {
+            fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("home_fragment")).commitAllowingStateLoss();
         }
     }
 
