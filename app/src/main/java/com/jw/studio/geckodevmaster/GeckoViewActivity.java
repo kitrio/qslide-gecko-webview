@@ -546,6 +546,9 @@ public class GeckoViewActivity extends FloatableActivity {
 
     private void switchToSessionAtIndex(int index) {
         hideHome();
+        if(mTabSessionManager.sessionCount() <= 0){
+            createNewTab("about:blank");
+        }
         TabSession currentSession = mTabSessionManager.getCurrentSession();
         TabSession nextSession = mTabSessionManager.getSession(index);
 
