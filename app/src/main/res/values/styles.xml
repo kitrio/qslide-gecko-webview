@@ -19,7 +19,7 @@
     </style>
 
     <style name="PopupMenu" parent="Widget.AppCompat.PopupMenu">
-        <item name="android:animation">@android:anim/fade_out</item>
+        <item name="android:animation">@null</item>
     </style>
 
 </resources>

@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
-apply plugin: 'com.google.gms.google-services'
+
 android {
     compileSdkVersion 28
     buildToolsVersion "29.0.2"
@@ -8,7 +7,7 @@ android {
         applicationId "com.jw.studio.geckodevmaster"
         minSdkVersion 23
         targetSdkVersion 28
-        versionName "2.0.7"
+        versionName "2.0.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     flavorDimensions "abi"
@@ -19,7 +18,7 @@ android {
         }
         aarch64 {
             dimension "abi"
-            versionCode 2364015
+            versionCode 2364017
         }
     }
     compileOptions {
@@ -51,8 +50,8 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     //crashytics
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-    implementation 'com.google.firebase:firebase-analytics:17.2.0'
+//    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
+//    implementation 'com.google.firebase:firebase-analytics:17.2.0'
 
     //test
     testImplementation 'junit:junit:4.12'

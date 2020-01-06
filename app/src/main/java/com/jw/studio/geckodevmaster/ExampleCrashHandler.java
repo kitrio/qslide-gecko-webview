@@ -13,8 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
-
 import org.mozilla.geckoview.BuildConfig;
 import org.mozilla.geckoview.CrashReporter;
 import org.mozilla.geckoview.GeckoRuntime;
@@ -28,8 +26,6 @@ public class ExampleCrashHandler extends Service {
     private static final String ACTION_REPORT_CRASH = "org.mozilla.geckoview_example.ACTION_REPORT_CRASH";
     private static final String ACTION_DISMISS = "org.mozilla.geckoview_example.ACTION_DISMISS";
 
-    private Intent mCrashIntent;
-
     public ExampleCrashHandler() {
     }
 
@@ -41,15 +37,6 @@ public class ExampleCrashHandler extends Service {
         }
 
         if (GeckoRuntime.ACTION_CRASHED.equals(intent.getAction())) {
-            mCrashIntent = intent;
-            Crashlytics.log("error occur , notification make");
-
-            Log.d(LOGTAG, "Dump File: " +
-                    mCrashIntent.getStringExtra(GeckoRuntime.EXTRA_MINIDUMP_PATH));
-            Log.d(LOGTAG, "Extras File: " +
-                    mCrashIntent.getStringExtra(GeckoRuntime.EXTRA_EXTRAS_PATH));
-            Log.d(LOGTAG, "Fatal: " +
-                    mCrashIntent.getBooleanExtra(GeckoRuntime.EXTRA_CRASH_FATAL, false));
 
             String id = createNotificationChannel();
 
@@ -88,12 +75,6 @@ public class ExampleCrashHandler extends Service {
                         .build());
             }
 
-            try {
-                CrashReporter.sendCrashReport(this, mCrashIntent, "GeckoViewExample");
-            } catch (Exception e) {
-                Log.e(LOGTAG, "Failed to send crash report", e);
-            }
-
             if (oldPolicy != null) {
                 StrictMode.setThreadPolicy(oldPolicy);
             }
@@ -119,7 +100,6 @@ public class ExampleCrashHandler extends Service {
             notificationManager.createNotificationChannel(channel);
             return CHANNEL_ID;
         }
-
         return "";
     }
 
