@@ -7,9 +7,9 @@ package com.jw.studio.geckodevmaster;
 
 import android.content.Context;
 import androidx.appcompat.widget.AppCompatEditText;
+import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 public class LocationView extends AppCompatEditText {
@@ -24,11 +24,11 @@ public class LocationView extends AppCompatEditText {
     public LocationView(Context context) {
         super(context);
 
-        this.setInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_URI );
-        this.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-        this.setSingleLine(true);
-        this.setSelectAllOnFocus(true);
-        this.setHint(R.string.location_hint);
+        setOnFocusChangeListener(mFocusCommitListener);
+        setOnEditorActionListener(mFocusCommitListener);
+    }
+    public LocationView(Context context, AttributeSet attrs) {
+        super(context ,attrs);
 
         setOnFocusChangeListener(mFocusCommitListener);
         setOnEditorActionListener(mFocusCommitListener);

@@ -38,7 +38,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
-import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import android.util.Log;
 import android.view.View;
@@ -145,7 +144,7 @@ public class GeckoViewActivity extends FloatableActivity {
         createNotificationChannel();
         setContentView(R.layout.geckoview_activity);
         mGeckoView = findViewById(R.id.gecko_view);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        ImageButton toolbar = findViewById(R.id.toolbar);
         ConstraintLayout appLayout = findViewById(R.id.main);
         //ProgressBar bar  = findViewById(R.id.progress_bar);
 
@@ -155,21 +154,18 @@ public class GeckoViewActivity extends FloatableActivity {
         mToolbarView.setTabListener(this::switchToSessionAtIndex);
         mToolbarView.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,ConstraintLayout.LayoutParams.WRAP_CONTENT));
 
-        toolbar.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,80));
-        toolbar.setBackgroundResource(R.drawable.ic_menu);
-
         ConstraintSet set = new ConstraintSet();
         appLayout.addView(mToolbarView);
         set.clone(appLayout);
         set.connect(R.id.gecko_view,ConstraintSet.TOP, R.id.main,ConstraintSet.TOP);
         set.connect(R.id.gecko_view,ConstraintSet.BOTTOM, R.id.toolbar_layout,ConstraintSet.TOP);
 
-        set.connect(R.id.toolbar, ConstraintSet.LEFT,R.id.toolbar_layout,ConstraintSet.RIGHT,20);
+        set.connect(R.id.toolbar, ConstraintSet.LEFT,R.id.toolbar_layout,ConstraintSet.RIGHT);
         set.connect(R.id.toolbar, ConstraintSet.RIGHT,R.id.main,ConstraintSet.RIGHT, 20);
         set.connect(R.id.toolbar, ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
         set.connect(R.id.toolbar, ConstraintSet.BOTTOM, R.id.toolbar_layout,ConstraintSet.BOTTOM);
 
-        set.connect(R.id.toolbar_layout,ConstraintSet.LEFT,R.id.main,ConstraintSet.LEFT,30);
+        set.connect(R.id.toolbar_layout,ConstraintSet.LEFT,R.id.main,ConstraintSet.LEFT);
         set.connect(R.id.toolbar_layout,ConstraintSet.RIGHT,R.id.toolbar,ConstraintSet.LEFT);
         set.connect(R.id.toolbar_layout,ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
         set.connect(R.id.toolbar_layout,ConstraintSet.BOTTOM,R.id.main,ConstraintSet.BOTTOM);
@@ -363,7 +359,7 @@ public class GeckoViewActivity extends FloatableActivity {
                     session.reload();
                 }
             });
-            popupWindow.showAsDropDown(toolbar,toolbar.getContentInsetEnd(), -menu_height, mGeckoView.getPaddingBottom());
+            popupWindow.showAsDropDown(toolbar,toolbar.getBottom(), -menu_height, mGeckoView.getPaddingBottom());
 
         });
         mBackButton = findViewById(R.id.back_button);

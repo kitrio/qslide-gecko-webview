@@ -1,14 +1,14 @@
 package com.jw.studio.geckodevmaster;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
-public class ToolbarLayout extends LinearLayout {
+import androidx.constraintlayout.widget.ConstraintLayout;
+
+public class ToolbarLayout extends ConstraintLayout {
 
     public interface TabListener {
         void switchToTab(int tabId);
@@ -27,31 +27,11 @@ public class ToolbarLayout extends LinearLayout {
     }
 
     private void initView() {
-
-        setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
-        setOrientation(LinearLayout.HORIZONTAL);
-
-        ImageButton mBackButton = new ImageButton(getContext());
-        mBackButton.setId(R.id.back_button);
-        mBackButton.setImageResource(R.drawable.ic_toolbar);
-        mBackButton.setBackgroundColor(Color.TRANSPARENT);
-        mBackButton.setPadding(0,0,14,0);
-        mBackButton.setLayoutParams(new LayoutParams(100, LayoutParams.MATCH_PARENT));
-        addView(mBackButton);
-
-        mLocationView = new LocationView(getContext());
-        mLocationView.setId(R.id.url_bar);
-        mLocationView.setBackgroundColor(Color.TRANSPARENT);
-        mLocationView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT,1));
-        addView(mLocationView);
-
-        mTabsCountButton = new Button(getContext());
-        mTabsCountButton.setLayoutParams(new LayoutParams(100, LayoutParams.MATCH_PARENT));
-        mTabsCountButton.setId(R.id.tabs_button);
+        LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater.inflate(R.layout.toolbar_layout,this,true);
+        mLocationView = findViewById(R.id.locationView);
+        mTabsCountButton = findViewById(R.id.tabs_button);
         mTabsCountButton.setOnClickListener(this::onTabButtonClicked);
-        mTabsCountButton.setBackgroundResource(R.drawable.tab_number_background);
-        addView(mTabsCountButton);
-
     }
 
     public LocationView getLocationView() {

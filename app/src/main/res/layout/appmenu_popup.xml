@@ -7,10 +7,11 @@
             type="com.jw.studio.geckodevmaster.GeckoViewActivity" />
     </data>
     <LinearLayout
-        android:id="@+id/LinearLayout"
+        android:id="@+id/app_popupmenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/menu_border"
+        android:alpha="0.9"
         android:focusable="false"
         android:minWidth="170dp"
         android:orientation="vertical"
@@ -84,7 +85,7 @@
 
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="2dp"
-                android:background="@drawable/ic_arrow_forward"
+                android:background="@drawable/ic_forward"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
