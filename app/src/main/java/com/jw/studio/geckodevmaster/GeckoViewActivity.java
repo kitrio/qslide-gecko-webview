@@ -7,7 +7,6 @@ package com.jw.studio.geckodevmaster;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -17,8 +16,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -42,14 +39,12 @@ import androidx.databinding.DataBindingUtil;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
-import android.widget.TextView;
+
 import org.json.JSONObject;
 import org.mozilla.geckoview.AllowOrDeny;
 import org.mozilla.geckoview.BasicSelectionActionDelegate;
@@ -69,6 +64,7 @@ import org.mozilla.geckoview.WebNotificationDelegate;
 import org.mozilla.geckoview.WebRequest;
 import org.mozilla.geckoview.WebRequestError;
 import org.mozilla.geckoview.WebResponse;
+import org.mozilla.gecko.util.ActivityUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -108,9 +104,7 @@ public class GeckoViewActivity extends FloatableActivity {
     private PopupWindow popupWindow;
     private ToolbarLayout mToolbarView;
     private String mCurrentUri;
-    private ImageButton mBackButton;
     private boolean mCanGoBack;
-    private boolean mCanGoForward;
     private static boolean mFullScreen;
     private HashMap<String, Integer> mNotificationIDMap = new HashMap<>();
     private HashMap<Integer, WebNotification> mNotificationMap = new HashMap<>();
@@ -132,7 +126,6 @@ public class GeckoViewActivity extends FloatableActivity {
 
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             EditText urlEdit = findViewById(mToolbarView.getLocationView().getId());
-
             imm.hideSoftInputFromWindow(urlEdit.getWindowToken(), 0);
         }
     };
