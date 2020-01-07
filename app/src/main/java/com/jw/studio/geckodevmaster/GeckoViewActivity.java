@@ -763,42 +763,7 @@ public class GeckoViewActivity extends FloatableActivity {
                     " title=" + element.title +
                     " alt=" + element.altText +
                     " srcUri=" + element.srcUri);
-
-            String contextUrl = element.linkUri;
-            if(contextUrl == null){
-                contextUrl = element.srcUri;
-            }
-            String clipboardID = "qwebview";
-
-            Dialog dialog = new Dialog(GeckoViewActivity.this);
-            dialog.setContentView(R.layout.contextmenu_dialog);
-            dialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.border));
-            if(Build.VERSION.SDK_INT <=25){
-                dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_PHONE);
-            }else {
-                dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-            }
-            final TextView tvTitle = dialog.findViewById(R.id.title_textview);
-            final String finalUrl = contextUrl;
-
-            Button btnUrl = dialog.findViewById(R.id.link_button);
-            Button btnCopy = dialog.findViewById(R.id.copy_button);
-
-            tvTitle.setText(element.linkUri);
-            btnUrl.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    createNewTab(finalUrl);
-                    dialog.dismiss();
-                }
-            });
-            btnCopy.setOnClickListener(v -> {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText(clipboardID, finalUrl);
-                clipboard.setPrimaryClip(clip);
-                dialog.dismiss();
-            });
-            dialog.show();
+            BasicGeckoViewPrompt.contextMenuPrompt(GeckoViewActivity.this,element);
         }
 
         @Override

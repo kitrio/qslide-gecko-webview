@@ -8,8 +8,10 @@ package com.jw.studio.geckodevmaster;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,6 +33,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -64,11 +67,11 @@ import static android.content.Intent.EXTRA_LOCAL_ONLY;
 
 final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     private static final int sdkVersion = Build.VERSION.SDK_INT;
-    protected static final String LOGTAG = "BasicGeckoViewPrompt";
+    private static final String LOGTAG = "BasicGeckoViewPrompt";
 
     private final Activity mActivity;
     public int filePickerRequestCode = 1;
-    private int mFileType;
+//    private int mFileType;
     private GeckoResult<PromptResponse> mFileResponse;
     private FilePrompt mFilePrompt;
 
@@ -470,6 +473,18 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
             throw new UnsupportedOperationException();
         }
         dialog.show();
+    }
+
+//    @Override
+//    public GeckoResult<PromptResponse> onLoginStoragePrompt(final GeckoSession session, final LoginStoragePrompt prompt){
+//        final GeckoResult<PromptResponse> res = new GeckoResult<>();
+//        onLoginStoragePrompt(session,prompt);
+//        return res;
+//    }
+    @Override
+    public GeckoResult<PromptResponse> onSharePrompt(final GeckoSession session,
+                                                     final SharePrompt prompt) {
+        return GeckoResult.fromValue(prompt.confirm(SharePrompt.Result.SUCCESS));
     }
 
     @Override
@@ -1025,6 +1040,41 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     public static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri
                 .getAuthority());
+    }
+
+    public static void contextMenuPrompt(GeckoViewActivity geckoViewActivity, GeckoSession.ContentDelegate.ContextElement element){
+        String contextUrl = element.linkUri;
+        if(contextUrl == null){
+            contextUrl = element.srcUri;
+        }
+        String clipboardID = "qwebview";
+
+        Dialog dialog = new Dialog(geckoViewActivity);
+        dialog.setContentView(R.layout.contextmenu_dialog);
+        dialog.getWindow().setBackgroundDrawable(geckoViewActivity.getDrawable(R.drawable.border));
+        if(Build.VERSION.SDK_INT <=25){
+            dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_PHONE);
+        }else {
+            dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+        }
+        TextView tvTitle = dialog.findViewById(R.id.title_textview);
+        String finalUrl = contextUrl;
+
+        Button btnUrl = dialog.findViewById(R.id.link_button);
+        Button btnCopy = dialog.findViewById(R.id.copy_button);
+
+        tvTitle.setText(element.linkUri);
+        btnUrl.setOnClickListener(v -> {
+            geckoViewActivity.createNewTab(finalUrl);
+            dialog.dismiss();
+        });
+        btnCopy.setOnClickListener(v -> {
+            ClipboardManager clipboard = (ClipboardManager) geckoViewActivity.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText(clipboardID, finalUrl);
+            clipboard.setPrimaryClip(clip);
+            dialog.dismiss();
+        });
+        dialog.show();
     }
 
 }
