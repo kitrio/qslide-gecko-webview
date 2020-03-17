@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
@@ -19,23 +20,24 @@ public class HomeFragment extends Fragment {
 
     private GeckoViewActivity activity;
     private FragmentManager fragmentManager;
+
     @Override
-    public void onAttach(Context context){
+    public void onAttach(Context context) {
         super.onAttach(context);
-        if( context instanceof GeckoViewActivity){
-            activity = (GeckoViewActivity)context;
+        if (context instanceof GeckoViewActivity) {
+            activity = (GeckoViewActivity) context;
         }
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fragmentManager = activity.getFragmentManager();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.home_fragment , container, false);
+        View rootView = inflater.inflate(R.layout.home_fragment, container, false);
         Button googleBtn = rootView.findViewById(R.id.button_google);
         Button youtubeBtn = rootView.findViewById(R.id.button_youtube);
         Button localBtn = rootView.findViewById(R.id.button_localurl);
@@ -61,11 +63,11 @@ public class HomeFragment extends Fragment {
 
         if (Locale.getDefault().getLanguage().equals("ko")) {
             topDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.fav_naver, null);
-        }else{
-            topDrawable = ResourcesCompat.getDrawable(getResources(),R.drawable.fav_duckduckgo,null);
+        } else {
+            topDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.fav_duckduckgo, null);
         }
-        topDrawable.setBounds(0,-5,0,0);
-        localBtn.setCompoundDrawablesWithIntrinsicBounds(null,topDrawable,null,null);
+        topDrawable.setBounds(0, -5, 0, 0);
+        localBtn.setCompoundDrawablesWithIntrinsicBounds(null, topDrawable, null, null);
         localBtn.setText(getString(R.string.urlname));
         localBtn.setOnClickListener(new View.OnClickListener() {
             @Override

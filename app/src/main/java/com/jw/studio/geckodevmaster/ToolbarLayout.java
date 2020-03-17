@@ -27,8 +27,8 @@ public class ToolbarLayout extends ConstraintLayout {
     }
 
     private void initView() {
-        LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.toolbar_layout,this,true);
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater.inflate(R.layout.toolbar_layout, this, true);
         mLocationView = findViewById(R.id.locationView);
         mTabsCountButton = findViewById(R.id.tabs_button);
         mTabsCountButton.setOnClickListener(this::onTabButtonClicked);
@@ -48,7 +48,7 @@ public class ToolbarLayout extends ConstraintLayout {
 
     public void onTabButtonClicked(View view) {
         PopupMenu tabButtonMenu = new PopupMenu(view.getContext(), mTabsCountButton);
-        for(int idx = 0; idx < mSessionManager.sessionCount(); ++idx) {
+        for (int idx = 0; idx < mSessionManager.sessionCount(); ++idx) {
             tabButtonMenu.getMenu().add(0, idx, idx,
                     mSessionManager.getSession(idx).getTitle());
         }

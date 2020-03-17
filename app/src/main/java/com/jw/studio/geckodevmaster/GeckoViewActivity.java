@@ -27,7 +27,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.SystemClock;
+
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -36,6 +36,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
+
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,7 @@ import android.widget.PopupWindow;
 import org.json.JSONObject;
 import org.mozilla.geckoview.AllowOrDeny;
 import org.mozilla.geckoview.BasicSelectionActionDelegate;
+import org.mozilla.geckoview.BuildConfig;
 import org.mozilla.geckoview.ContentBlocking;
 import org.mozilla.geckoview.GeckoResult;
 import org.mozilla.geckoview.GeckoRuntime;
@@ -76,7 +78,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Locale;
 
-//import com.crashlytics.android.Crashlytics;
 import com.jw.studio.geckodevmaster.databinding.AppmenuPopupBinding;
 import com.lge.app.floating.FloatableActivity;
 import com.lge.app.floating.FloatingWindow;
@@ -124,7 +125,7 @@ public class GeckoViewActivity extends FloatableActivity {
             }
             mGeckoView.requestFocus();
 
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             EditText urlEdit = findViewById(mToolbarView.getLocationView().getId());
             imm.hideSoftInputFromWindow(urlEdit.getWindowToken(), 0);
         }
@@ -146,23 +147,23 @@ public class GeckoViewActivity extends FloatableActivity {
         mToolbarView = new ToolbarLayout(this, mTabSessionManager);
         mToolbarView.setId(R.id.toolbar_layout);
         mToolbarView.setTabListener(this::switchToSessionAtIndex);
-        mToolbarView.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,ConstraintLayout.LayoutParams.WRAP_CONTENT));
+        mToolbarView.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
 
         ConstraintSet set = new ConstraintSet();
         appLayout.addView(mToolbarView);
         set.clone(appLayout);
-        set.connect(R.id.gecko_view,ConstraintSet.TOP, R.id.main,ConstraintSet.TOP);
-        set.connect(R.id.gecko_view,ConstraintSet.BOTTOM, R.id.toolbar_layout,ConstraintSet.TOP);
+        set.connect(R.id.gecko_view, ConstraintSet.TOP, R.id.main, ConstraintSet.TOP);
+        set.connect(R.id.gecko_view, ConstraintSet.BOTTOM, R.id.toolbar_layout, ConstraintSet.TOP);
 
-        set.connect(R.id.toolbar, ConstraintSet.LEFT,R.id.toolbar_layout,ConstraintSet.RIGHT);
-        set.connect(R.id.toolbar, ConstraintSet.RIGHT,R.id.main,ConstraintSet.RIGHT, 20);
-        set.connect(R.id.toolbar, ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
-        set.connect(R.id.toolbar, ConstraintSet.BOTTOM, R.id.toolbar_layout,ConstraintSet.BOTTOM);
+        set.connect(R.id.toolbar, ConstraintSet.LEFT, R.id.toolbar_layout, ConstraintSet.RIGHT);
+        set.connect(R.id.toolbar, ConstraintSet.RIGHT, R.id.main, ConstraintSet.RIGHT, 20);
+        set.connect(R.id.toolbar, ConstraintSet.TOP, R.id.gecko_view, ConstraintSet.BOTTOM);
+        set.connect(R.id.toolbar, ConstraintSet.BOTTOM, R.id.toolbar_layout, ConstraintSet.BOTTOM);
 
-        set.connect(R.id.toolbar_layout,ConstraintSet.LEFT,R.id.main,ConstraintSet.LEFT);
-        set.connect(R.id.toolbar_layout,ConstraintSet.RIGHT,R.id.toolbar,ConstraintSet.LEFT);
-        set.connect(R.id.toolbar_layout,ConstraintSet.TOP,R.id.gecko_view,ConstraintSet.BOTTOM);
-        set.connect(R.id.toolbar_layout,ConstraintSet.BOTTOM,R.id.main,ConstraintSet.BOTTOM);
+        set.connect(R.id.toolbar_layout, ConstraintSet.LEFT, R.id.main, ConstraintSet.LEFT);
+        set.connect(R.id.toolbar_layout, ConstraintSet.RIGHT, R.id.toolbar, ConstraintSet.LEFT);
+        set.connect(R.id.toolbar_layout, ConstraintSet.TOP, R.id.gecko_view, ConstraintSet.BOTTOM);
+        set.connect(R.id.toolbar_layout, ConstraintSet.BOTTOM, R.id.main, ConstraintSet.BOTTOM);
         set.applyTo(appLayout);
 
         final boolean useMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
@@ -174,7 +175,7 @@ public class GeckoViewActivity extends FloatableActivity {
             if (BuildConfig.DEBUG) {
                 // In debug builds, we want to load JavaScript resources fresh with
                 // each build.
-                runtimeSettingsBuilder.arguments(new String[] { "-purgecaches" });
+                runtimeSettingsBuilder.arguments(new String[]{"-purgecaches"});
             }
 
             final Bundle extras = getIntent().getExtras();
@@ -182,18 +183,18 @@ public class GeckoViewActivity extends FloatableActivity {
                 runtimeSettingsBuilder.extras(extras);
             }
             runtimeSettingsBuilder
-                .useContentProcessHint(useMultiprocess)
-                .remoteDebuggingEnabled(false)
-                .consoleOutput(false)
-                .contentBlocking(new ContentBlocking.Settings.Builder()
-                        .antiTracking(ContentBlocking.AntiTracking.DEFAULT |
-                                ContentBlocking.AntiTracking.STP)
-                        .safeBrowsing(ContentBlocking.SafeBrowsing.DEFAULT)
-                        .cookieBehavior(ContentBlocking.CookieBehavior.ACCEPT_NON_TRACKERS)
-                        .enhancedTrackingProtectionLevel(ContentBlocking.EtpLevel.DEFAULT)
-                        .build())
-                .crashHandler(ExampleCrashHandler.class)
-                .aboutConfigEnabled(true);
+                    .useContentProcessHint(useMultiprocess)
+                    .remoteDebuggingEnabled(false)
+                    .consoleOutput(false)
+                    .contentBlocking(new ContentBlocking.Settings.Builder()
+                            .antiTracking(ContentBlocking.AntiTracking.DEFAULT |
+                                    ContentBlocking.AntiTracking.STP)
+                            .safeBrowsing(ContentBlocking.SafeBrowsing.DEFAULT)
+                            .cookieBehavior(ContentBlocking.CookieBehavior.ACCEPT_NON_TRACKERS)
+                            .enhancedTrackingProtectionLevel(ContentBlocking.EtpLevel.DEFAULT)
+                            .build())
+                    .crashHandler(ExampleCrashHandler.class)
+                    .aboutConfigEnabled(true);
 
             sGeckoRuntime = GeckoRuntime.create(this, runtimeSettingsBuilder.build());
 
@@ -204,6 +205,7 @@ public class GeckoViewActivity extends FloatableActivity {
                     mToolbarView.updateTabCount();
                     return GeckoResult.fromValue(newSession);
                 }
+
                 @Override
                 public GeckoResult<AllowOrDeny> onCloseTab(WebExtension source, GeckoSession session) {
                     TabSession tabSession = mTabSessionManager.getSession(session);
@@ -266,7 +268,7 @@ public class GeckoViewActivity extends FloatableActivity {
             });
         }
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             TabSession session = getIntent().getParcelableExtra("session");
             if (session != null) {
                 connectSession(session);
@@ -289,8 +291,8 @@ public class GeckoViewActivity extends FloatableActivity {
         mToolbarView.getLocationView().setCommitListener(mCommitListener);
 
 
-        toolbar.setOnClickListener((view)->{
-            AppmenuPopupBinding menu = DataBindingUtil.inflate(getLayoutInflater(),R.layout.appmenu_popup,null,false);
+        toolbar.setOnClickListener((view) -> {
+            AppmenuPopupBinding menu = DataBindingUtil.inflate(getLayoutInflater(), R.layout.appmenu_popup, null, false);
             GeckoSession session = mTabSessionManager.getCurrentSession();
             popupWindow = new PopupWindow(menu.getRoot(), ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             popupWindow.setFocusable(true);
@@ -307,17 +309,17 @@ public class GeckoViewActivity extends FloatableActivity {
             menu.forwardButton.setOnClickListener((v -> {
                 session.goForward();
             }));
-            menu.refreshButton.setOnClickListener((v)->{
+            menu.refreshButton.setOnClickListener((v) -> {
                 session.reload();
             });
-            menu.closetabButton.setOnClickListener(v->{
+            menu.closetabButton.setOnClickListener(v -> {
                 popupWindow.dismiss();
-                closeTab((TabSession)session);
+                closeTab((TabSession) session);
                 hideHome();
             });
-            if(this.isSwitchingToFloatingMode()){
+            if (this.isSwitchingToFloatingMode()) {
                 menu.buttonQslide.setVisibility(View.GONE);
-            }else {
+            } else {
                 menu.buttonQslide.setVisibility(View.VISIBLE);
                 menu_height = dpToPx(288);
                 menu.buttonQslide.setOnClickListener(v -> {
@@ -328,7 +330,7 @@ public class GeckoViewActivity extends FloatableActivity {
             menu.switchDesktop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    mDesktopMode =!mDesktopMode;
+                    mDesktopMode = !mDesktopMode;
                     updateDesktopMode(session);
                     session.reload();
                 }
@@ -350,7 +352,7 @@ public class GeckoViewActivity extends FloatableActivity {
                     session.reload();
                 }
             });
-            popupWindow.showAsDropDown(toolbar,toolbar.getBottom(), -menu_height, mGeckoView.getPaddingBottom());
+            popupWindow.showAsDropDown(toolbar, toolbar.getBottom(), -menu_height, mGeckoView.getPaddingBottom());
 
         });
         ImageButton mBackButton = findViewById(R.id.back_button);
@@ -370,25 +372,24 @@ public class GeckoViewActivity extends FloatableActivity {
 
     }
 
-    private void showHome(){
+    private void showHome() {
         homeFragment = new HomeFragment();
         fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,android.R.animator.fade_out);
-        if(homeFragment.isAdded()){
+        fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
+        if (homeFragment.isAdded()) {
             fragmentTransaction.show(homeFragment);
-        }else {
-            fragmentTransaction.replace(R.id.gecko_view, homeFragment,"home_fragment").commitAllowingStateLoss();
+        } else {
+            fragmentTransaction.replace(R.id.gecko_view, homeFragment, "home_fragment").commitAllowingStateLoss();
         }
-
     }
 
-    private void hideHome(){
+    private void hideHome() {
         fragmentManager = getFragmentManager();
-        if(homeFragment == null){
+        if (homeFragment == null) {
             homeFragment = new HomeFragment();
         }
-        if(homeFragment.isVisible()) {
+        if (homeFragment.isVisible()) {
             fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("home_fragment")).commitAllowingStateLoss();
         }
     }
@@ -452,7 +453,7 @@ public class GeckoViewActivity extends FloatableActivity {
     }
 
     private void recreateSession(TabSession session) {
-        if(session != null) {
+        if (session != null) {
             mTabSessionManager.closeSession(session);
         }
         session = createSession();
@@ -467,8 +468,8 @@ public class GeckoViewActivity extends FloatableActivity {
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if(savedInstanceState != null) {
-            mTabSessionManager.setCurrentSession((TabSession)mGeckoView.getSession());
+        if (savedInstanceState != null) {
+            mTabSessionManager.setCurrentSession((TabSession) mGeckoView.getSession());
         } else {
             recreateSession();
         }
@@ -482,6 +483,7 @@ public class GeckoViewActivity extends FloatableActivity {
                 ? GeckoSessionSettings.USER_AGENT_MODE_DESKTOP
                 : GeckoSessionSettings.USER_AGENT_MODE_MOBILE);
     }
+
     private void updateTrackingProtection(GeckoSession session) {
         session.getSettings().setUseTrackingProtection(mUseTrackingProtection);
         sGeckoRuntime.getSettings().getContentBlocking()
@@ -518,10 +520,10 @@ public class GeckoViewActivity extends FloatableActivity {
     }
 
     public void closeTab(TabSession session) {
-        if(mTabSessionManager.sessionCount() > 1) {
+        if (mTabSessionManager.sessionCount() > 1) {
             mTabSessionManager.closeSession(session);
             TabSession tabSession = mTabSessionManager.getCurrentSession();
-            if(tabSession.getTitle().equals("about:blank")){
+            if (tabSession.getTitle().equals("about:blank")) {
                 showHome();
             }
             setGeckoViewSession(tabSession);
@@ -536,16 +538,16 @@ public class GeckoViewActivity extends FloatableActivity {
 
     private void switchToSessionAtIndex(int index) {
         hideHome();
-        if(mTabSessionManager.sessionCount() <= 0){
+        if (mTabSessionManager.sessionCount() <= 0) {
             createNewTab("about:blank");
         }
         TabSession currentSession = mTabSessionManager.getCurrentSession();
         TabSession nextSession = mTabSessionManager.getSession(index);
 
-        if(nextSession != currentSession) {
+        if (nextSession != currentSession) {
             setGeckoViewSession(nextSession);
             mCurrentUri = nextSession.getUri();
-            if(nextSession.getTitle().equals("about:blank")) {
+            if (nextSession.getTitle().equals("about:blank")) {
                 mCurrentUri = "about:blank";
 //                Log.d("geckoview location=", mCurrentUri);
                 showHome();
@@ -556,7 +558,7 @@ public class GeckoViewActivity extends FloatableActivity {
 
     private void setGeckoViewSession(TabSession session) {
         mGeckoView.releaseSession();
-        if(!session.isOpen()) {
+        if (!session.isOpen()) {
             session.open(sGeckoRuntime);
         }
         mGeckoView.setSession(session);
@@ -590,7 +592,7 @@ public class GeckoViewActivity extends FloatableActivity {
 
     @Override
     protected void onNewIntent(final Intent intent) {
-        if(intent.getBooleanExtra("com.lge.app.floating.returnFromFloating", false)){
+        if (intent.getBooleanExtra("com.lge.app.floating.returnFromFloating", false)) {
             Log.d("returnFromFloating", "false");
             return;
         }
@@ -727,7 +729,7 @@ public class GeckoViewActivity extends FloatableActivity {
         public void onTitleChange(GeckoSession session, String title) {
 //            Log.i(LOGTAG, "Content title changed to " + title);
             TabSession tabSession = mTabSessionManager.getSession(session);
-            if (tabSession != null ) {
+            if (tabSession != null) {
                 tabSession.setTitle(title);
             }
         }
@@ -738,7 +740,7 @@ public class GeckoViewActivity extends FloatableActivity {
 //                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
             mFullScreen = fullScreen;
             if (fullScreen) {
-                ActivityUtils.setFullScreen(GeckoViewActivity.this,true);
+                ActivityUtils.setFullScreen(GeckoViewActivity.this, true);
                 mToolbarView.setVisibility(ConstraintLayout.GONE);
                 Log.d("Geckoview", "Fullscreen in");
             } else {
@@ -770,7 +772,7 @@ public class GeckoViewActivity extends FloatableActivity {
                     " title=" + element.title +
                     " alt=" + element.altText +
                     " srcUri=" + element.srcUri);
-            BasicGeckoViewPrompt.contextMenuPrompt(GeckoViewActivity.this,element);
+            BasicGeckoViewPrompt.contextMenuPrompt(GeckoViewActivity.this, element);
         }
 
         @Override
@@ -835,7 +837,7 @@ public class GeckoViewActivity extends FloatableActivity {
 //            Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
 //                    " - page load start");
             //mCb.clearCounters();
-            if(!url.trim().equals("about:blank")){
+            if (!url.trim().equals("about:blank")) {
                 hideHome();
             }
         }
@@ -866,6 +868,7 @@ public class GeckoViewActivity extends FloatableActivity {
 
         class ExampleNotificationCallback implements GeckoSession.PermissionDelegate.Callback {
             private final GeckoSession.PermissionDelegate.Callback mCallback;
+
             ExampleNotificationCallback(final GeckoSession.PermissionDelegate.Callback callback) {
                 mCallback = callback;
             }
@@ -886,6 +889,7 @@ public class GeckoViewActivity extends FloatableActivity {
         class ExamplePersistentStorageCallback implements GeckoSession.PermissionDelegate.Callback {
             private final GeckoSession.PermissionDelegate.Callback mCallback;
             private final String mUri;
+
             ExamplePersistentStorageCallback(final GeckoSession.PermissionDelegate.Callback callback, String uri) {
                 mCallback = callback;
                 mUri = uri;
@@ -946,7 +950,7 @@ public class GeckoViewActivity extends FloatableActivity {
                 contentPermissionCallback = new ExampleNotificationCallback(callback);
             } else if (PERMISSION_PERSISTENT_STORAGE == type) {
                 if (mAcceptedPersistentStorage.contains(uri)) {
-                    Log.w(LOGTAG, "Persistent Storage for "+ uri +" already granted by user.");
+                    Log.w(LOGTAG, "Persistent Storage for " + uri + " already granted by user.");
                     callback.grant();
                     return;
                 }
@@ -1064,47 +1068,47 @@ public class GeckoViewActivity extends FloatableActivity {
             // which prevents the session from being garbage-collected.
             return GeckoResult.fromValue(newSession);
         }
-        
+
         private String createErrorPage() {
             String errorPageTemplate;
-                InputStream stream = null;
-                BufferedReader reader = null;
-                StringBuilder builder = new StringBuilder();
-                try {
-                    if (Locale.getDefault().getLanguage().equals("ko")) {
-                        stream = getResources().getAssets().open("error_ko.html");
-                    }else{
-                        stream = getResources().getAssets().open("error_en.html");
-                    }
-                    reader = new BufferedReader(new InputStreamReader(stream));
+            InputStream stream = null;
+            BufferedReader reader = null;
+            StringBuilder builder = new StringBuilder();
+            try {
+                if (Locale.getDefault().getLanguage().equals("ko")) {
+                    stream = getResources().getAssets().open("error_ko.html");
+                } else {
+                    stream = getResources().getAssets().open("error_en.html");
+                }
+                reader = new BufferedReader(new InputStreamReader(stream));
 
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        builder.append(line);
-                        builder.append("\n");
-                    }
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                    builder.append("\n");
+                }
 
-                    errorPageTemplate = builder.toString();
-                } catch (IOException e) {
-                    Log.d(LOGTAG, "Failed to open error page template", e);
-                    return null;
-                } finally {
-                    if (stream != null) {
-                        try {
-                            stream.close();
-                        } catch (IOException e) {
-                            Log.e(LOGTAG, "Failed to close error page template stream", e);
-                        }
-                    }
-
-                    if (reader != null) {
-                        try {
-                            reader.close();
-                        } catch (IOException e) {
-                            Log.e(LOGTAG, "Failed to close error page template reader", e);
-                        }
+                errorPageTemplate = builder.toString();
+            } catch (IOException e) {
+                Log.d(LOGTAG, "Failed to open error page template", e);
+                return null;
+            } finally {
+                if (stream != null) {
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                        Log.e(LOGTAG, "Failed to close error page template stream", e);
                     }
                 }
+
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        Log.e(LOGTAG, "Failed to close error page template reader", e);
+                    }
+                }
+            }
 
             return errorPageTemplate;
         }
@@ -1225,7 +1229,7 @@ public class GeckoViewActivity extends FloatableActivity {
                 Log.d(LOGTAG, "ExampleDeviceDelegate:onRecordingDeviceEvent display alert_camera");
                 message = getResources().getString(R.string.device_sharing_camera);
                 icon = R.drawable.alert_camera;
-            } else if (microphone != null){
+            } else if (microphone != null) {
                 Log.d(LOGTAG, "ExampleDeviceDelegate:onRecordingDeviceEvent display alert_mic");
                 message = getResources().getString(R.string.device_sharing_microphone);
                 icon = R.drawable.alert_mic;
@@ -1260,21 +1264,22 @@ public class GeckoViewActivity extends FloatableActivity {
     public static int dpToPx(int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
+
     //Qslide feature
     @Override
     public void onAttachedToFloatingWindow(FloatingWindow floatingWindow) {
-        Log.d("WindowFlow","onAttachedToFloatingWindow.");
+        Log.d("WindowFlow", "onAttachedToFloatingWindow.");
         /* all resources should be reinitialized once again
          * if you set new layout for the floating mode setContentViewForFloatingMode()*/
         // and also listeners a should be added once again to the buttons in floating mode
         int width = dpToPx(324);
         int height = dpToPx(360);
-        floatingWindow.setSize(width,height);
+        floatingWindow.setSize(width, height);
     }
 
     @Override
     public boolean onDetachedFromFloatingWindow(FloatingWindow w, boolean isReturningToFullScreen) {
-        Log.d("WindowFlow","onDetachedFromFloatingWindow. Returning to Fullscreen: " + isReturningToFullScreen);
+        Log.d("WindowFlow", "onDetachedFromFloatingWindow. Returning to Fullscreen: " + isReturningToFullScreen);
 
         return true;
     }
