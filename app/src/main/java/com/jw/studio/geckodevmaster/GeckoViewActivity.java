@@ -76,6 +76,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Locale;
 
+//import com.crashlytics.android.Crashlytics;
 import com.jw.studio.geckodevmaster.databinding.AppmenuPopupBinding;
 import com.lge.app.floating.FloatableActivity;
 import com.lge.app.floating.FloatingWindow;
@@ -84,7 +85,7 @@ public class GeckoViewActivity extends FloatableActivity {
     private static final String LOGTAG = "GeckoViewActivity";
     private static final String USE_MULTIPROCESS_EXTRA = "use_multiprocess";
     private static final String SEARCH_URI_BASE = "https://www.google.com/search?q=";
-    private static final String CHANNEL_ID = "Qwebview_GeckoView";
+    private static final String CHANNEL_ID = "QwebviewChannel";
     private static final int REQUEST_FILE_PICKER = 1;
     private static final int REQUEST_PERMISSIONS = 2;
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 3;
@@ -92,8 +93,7 @@ public class GeckoViewActivity extends FloatableActivity {
     public TabSessionManager mTabSessionManager;
     private static GeckoRuntime sGeckoRuntime;
     private GeckoView mGeckoView;
-    private boolean mUseMultiprocess;
-    private boolean mUseTrackingProtection;
+    private boolean mUseTrackingProtection = true;
     private boolean mUsePrivateBrowsing;
     private boolean mKillProcessOnDestroy;
     private boolean mDesktopMode;
@@ -129,11 +129,12 @@ public class GeckoViewActivity extends FloatableActivity {
             imm.hideSoftInputFromWindow(urlEdit.getWindowToken(), 0);
         }
     };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
-                " - application start");
+//        Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
+//                " - application start");
         createNotificationChannel();
         setContentView(R.layout.geckoview_activity);
         mGeckoView = findViewById(R.id.gecko_view);
@@ -164,7 +165,7 @@ public class GeckoViewActivity extends FloatableActivity {
         set.connect(R.id.toolbar_layout,ConstraintSet.BOTTOM,R.id.main,ConstraintSet.BOTTOM);
         set.applyTo(appLayout);
 
-        mUseMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
+        final boolean useMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
 
         if (sGeckoRuntime == null) {
             final GeckoRuntimeSettings.Builder runtimeSettingsBuilder =
@@ -174,7 +175,6 @@ public class GeckoViewActivity extends FloatableActivity {
                 // In debug builds, we want to load JavaScript resources fresh with
                 // each build.
                 runtimeSettingsBuilder.arguments(new String[] { "-purgecaches" });
-
             }
 
             final Bundle extras = getIntent().getExtras();
@@ -182,18 +182,18 @@ public class GeckoViewActivity extends FloatableActivity {
                 runtimeSettingsBuilder.extras(extras);
             }
             runtimeSettingsBuilder
-                    .useContentProcessHint(mUseMultiprocess)
-                    .remoteDebuggingEnabled(false)
-                    .consoleOutput(false)
-                    .contentBlocking(new ContentBlocking.Settings.Builder()
-                            .antiTracking(ContentBlocking.AntiTracking.DEFAULT |
-                                    ContentBlocking.AntiTracking.STP)
-                            .safeBrowsing(ContentBlocking.SafeBrowsing.DEFAULT)
-                            .cookieBehavior(ContentBlocking.CookieBehavior.ACCEPT_NON_TRACKERS)
-                            .enhancedTrackingProtectionLevel(ContentBlocking.EtpLevel.DEFAULT)
-                            .build())
-                    .crashHandler(ExampleCrashHandler.class)
-                    .aboutConfigEnabled(true);
+                .useContentProcessHint(useMultiprocess)
+                .remoteDebuggingEnabled(false)
+                .consoleOutput(false)
+                .contentBlocking(new ContentBlocking.Settings.Builder()
+                        .antiTracking(ContentBlocking.AntiTracking.DEFAULT |
+                                ContentBlocking.AntiTracking.STP)
+                        .safeBrowsing(ContentBlocking.SafeBrowsing.DEFAULT)
+                        .cookieBehavior(ContentBlocking.CookieBehavior.ACCEPT_NON_TRACKERS)
+                        .enhancedTrackingProtectionLevel(ContentBlocking.EtpLevel.DEFAULT)
+                        .build())
+                .crashHandler(ExampleCrashHandler.class)
+                .aboutConfigEnabled(true);
 
             sGeckoRuntime = GeckoRuntime.create(this, runtimeSettingsBuilder.build());
 
@@ -274,8 +274,6 @@ public class GeckoViewActivity extends FloatableActivity {
                 if (!session.isOpen()) {
                     session.open(sGeckoRuntime);
                 }
-
-                mUseMultiprocess = session.getSettings().getUseMultiprocess();
                 mTabSessionManager.addSession(session);
                 setGeckoViewSession(session);
             } else {
@@ -290,13 +288,13 @@ public class GeckoViewActivity extends FloatableActivity {
         mToolbarView.updateTabCount();
         mToolbarView.getLocationView().setCommitListener(mCommitListener);
 
+
         toolbar.setOnClickListener((view)->{
             AppmenuPopupBinding menu = DataBindingUtil.inflate(getLayoutInflater(),R.layout.appmenu_popup,null,false);
             GeckoSession session = mTabSessionManager.getCurrentSession();
             popupWindow = new PopupWindow(menu.getRoot(), ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             popupWindow.setFocusable(true);
-
-            int menu_height = dpToPx(258);
+            int menu_height = dpToPx(260);
 
             menu.newtabButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -355,7 +353,7 @@ public class GeckoViewActivity extends FloatableActivity {
             popupWindow.showAsDropDown(toolbar,toolbar.getBottom(), -menu_height, mGeckoView.getPaddingBottom());
 
         });
-        mBackButton = findViewById(R.id.back_button);
+        ImageButton mBackButton = findViewById(R.id.back_button);
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -414,7 +412,6 @@ public class GeckoViewActivity extends FloatableActivity {
     private TabSession createSession() {
         TabSession session = mTabSessionManager.newSession(new GeckoSessionSettings.Builder()
                 .suspendMediaWhenInactive(true)
-                .useMultiprocess(mUseMultiprocess)
                 .usePrivateMode(mUsePrivateBrowsing)
                 .useTrackingProtection(mUseTrackingProtection)
                 .viewportMode(mDesktopMode
@@ -566,6 +563,22 @@ public class GeckoViewActivity extends FloatableActivity {
         mTabSessionManager.setCurrentSession(session);
     }
 
+//    private void isUrlIntent(String url){
+//        if (url.startsWith("tel:")){
+//            startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse(url)));
+//        }
+//        if (url.startsWith("mailto:")) {
+//            startActivity(new Intent(Intent.EXTRA_EMAIL, Uri.parse(url)));
+//        }
+//        if (url.startsWith("intent://www.google.com/maps")) {
+//            Intent mapIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+//            mapIntent.setClassName("com.google.android.apps.maps","com.google.android.maps.MapsActivity");
+//            if (mapIntent.resolveActivity(getPackageManager()) != null) {
+//                startActivity(mapIntent);
+//            }
+//        }
+//    }
+
     @Override
     public void onDestroy() {
         if (mKillProcessOnDestroy) {
@@ -712,7 +725,7 @@ public class GeckoViewActivity extends FloatableActivity {
     private class ExampleContentDelegate implements GeckoSession.ContentDelegate {
         @Override
         public void onTitleChange(GeckoSession session, String title) {
-            Log.i(LOGTAG, "Content title changed to " + title);
+//            Log.i(LOGTAG, "Content title changed to " + title);
             TabSession tabSession = mTabSessionManager.getSession(session);
             if (tabSession != null ) {
                 tabSession.setTitle(title);
@@ -721,10 +734,11 @@ public class GeckoViewActivity extends FloatableActivity {
 
         @Override
         public void onFullScreen(final GeckoSession session, final boolean fullScreen) {
-            getWindow().setFlags(fullScreen ? WindowManager.LayoutParams.FLAG_FULLSCREEN : 0,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            getWindow().setFlags(fullScreen ? WindowManager.LayoutParams.FLAG_FULLSCREEN : 0,
+//                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
             mFullScreen = fullScreen;
             if (fullScreen) {
+                ActivityUtils.setFullScreen(GeckoViewActivity.this,true);
                 mToolbarView.setVisibility(ConstraintLayout.GONE);
                 Log.d("Geckoview", "Fullscreen in");
             } else {
@@ -773,6 +787,7 @@ public class GeckoViewActivity extends FloatableActivity {
         @Override
         public void onCrash(GeckoSession session) {
             Log.e(LOGTAG, "Crashed, reopening session");
+            //Crashlytics.log("Crashed, reopeing session");
             session.open(sGeckoRuntime);
         }
 
@@ -816,10 +831,10 @@ public class GeckoViewActivity extends FloatableActivity {
 
         @Override
         public void onPageStart(GeckoSession session, String url) {
-            Log.i(LOGTAG, "Starting to load page at " + url);
-            Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
-                    " - page load start");
-            mCb.clearCounters();
+//            Log.i(LOGTAG, "Starting to load page at " + url);
+//            Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
+//                    " - page load start");
+            //mCb.clearCounters();
             if(!url.trim().equals("about:blank")){
                 hideHome();
             }
@@ -827,21 +842,21 @@ public class GeckoViewActivity extends FloatableActivity {
 
         @Override
         public void onPageStop(GeckoSession session, boolean success) {
-            Log.i(LOGTAG, "Stopping page load " + (success ? "successfully" : "unsuccessfully"));
-            Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
-                    " - page load stop");
-            mCb.logCounters();
+//            Log.i(LOGTAG, "Stopping page load " + (success ? "successfully" : "unsuccessfully"));
+//            Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
+//                    " - page load stop");
+//            mCb.logCounters();
         }
 
-        @Override
-        public void onSecurityChange(GeckoSession session, SecurityInformation securityInfo) {
-            Log.i(LOGTAG, "Security status changed to " + securityInfo.securityMode);
-        }
-
-        @Override
-        public void onSessionStateChange(GeckoSession session, GeckoSession.SessionState state) {
-            Log.i(LOGTAG, "New Session state: " + state.toString());
-        }
+//        @Override
+//        public void onSecurityChange(GeckoSession session, SecurityInformation securityInfo) {
+////            Log.i(LOGTAG, "Security status changed to " + securityInfo.securityMode);
+//        }
+//
+//        @Override
+//        public void onSessionStateChange(GeckoSession session, GeckoSession.SessionState state) {
+////            Log.i(LOGTAG, "New Session state: " + state.toString());
+//        }
     }
 
     private class ExamplePermissionDelegate implements GeckoSession.PermissionDelegate {
@@ -1027,16 +1042,15 @@ public class GeckoViewActivity extends FloatableActivity {
 
         @Override
         public void onCanGoForward(GeckoSession session, boolean canGoForward) {
-            mCanGoForward = canGoForward;
         }
 
         @Override
         public GeckoResult<AllowOrDeny> onLoadRequest(final GeckoSession session,
                                                       final LoadRequest request) {
-            Log.d(LOGTAG, "onLoadRequest=" + request.uri +
-                    " triggerUri=" + request.triggerUri +
-                    " where=" + request.target +
-                    " isRedirect=" + request.isRedirect);
+//            Log.d(LOGTAG, "onLoadRequest=" + request.uri +
+//                    " triggerUri=" + request.triggerUri +
+//                    " where=" + request.target +
+//                    " isRedirect=" + request.isRedirect);
 
             return GeckoResult.fromValue(AllowOrDeny.ALLOW);
         }
@@ -1253,8 +1267,8 @@ public class GeckoViewActivity extends FloatableActivity {
         /* all resources should be reinitialized once again
          * if you set new layout for the floating mode setContentViewForFloatingMode()*/
         // and also listeners a should be added once again to the buttons in floating mode
-        int width = dpToPx(320);
-        int height = dpToPx(364);
+        int width = dpToPx(324);
+        int height = dpToPx(360);
         floatingWindow.setSize(width,height);
     }
 
@@ -1267,7 +1281,9 @@ public class GeckoViewActivity extends FloatableActivity {
 
     @Override
     public void switchToFloatingMode() {
-        setDontFinishOnFloatingMode(true);
+        if (onStartedAsFloatingMode()) {
+            setDontFinishOnFloatingMode(true);
+        }
         super.switchToFloatingMode();
     }
 }
