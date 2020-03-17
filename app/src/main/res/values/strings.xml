@@ -39,7 +39,7 @@
     <string name="stop">Stop</string>
     <string name="urlname">Duck Duck Go</string>
     <string name="initurl">https://duckduckgo.com/</string>
-    <string name="notsupport_qslide">This app is only support LG smartphone due to Qslidefeature</string>
+    <string name="notsupport_qslide">This app is only support LG smartphone due to Qslide feature, OR if your phone Android 10, Qslide removed and replaced popup window feature</string>
     <string name="copy_contextmenu">Copy link</string>
     <string name="new_tab_contextmenu">Open link in new tab</string>
 </resources>

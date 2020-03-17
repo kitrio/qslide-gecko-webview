@@ -39,7 +39,7 @@
     <string name="stop">중지</string>
     <string name="urlname">네이버</string>
     <string name="initurl">https://m.naver.com</string>
-    <string name="notsupport_qslide">Q슬라이드 지원 앱입니다. LG 폰만 지원 됩니다.</string>
+    <string name="notsupport_qslide">LG Q슬라이드 지원 앱입니다. LG 폰만 지원 됩니다. 안드로이드 10부터는 Q슬라이드 기능이 팝업윈도우로 대체되어 이앱을 쓸 수없습니다.</string>
     <string name="copy_contextmenu">링크 주소복사하기</string>
     <string name="new_tab_contextmenu">새탭에서 열기</string>
 </resources>

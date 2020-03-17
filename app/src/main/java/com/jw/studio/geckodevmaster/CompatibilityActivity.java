@@ -17,8 +17,8 @@ public class CompatibilityActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         String MANUFACTURE = Build.MANUFACTURER;
-
-        if(MANUFACTURE.contains("LGE")){
+        int OSVERSION = Build.VERSION.SDK_INT;
+        if(MANUFACTURE.contains("LGE") && !(Build.VERSION_CODES.P < OSVERSION)){
 //            if (ContextCompat.checkSelfPermission(this,
 //                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 //                ActivityCompat.requestPermissions(this,
