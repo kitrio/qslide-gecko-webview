@@ -60,7 +60,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
         if (Locale.getDefault().getLanguage().equals("ko")) {
             topDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.fav_naver, null);
         } else {

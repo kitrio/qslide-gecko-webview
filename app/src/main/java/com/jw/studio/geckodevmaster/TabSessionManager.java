@@ -11,8 +11,17 @@ import java.util.LinkedList;
 public class TabSessionManager {
     private static LinkedList<TabSession> mTabSessions = new LinkedList<>();
     private int mCurrentSessionIndex = 0;
+    private TabObserver mTabObserver;
+
+    public interface TabObserver {
+        void onCurrentSession(TabSession session);
+    }
 
     public TabSessionManager() {
+    }
+
+    public void setTabObserver(TabObserver observer) {
+        mTabObserver = observer;
     }
 
     public void addSession(TabSession session) {
@@ -46,6 +55,10 @@ public class TabSessionManager {
             index = mTabSessions.size() - 1;
         }
         mCurrentSessionIndex = index;
+
+        if(mTabObserver != null) {
+            mTabObserver.onCurrentSession(session);
+        }
     }
 
     private boolean isCurrentSession(TabSession session) {

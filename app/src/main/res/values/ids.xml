@@ -3,5 +3,6 @@
     <item name="toolbar_layout" type="id"/>
     <item name="url_bar" type="id"/>
     <item name="back_button" type="id"/>
+    <item name="browser_action" type="id"/>
     <item name="tabs_button" type="id"/>
 </resources>

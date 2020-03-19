@@ -14,7 +14,7 @@ android {
     productFlavors {
         arm {
             dimension "abi"
-            versionCode 2332015
+            versionCode 2332016
         }
         aarch64 {
             dimension "abi"
@@ -32,18 +32,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    dataBinding{
+    dataBinding {
         enabled = true
     }
 }
 
 dependencies {
     implementation files('libs/LGQSlideAPIs.jar')
-    aarch64Implementation "org.mozilla.geckoview:geckoview-arm64-v8a:71.0.20191208234333"
+//    aarch64Implementation "org.mozilla.geckoview:geckoview-arm64-v8a:72.0.20200107212822"
+    aarch64Implementation "org.mozilla.geckoview:geckoview-arm64-v8a:73.0.20200211134023"
     armImplementation "org.mozilla.geckoview:geckoview-armeabi-v7a:71.0.20191208234333"
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
