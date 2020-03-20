@@ -45,7 +45,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import androidx.core.content.ContextCompat;
+import org.mozilla.geckoview.AllowOrDeny;
+import org.mozilla.geckoview.GeckoResult;
+import org.mozilla.geckoview.GeckoSession;
+import org.mozilla.geckoview.GeckoSession.PermissionDelegate.MediaSource;
+import org.mozilla.geckoview.SlowScriptResponse;
 
 import java.io.File;
 import java.text.ParseException;
@@ -55,11 +59,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import org.mozilla.geckoview.AllowOrDeny;
-import org.mozilla.geckoview.GeckoResult;
-import org.mozilla.geckoview.GeckoSession;
-import org.mozilla.geckoview.GeckoSession.PermissionDelegate.MediaSource;
-import org.mozilla.geckoview.SlowScriptResponse;
+import androidx.core.content.ContextCompat;
 
 import static android.content.Intent.ACTION_GET_CONTENT;
 import static android.content.Intent.CATEGORY_OPENABLE;

@@ -9,13 +9,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.StrictMode;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
-import android.util.Log;
 
 import org.mozilla.geckoview.BuildConfig;
-import org.mozilla.geckoview.CrashReporter;
 import org.mozilla.geckoview.GeckoRuntime;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 public class ExampleCrashHandler extends Service {
     private static final String LOGTAG = "Qwebview CrashHandler";

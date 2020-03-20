@@ -2,12 +2,12 @@ package com.jw.studio.geckodevmaster;
 
 import android.os.Parcel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
-
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoSessionSettings;
 import org.mozilla.geckoview.WebExtension;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
 
 public class TabSession extends GeckoSession {
     private String mTitle;

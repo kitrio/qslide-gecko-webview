@@ -2,11 +2,12 @@ package com.jw.studio.geckodevmaster;
 
 import android.util.Log;
 
-import androidx.annotation.Nullable;
-
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoSessionSettings;
+
 import java.util.LinkedList;
+
+import androidx.annotation.Nullable;
 
 public class TabSessionManager {
     private static LinkedList<TabSession> mTabSessions = new LinkedList<>();

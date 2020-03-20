@@ -27,16 +27,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-
 import android.util.Log;
 import android.util.LruCache;
 import android.view.LayoutInflater;
@@ -49,9 +39,13 @@ import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
+import com.jw.studio.geckodevmaster.databinding.AppmenuPopupBinding;
+import com.lge.app.floating.FloatableActivity;
+import com.lge.app.floating.FloatingWindow;
+
 import org.json.JSONObject;
+import org.mozilla.gecko.util.ActivityUtils;
 import org.mozilla.geckoview.AllowOrDeny;
-import org.mozilla.geckoview.BasicSelectionActionDelegate;
 import org.mozilla.geckoview.BuildConfig;
 import org.mozilla.geckoview.ContentBlocking;
 import org.mozilla.geckoview.GeckoResult;
@@ -69,7 +63,6 @@ import org.mozilla.geckoview.WebNotificationDelegate;
 import org.mozilla.geckoview.WebRequest;
 import org.mozilla.geckoview.WebRequestError;
 import org.mozilla.geckoview.WebResponse;
-import org.mozilla.gecko.util.ActivityUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -82,9 +75,14 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Locale;
 
-import com.jw.studio.geckodevmaster.databinding.AppmenuPopupBinding;
-import com.lge.app.floating.FloatableActivity;
-import com.lge.app.floating.FloatingWindow;
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 
 interface BrowserActionDelegate {
     default GeckoSession toggleBrowserActionPopup(boolean force) {
@@ -667,7 +665,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
     private void connectSession(GeckoSession session) {
         session.setContentDelegate(new ExampleContentDelegate());
-        session.setHistoryDelegate(new ExampleHistoryDelegate());
+        //session.setHistoryDelegate(new ExampleHistoryDelegate());
         final ExampleContentBlockingDelegate cb = new ExampleContentBlockingDelegate();
         session.setContentBlockingDelegate(cb);
         session.setProgressDelegate(new ExampleProgressDelegate(cb));
@@ -680,7 +678,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         permission.androidPermissionRequestCode = REQUEST_PERMISSIONS;
         session.setPermissionDelegate(permission);
         session.setMediaDelegate(new ExampleMediaDelegate(this));
-        session.setSelectionActionDelegate(new BasicSelectionActionDelegate(this));
+        //session.setSelectionActionDelegate(new BasicSelectionActionDelegate(this));
         if(sExtensionManager.extension != null) {
             session.setWebExtensionActionDelegate(sExtensionManager.extension, sExtensionManager);
         }
@@ -1080,7 +1078,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 //            Log.i(LOGTAG, "Starting to load page at " + url);
 //            Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
 //                    " - page load start");
-            //mCb.clearCounters();
+            mCb.clearCounters();
             if (!url.trim().equals("about:blank")) {
                 hideHome();
             }
@@ -1093,16 +1091,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 //                    " - page load stop");
 //            mCb.logCounters();
         }
-
-//        @Override
-//        public void onSecurityChange(GeckoSession session, SecurityInformation securityInfo) {
-////            Log.i(LOGTAG, "Security status changed to " + securityInfo.securityMode);
-//        }
-//
-//        @Override
-//        public void onSessionStateChange(GeckoSession session, GeckoSession.SessionState state) {
-////            Log.i(LOGTAG, "New Session state: " + state.toString());
-//        }
     }
 
     private class ExamplePermissionDelegate implements GeckoSession.PermissionDelegate {
