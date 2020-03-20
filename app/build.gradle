@@ -7,7 +7,7 @@ android {
         applicationId "com.jw.studio.geckodevmaster"
         minSdkVersion 23
         targetSdkVersion 28
-        versionName "2.0.8"
+        versionName "2.0.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     flavorDimensions "abi"
@@ -18,7 +18,7 @@ android {
         }
         aarch64 {
             dimension "abi"
-            versionCode 2364017
+            versionCode 2364019
         }
     }
     compileOptions {
@@ -32,7 +32,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -43,8 +43,7 @@ android {
 
 dependencies {
     implementation files('libs/LGQSlideAPIs.jar')
-//    aarch64Implementation "org.mozilla.geckoview:geckoview-arm64-v8a:72.0.20200107212822"
-    aarch64Implementation "org.mozilla.geckoview:geckoview-arm64-v8a:73.0.20200211134023"
+    aarch64Implementation "org.mozilla.geckoview:geckoview-arm64-v8a:73.0.20200217142647"
     armImplementation "org.mozilla.geckoview:geckoview-armeabi-v7a:71.0.20191208234333"
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'

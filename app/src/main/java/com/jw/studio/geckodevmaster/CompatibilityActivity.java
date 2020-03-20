@@ -33,9 +33,7 @@ public class CompatibilityActivity extends Activity {
             startActivity(intent);
         } else {
             Log.d("phone MANUFACTURE" + MANUFACTURE, "not LG");
-
         }
         setContentView(R.layout.compatibility_activity);
-
     }
 }
