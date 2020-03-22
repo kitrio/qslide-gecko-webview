@@ -32,7 +32,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -43,7 +43,7 @@ android {
 
 dependencies {
     implementation files('libs/LGQSlideAPIs.jar')
-    aarch64Implementation "org.mozilla.geckoview:geckoview-arm64-v8a:73.0.20200217142647"
+    aarch64Implementation "org.mozilla.geckoview:geckoview-arm64-v8a:74.0.20200309095159"
     armImplementation "org.mozilla.geckoview:geckoview-armeabi-v7a:71.0.20191208234333"
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
