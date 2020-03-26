@@ -67,7 +67,7 @@ import static android.content.Intent.EXTRA_LOCAL_ONLY;
 
 final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     private static final int sdkVersion = Build.VERSION.SDK_INT;
-    private static final String LOGTAG = "BasicGeckoViewPrompt";
+    private static final String LOGTAG = "GeckoViewPrompt";
 
     private final Activity mActivity;
     public int filePickerRequestCode = 1;
@@ -478,15 +478,18 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
         dialog.show();
     }
 
-//    @Override
-//    public GeckoResult<PromptResponse> onLoginStoragePrompt(final GeckoSession session, final LoginStoragePrompt prompt){
-//        final GeckoResult<PromptResponse> res = new GeckoResult<>();
-//        onLoginStoragePrompt(session,prompt);
-//        return res;
-//    }
     @Override
     public GeckoResult<PromptResponse> onSharePrompt(final GeckoSession session,
                                                      final SharePrompt prompt) {
+        Log.d("Share title: "+prompt.title, "msg: "+prompt.text+"uri: "+prompt.uri);
+        Intent msg = new Intent(Intent.ACTION_SEND);
+
+        msg.addCategory(Intent.CATEGORY_DEFAULT);
+        msg.putExtra(Intent.EXTRA_SUBJECT, prompt.title);
+        msg.putExtra(Intent.EXTRA_TEXT, prompt.title+ "  "+ prompt.text + "  " + prompt.uri);
+        msg.setType("text/plain");
+        mActivity.startActivity(msg);
+
         return GeckoResult.fromValue(prompt.confirm(SharePrompt.Result.SUCCESS));
     }
 
