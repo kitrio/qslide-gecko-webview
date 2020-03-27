@@ -45,17 +45,17 @@
             android:text="@string/close_tab" />
 
         <Switch
+            android:id="@+id/switch_private"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="@string/private_browsing" />
+
+        <Switch
             android:id="@+id/switch_desktop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/desktop_mode" />
 
-        <Switch
-            android:id="@+id/switch_private"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:text="@string/private_browsing"
-            />
         <Switch
             android:id="@+id/switch_tracking"
             android:layout_width="wrap_content"
@@ -83,7 +83,7 @@
                 android:layout_width="36dp"
                 android:layout_height="32dp"
 
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginBottom="2dp"
                 android:background="@drawable/ic_forward"
                 app:layout_constraintBottom_toBottomOf="parent"
