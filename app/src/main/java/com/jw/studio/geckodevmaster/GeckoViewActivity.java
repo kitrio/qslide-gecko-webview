@@ -76,6 +76,7 @@ import java.util.LinkedList;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
@@ -97,7 +98,8 @@ interface BrowserActionDelegate {
     }
 }
 
-class WebExtensionManager implements WebExtension.ActionDelegate, TabSessionManager.TabObserver {
+class WebExtensionManager implements WebExtension.ActionDelegate, WebExtensionController.PromptDelegate,
+                                     TabSessionManager.TabObserver {
     public WebExtension extension;
 
     private LruCache<WebExtension.Icon, Bitmap> mBitmapCache = new LruCache<>(5);
@@ -105,6 +107,12 @@ class WebExtensionManager implements WebExtension.ActionDelegate, TabSessionMana
     private WebExtension.Action mDefaultAction;
 
     private WeakReference<BrowserActionDelegate> mActionDelegate;
+
+    @Nullable
+    @Override
+    public GeckoResult<AllowOrDeny> onInstallPrompt(final @NonNull WebExtension extension) {
+        return GeckoResult.fromValue(AllowOrDeny.ALLOW);
+    }
 
     // We only support either one browserAction or one pageAction
     private void onAction(final WebExtension extension, final GeckoSession session,
@@ -190,7 +198,7 @@ class WebExtensionManager implements WebExtension.ActionDelegate, TabSessionMana
             return;
         }
 
-        if (resolved.enabled == null || !resolved.enabled) {
+        if (resolved == null || resolved.enabled == null || !resolved.enabled) {
             actionDelegate.onActionButton(null);
             return;
         }
@@ -217,7 +225,10 @@ class WebExtensionManager implements WebExtension.ActionDelegate, TabSessionMana
     }
 
     public void onClicked(TabSession session) {
-        actionFor(session).click();
+        WebExtension.Action action = actionFor(session);
+        if (action != null) {
+            action.click();
+        }
     }
 
     public void setActionDelegate(BrowserActionDelegate delegate) {
@@ -238,12 +249,36 @@ class WebExtensionManager implements WebExtension.ActionDelegate, TabSessionMana
         }
     }
 
-    public WebExtensionManager(GeckoRuntime runtime) {
+    public GeckoResult<Void> unregisterExtension(TabSessionManager tabManager) {
+        if (extension == null) {
+            return GeckoResult.fromValue(null);
+        }
+
+        tabManager.unregisterWebExtension();
+
+        return mRuntime.getWebExtensionController().uninstall(extension).accept((unused) -> {
+            extension = null;
+            mDefaultAction = null;
+            updateAction(null);
+        });
+    }
+
+    public void registerExtension(WebExtension extension,
+                                  TabSessionManager tabManager) {
+        extension.setActionDelegate(this);
+        tabManager.setWebExtensionActionDelegate(extension, this);
+        this.extension = extension;
+    }
+
+    public WebExtensionManager(GeckoRuntime runtime,
+                               TabSessionManager tabManager) {
+        runtime.getWebExtensionController()
+                .list().accept(extensions -> {
+            for (final WebExtension extension : extensions) {
+                registerExtension(extension, tabManager);
+            }
+        });
         mRuntime = runtime;
-        // TODO: allow users to install an extension from file
-        // extension = new WebExtension("resource://android/assets/chill-out/");
-        // extension.setActionDelegate(this);
-        // mRuntime.registerWebExtension(extension);
     }
 }
 
@@ -457,6 +492,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 session.open(sGeckoRuntime);
                 mTabSessionManager.setCurrentSession(session);
                 mGeckoView.setSession(session);
+                sGeckoRuntime.getWebExtensionController().setTabActive(session, true);
             }
             loadFromIntent(getIntent());
         }
