@@ -27,6 +27,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.LayoutInflater;
@@ -327,25 +328,23 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             } else {
                 mTabSessionManager.getCurrentSession().loadUri(SEARCH_URI_BASE + text);
             }
-            mGeckoView.requestFocus();
-
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             EditText urlEdit = findViewById(mToolbarView.getLocationView().getId());
-            imm.hideSoftInputFromWindow(urlEdit.getWindowToken(), 0);
+            imm.hideSoftInputFromWindow(urlEdit.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+//            mGeckoView.requestFocus();
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
-//                " - application start");
+        Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
+                " - application start");
         createNotificationChannel();
         setContentView(R.layout.geckoview_activity);
         mGeckoView = findViewById(R.id.gecko_view);
         ImageButton toolbar = findViewById(R.id.toolbar);
         ConstraintLayout appLayout = findViewById(R.id.main);
-        //ProgressBar bar  = findViewById(R.id.progress_bar);
 
         mTabSessionManager = new TabSessionManager();
         mToolbarView = new ToolbarLayout(this, mTabSessionManager);
@@ -371,34 +370,27 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         set.applyTo(appLayout);
 
         final boolean useMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
-
+        
         if (sGeckoRuntime == null) {
-            final GeckoRuntimeSettings.Builder runtimeSettingsBuilder =
-                    new GeckoRuntimeSettings.Builder();
-
-            if (BuildConfig.DEBUG) {
-                // In debug builds, we want to load JavaScript resources fresh with
-                // each build.
-                runtimeSettingsBuilder.arguments(new String[]{"-purgecaches"});
-            }
-
+            final GeckoRuntimeSettings.Builder runtimeSettingsBuilder = new GeckoRuntimeSettings.Builder();
             final Bundle extras = getIntent().getExtras();
             if (extras != null) {
                 runtimeSettingsBuilder.extras(extras);
             }
             runtimeSettingsBuilder
-                    .useContentProcessHint(useMultiprocess)
-                    .remoteDebuggingEnabled(false)
-                    .consoleOutput(false)
-                    .contentBlocking(new ContentBlocking.Settings.Builder()
-                            .antiTracking(ContentBlocking.AntiTracking.DEFAULT |
-                                    ContentBlocking.AntiTracking.STP)
-                            .safeBrowsing(ContentBlocking.SafeBrowsing.DEFAULT)
-                            .cookieBehavior(ContentBlocking.CookieBehavior.ACCEPT_NON_TRACKERS)
-                            .enhancedTrackingProtectionLevel(ContentBlocking.EtpLevel.DEFAULT)
-                            .build())
-                    .crashHandler(ExampleCrashHandler.class)
-                    .aboutConfigEnabled(true);
+                .useContentProcessHint(useMultiprocess)
+                .remoteDebuggingEnabled(false)
+                .consoleOutput(false)
+                .debugLogging(false)
+                .contentBlocking(new ContentBlocking.Settings.Builder()
+                    .antiTracking(ContentBlocking.AntiTracking.DEFAULT |
+                            ContentBlocking.AntiTracking.STP)
+                    .safeBrowsing(ContentBlocking.SafeBrowsing.DEFAULT)
+                    .cookieBehavior(ContentBlocking.CookieBehavior.ACCEPT_NON_TRACKERS)
+                    .enhancedTrackingProtectionLevel(ContentBlocking.EtpLevel.DEFAULT)
+                    .build())
+//                    .crashHandler(ExampleCrashHandler.class)
+                .aboutConfigEnabled(true);
 
             sGeckoRuntime = GeckoRuntime.create(this, runtimeSettingsBuilder.build());
 
@@ -407,18 +399,21 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 public GeckoResult<GeckoSession> onNewTab(WebExtension source, String uri) {
                     final TabSession newSession = createSession();
                     mToolbarView.updateTabCount();
+                    setGeckoViewSession(newSession);
                     return GeckoResult.fromValue(newSession);
                 }
 
                 @Override
                 public GeckoResult<AllowOrDeny> onCloseTab(WebExtension source, GeckoSession session) {
                     TabSession tabSession = mTabSessionManager.getSession(session);
-                    closeTab(tabSession);
+                    if (tabSession != null) {
+                        closeTab(tabSession);
+                    }
                     return GeckoResult.fromValue(AllowOrDeny.ALLOW);
                 }
             });
 
-            sExtensionManager = new WebExtensionManager(sGeckoRuntime);
+            sExtensionManager = new WebExtensionManager(sGeckoRuntime, mTabSessionManager);
             mTabSessionManager.setTabObserver(sExtensionManager);
 
             sGeckoRuntime.setWebNotificationDelegate(new WebNotificationDelegate() {
@@ -485,6 +480,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                     session.open(sGeckoRuntime);
                 }
                 mTabSessionManager.addSession(session);
+                session.open(sGeckoRuntime);
                 setGeckoViewSession(session);
             } else {
                 showHome();
@@ -498,7 +494,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
         mToolbarView.updateTabCount();
         mToolbarView.getLocationView().setCommitListener(mCommitListener);
-
 
         toolbar.setOnClickListener((view) -> {
             AppmenuPopupBinding menu = DataBindingUtil.inflate(getLayoutInflater(), R.layout.appmenu_popup, null, false);
@@ -561,7 +556,10 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                     session.reload();
                 }
             });
-            popupWindow.showAsDropDown(toolbar, toolbar.getBottom(), -menu_height, mGeckoView.getPaddingBottom());
+//            menu.extendsInstallButton.setOnClickListener(v -> {
+//                installAddon() ;
+//            });
+            popupWindow.showAsDropDown(toolbar, toolbar.getHeight(), -menu_height, mGeckoView.getPaddingBottom());
 
         });
         ImageButton mBackButton = findViewById(R.id.back_button);
@@ -626,17 +624,24 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
         ViewGroup.LayoutParams params = mPopupView.getLayoutParams();
         boolean shouldShow = force || params.width == 0;
+        setPopupVisibility(shouldShow);
 
-        if (shouldShow) {
+        return shouldShow ? mPopupSession : null;
+    }
+    private void setPopupVisibility(boolean visible) {
+        if (mPopupView == null) {
+            return;
+        }
+        ViewGroup.LayoutParams params = mPopupView.getLayoutParams();
+
+        if (visible) {
             params.height = 1100;
             params.width = 1200;
         } else {
             params.height = 0;
             params.width = 0;
         }
-
         mPopupView.setLayoutParams(params);
-        return shouldShow ? mPopupSession : null;
     }
 
     private void openPopupSession() {
@@ -714,7 +719,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         permission.androidPermissionRequestCode = REQUEST_PERMISSIONS;
         session.setPermissionDelegate(permission);
         session.setMediaDelegate(new ExampleMediaDelegate(this));
-        //session.setSelectionActionDelegate(new BasicSelectionActionDelegate(this));
+		
         if(sExtensionManager.extension != null) {
             session.setWebExtensionActionDelegate(sExtensionManager.extension, sExtensionManager);
         }
@@ -734,6 +739,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         session.open(sGeckoRuntime);
         mTabSessionManager.setCurrentSession(session);
         mGeckoView.setSession(session);
+        sGeckoRuntime.getWebExtensionController().setTabActive(session, true);
         if (mCurrentUri != null) {
             session.loadUri(mCurrentUri);
         }
@@ -742,8 +748,9 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && mGeckoView.getSession() !=  null) {
             mTabSessionManager.setCurrentSession((TabSession) mGeckoView.getSession());
+            sGeckoRuntime.getWebExtensionController().setTabActive((mGeckoView.getSession()), true);
         } else {
             recreateSession();
         }
@@ -774,7 +781,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
         if (mCanGoBack && session != null) {
             session.goBack();
-            return;
         }
     }
 
@@ -804,13 +810,12 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             mToolbarView.getLocationView().setText(tabSession.getUri());
             mToolbarView.updateTabCount();
         } else {
-            mCurrentUri = "about:blank";
+            //mCurrentUri = "about:blank";
             recreateSession();
             showHome();
         }
     }
 
-    //private void switchToSessionAtIndex(int index) {
     public void onBrowserActionClick() {
         sExtensionManager.onClicked(mTabSessionManager.getCurrentSession());
     }
@@ -827,19 +832,21 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             mCurrentUri = nextSession.getUri();
             if (nextSession.getTitle().equals("about:blank")) {
                 mCurrentUri = "about:blank";
-//                Log.d("geckoview location=", mCurrentUri);
+                Log.d("geckoview location=", mCurrentUri);
                 showHome();
             }
-            mToolbarView.getLocationView().setText(mCurrentUri);
+            mToolbarView.getLocationView().setText(nextSession.getUri());
         }
     }
 
     private void setGeckoViewSession(TabSession session) {
-        mGeckoView.releaseSession();
-        if (!session.isOpen()) {
-            session.open(sGeckoRuntime);
+        final WebExtensionController controller = sGeckoRuntime.getWebExtensionController();
+        final GeckoSession previousSession = mGeckoView.releaseSession();
+        if (previousSession != null){
+            controller.setTabActive(previousSession, false);
         }
         mGeckoView.setSession(session);
+        controller.setTabActive(session, true);
         mTabSessionManager.setCurrentSession(session);
     }
 
@@ -886,7 +893,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
 
         setIntent(intent);
-
         if (intent.getData() != null) {
             loadFromIntent(intent);
         }
@@ -1067,18 +1073,17 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         @Override
         public void onCrash(GeckoSession session) {
             Log.e(LOGTAG, "Crashed, reopening session");
-            //Crashlytics.log("Crashed, reopeing session");
             session.open(sGeckoRuntime);
         }
 
         @Override
         public void onFirstComposite(final GeckoSession session) {
-            Log.d(LOGTAG, "onFirstComposite");
+//            Log.d(LOGTAG, "onFirstComposite");
         }
 
         @Override
         public void onWebAppManifest(final GeckoSession session, JSONObject manifest) {
-            Log.d(LOGTAG, "onWebAppManifest: " + manifest);
+//            Log.d(LOGTAG, "onWebAppManifest: " + manifest);
         }
 
         private boolean activeAlert = false;
@@ -1303,6 +1308,10 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     private class ExampleNavigationDelegate implements GeckoSession.NavigationDelegate {
         @Override
         public void onLocationChange(GeckoSession session, final String url) {
+            TabSession tabSession = mTabSessionManager.getSession(session);
+            if (tabSession != null ) {
+                tabSession.onLocationChange(url);
+            }
             mCurrentUri = url;
             mToolbarView.getLocationView().setText(mCurrentUri);
         }
@@ -1331,7 +1340,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         public GeckoResult<GeckoSession> onNewSession(final GeckoSession session, final String uri) {
             final TabSession newSession = createSession();
             mToolbarView.updateTabCount();
-            newSession.loadUri(uri);
+            setGeckoViewSession(newSession);
             // A reference to newSession is stored by mTabSessionManager,
             // which prevents the session from being garbage-collected.
             return GeckoResult.fromValue(newSession);
@@ -1384,9 +1393,9 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         @Override
         public GeckoResult<String> onLoadError(final GeckoSession session, final String uri,
                                                final WebRequestError error) {
-            Log.d(LOGTAG, "onLoadError=" + uri +
-                    " error category=" + error.category +
-                    " error=" + error.code);
+//            Log.d(LOGTAG, "onLoadError=" + uri +
+//                    " error category=" + error.category +
+//                    " error=" + error.code);
 
             return GeckoResult.fromValue("data:text/html," + createErrorPage());
         }
