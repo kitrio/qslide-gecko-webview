@@ -24,6 +24,9 @@
     <string name="tracking_protection_ex2">Reenable TP</string>
     <string name="private_browsing">Private Browsing</string>
     <string name="qslide_mode">Q slide mode</string>
+    <string name="install_addon">Q slide mode</string>
+    <string name="install">Q slide mode</string>
+    <string name="install_addon_hint">Q slide mode</string>
 
     <string name="crashed_title">GeckoView Example Crashed</string>
     <string name="crashed_text">Tap to report to Mozilla.</string>
@@ -38,8 +41,9 @@
     <string name="wait">Wait</string>
     <string name="stop">Stop</string>
     <string name="urlname">Duck Duck Go</string>
-    <string name="initurl">https://duckduckgo.com/</string>
+    <string name="initurl">https://duckduckgo.com</string>
     <string name="notsupport_qslide">This app is only support LG smartphone due to Qslide feature, OR if your phone Android 10, Qslide removed and replaced popup window feature</string>
     <string name="copy_contextmenu">Copy link</string>
     <string name="new_tab_contextmenu">Open link in new tab</string>
+    <string name="cancel" >cancel</string>
 </resources>

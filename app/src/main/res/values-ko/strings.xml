@@ -11,7 +11,7 @@
     <string name="request_video">"%1$s" 과(와) 영상 공유</string>
     <string name="request_audio">"%1$s" 과(와) 소리 공유</string>
     <string name="request_media">"%1$s" 과(와) 영상 및 소리 공유</string>
-    <string name="media_back_camera">뒷면 카메라</string>
+    <string name="media_back_camera">후면 카메라</string>
     <string name="media_front_camera">전면 카메라</string>
     <string name="media_microphone">마이크</string>
     <string name="media_other">Unknown source</string>
@@ -24,9 +24,12 @@
     <string name="tracking_protection_ex2">TP 켜기</string>
     <string name="private_browsing">사생활 보호 모드</string>
     <string name="qslide_mode">Q 슬라이드 모드</string>
+    <string name="install_addon">Q add on</string>
+    <string name="install">Q install</string>
+    <string name="install_addon_hint">Q 힌트</string>
 
     <string name="crashed_title">Q웹뷰 오류</string>
-    <string name="crashed_text">오류 전송보고 하기</string>
+    <string name="crashed_text">오류 보고 전송 하기</string>
     <string name="crashed_ignore">무시</string>
     <string name="device_sharing_microphone">마이크 작동 중</string>
     <string name="device_sharing_camera">카메라 실행 중</string>
@@ -39,7 +42,8 @@
     <string name="stop">중지</string>
     <string name="urlname">네이버</string>
     <string name="initurl">https://m.naver.com</string>
-    <string name="notsupport_qslide">LG Q슬라이드 지원 앱입니다. LG 폰만 지원 됩니다. 안드로이드 10부터는 Q슬라이드 기능이 팝업윈도우로 대체되어 이앱을 쓸 수없습니다.</string>
+    <string name="notsupport_qslide">LG Q슬라이드 지원 앱입니다. LG 폰만 지원 됩니다. 안드로이드 10부터는 Q슬라이드 기능이 팝업윈도우로 대체되어 이 앱을 쓸 수 없습니다.</string>
     <string name="copy_contextmenu">링크 주소복사하기</string>
-    <string name="new_tab_contextmenu">새탭에서 열기</string>
+    <string name="new_tab_contextmenu">새 탭에서 열기</string>
+    <string name="cancel">취소</string>
 </resources>
