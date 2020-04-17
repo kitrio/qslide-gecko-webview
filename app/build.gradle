@@ -7,7 +7,7 @@ android {
         applicationId "com.jw.studio.geckodevmaster"
         minSdkVersion 23
         targetSdkVersion 28
-        versionName "2.0.9"
+        versionName "2.0.10"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         viewBinding.enabled = true
     }
@@ -46,8 +46,8 @@ android {
 
 dependencies {
     implementation files('libs/LGQSlideAPIs.jar')
-    aarch64Implementation "org.mozilla.geckoview:geckoview-arm64-v8a:74.0.20200309095159"
-    armImplementation "org.mozilla.geckoview:geckoview-armeabi-v7a:71.0.20191208234333"
+    aarch64Implementation "org.mozilla.geckoview:geckoview-arm64-v8a:74.0.20200403064753"
+    armImplementation "org.mozilla.geckoview:geckoview-armeabi-v7a:74.0.20200403064753"
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
