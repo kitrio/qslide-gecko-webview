@@ -47,7 +47,6 @@ import com.lge.app.floating.FloatingWindow;
 import org.json.JSONObject;
 import org.mozilla.gecko.util.ActivityUtils;
 import org.mozilla.geckoview.AllowOrDeny;
-import org.mozilla.geckoview.BuildConfig;
 import org.mozilla.geckoview.ContentBlocking;
 import org.mozilla.geckoview.GeckoResult;
 import org.mozilla.geckoview.GeckoRuntime;
@@ -359,7 +358,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         set.connect(R.id.gecko_view, ConstraintSet.BOTTOM, R.id.toolbar_layout, ConstraintSet.TOP);
 
         set.connect(R.id.toolbar, ConstraintSet.LEFT, R.id.toolbar_layout, ConstraintSet.RIGHT);
-        set.connect(R.id.toolbar, ConstraintSet.RIGHT, R.id.main, ConstraintSet.RIGHT, 20);
+        set.connect(R.id.toolbar, ConstraintSet.RIGHT, R.id.main, ConstraintSet.RIGHT, 60);
         set.connect(R.id.toolbar, ConstraintSet.TOP, R.id.gecko_view, ConstraintSet.BOTTOM);
         set.connect(R.id.toolbar, ConstraintSet.BOTTOM, R.id.toolbar_layout, ConstraintSet.BOTTOM);
 
@@ -389,7 +388,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                     .cookieBehavior(ContentBlocking.CookieBehavior.ACCEPT_NON_TRACKERS)
                     .enhancedTrackingProtectionLevel(ContentBlocking.EtpLevel.DEFAULT)
                     .build())
-//                    .crashHandler(ExampleCrashHandler.class)
                 .aboutConfigEnabled(true);
 
             sGeckoRuntime = GeckoRuntime.create(this, runtimeSettingsBuilder.build());
@@ -705,20 +703,20 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     }
 
     private void connectSession(GeckoSession session) {
-        session.setContentDelegate(new ExampleContentDelegate());
-        //session.setHistoryDelegate(new ExampleHistoryDelegate());
-        final ExampleContentBlockingDelegate cb = new ExampleContentBlockingDelegate();
+        session.setContentDelegate(new ContentDelegate());
+        session.setHistoryDelegate(new HistoryDelegate());
+        final ContentBlockingDelegate cb = new ContentBlockingDelegate();
         session.setContentBlockingDelegate(cb);
-        session.setProgressDelegate(new ExampleProgressDelegate(cb));
-        session.setNavigationDelegate(new ExampleNavigationDelegate());
+        session.setProgressDelegate(new ProgressDelegate(cb));
+        session.setNavigationDelegate(new NavigationDelegate());
         final BasicGeckoViewPrompt prompt = new BasicGeckoViewPrompt(this);
         prompt.filePickerRequestCode = REQUEST_FILE_PICKER;
         session.setPromptDelegate(prompt);
 
-        final ExamplePermissionDelegate permission = new ExamplePermissionDelegate();
+        final PermissionDelegate permission = new PermissionDelegate();
         permission.androidPermissionRequestCode = REQUEST_PERMISSIONS;
         session.setPermissionDelegate(permission);
-        session.setMediaDelegate(new ExampleMediaDelegate(this));
+        session.setMediaDelegate(new MediaDelegate(this));
 		
         if(sExtensionManager.extension != null) {
             session.setWebExtensionActionDelegate(sExtensionManager.extension, sExtensionManager);
@@ -803,14 +801,13 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         if (mTabSessionManager.sessionCount() > 1) {
             mTabSessionManager.closeSession(session);
             TabSession tabSession = mTabSessionManager.getCurrentSession();
+            setGeckoViewSession(tabSession);
             if (tabSession.getTitle().equals("about:blank")) {
                 showHome();
             }
-            setGeckoViewSession(tabSession);
             mToolbarView.getLocationView().setText(tabSession.getUri());
             mToolbarView.updateTabCount();
         } else {
-            //mCurrentUri = "about:blank";
             recreateSession();
             showHome();
         }
@@ -924,7 +921,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                                            final String[] permissions,
                                            final int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS) {
-            final ExamplePermissionDelegate permission = (ExamplePermissionDelegate)
+            final PermissionDelegate permission = (PermissionDelegate)
                     mTabSessionManager.getCurrentSession().getPermissionDelegate();
             permission.onRequestPermissionsResult(permissions, grantResults);
         } else if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE &&
@@ -976,17 +973,17 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     }
 
 
-    private class ExampleHistoryDelegate implements GeckoSession.HistoryDelegate {
+    private static class HistoryDelegate implements GeckoSession.HistoryDelegate {
         private final HashSet<String> mVisitedURLs;
 
-        private ExampleHistoryDelegate() {
+        private HistoryDelegate() {
             mVisitedURLs = new HashSet<>();
         }
 
         @Override
         public GeckoResult<Boolean> onVisited(GeckoSession session, String url,
                                               String lastVisitedURL, int flags) {
-            Log.i(LOGTAG, "Visited URL: " + url);
+//            Log.i(LOGTAG, "Visited URL: " + url);
 
             mVisitedURLs.add(url);
             return GeckoResult.fromValue(true);
@@ -1004,11 +1001,11 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         @Override
         public void onHistoryStateChange(final GeckoSession session,
                                          final GeckoSession.HistoryDelegate.HistoryList state) {
-            Log.i(LOGTAG, "History state updated");
+            //Log.i(LOGTAG, "History state updated");
         }
     }
 
-    private class ExampleContentDelegate implements GeckoSession.ContentDelegate {
+    private class ContentDelegate implements GeckoSession.ContentDelegate {
         @Override
         public void onTitleChange(GeckoSession session, String title) {
 //            Log.i(LOGTAG, "Content title changed to " + title);
@@ -1026,10 +1023,10 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             if (fullScreen) {
                 ActivityUtils.setFullScreen(GeckoViewActivity.this, true);
                 mToolbarView.setVisibility(ConstraintLayout.GONE);
-                Log.d("Geckoview", "Fullscreen in");
+//                Log.d("Geckoview", "Fullscreen in");
             } else {
                 mToolbarView.setVisibility(ConstraintLayout.VISIBLE);
-                Log.d("Geckoview", "Fullscreen out");
+//                Log.d("Geckoview", "Fullscreen out");
             }
         }
 
@@ -1049,13 +1046,13 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         public void onContextMenu(final GeckoSession session,
                                   int screenX, int screenY,
                                   final ContextElement element) {
-            Log.d(LOGTAG, "onContextMenu screenX=" + screenX +
-                    " screenY=" + screenY +
-                    " type=" + element.type +
-                    " linkUri=" + element.linkUri +
-                    " title=" + element.title +
-                    " alt=" + element.altText +
-                    " srcUri=" + element.srcUri);
+//            Log.d(LOGTAG, "onContextMenu screenX=" + screenX +
+//                    " screenY=" + screenY +
+//                    " type=" + element.type +
+//                    " linkUri=" + element.linkUri +
+//                    " title=" + element.title +
+//                    " alt=" + element.altText +
+//                    " srcUri=" + element.srcUri);
             BasicGeckoViewPrompt.contextMenuPrompt(GeckoViewActivity.this, element);
         }
 
@@ -1107,10 +1104,10 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
     }
 
-    private class ExampleProgressDelegate implements GeckoSession.ProgressDelegate {
-        private ExampleContentBlockingDelegate mCb;
+    private class ProgressDelegate implements GeckoSession.ProgressDelegate {
+        private ContentBlockingDelegate mCb;
 
-        private ExampleProgressDelegate(final ExampleContentBlockingDelegate cb) {
+        private ProgressDelegate(final ContentBlockingDelegate cb) {
             mCb = cb;
         }
 
@@ -1134,15 +1131,15 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
     }
 
-    private class ExamplePermissionDelegate implements GeckoSession.PermissionDelegate {
+    private class PermissionDelegate implements GeckoSession.PermissionDelegate {
 
         public int androidPermissionRequestCode = 1;
         private Callback mCallback;
 
-        class ExampleNotificationCallback implements GeckoSession.PermissionDelegate.Callback {
+        class NotificationCallback implements GeckoSession.PermissionDelegate.Callback {
             private final GeckoSession.PermissionDelegate.Callback mCallback;
 
-            ExampleNotificationCallback(final GeckoSession.PermissionDelegate.Callback callback) {
+            NotificationCallback(final GeckoSession.PermissionDelegate.Callback callback) {
                 mCallback = callback;
             }
 
@@ -1159,11 +1156,11 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             }
         }
 
-        class ExamplePersistentStorageCallback implements GeckoSession.PermissionDelegate.Callback {
+        class PersistentStorageCallback implements GeckoSession.PermissionDelegate.Callback {
             private final GeckoSession.PermissionDelegate.Callback mCallback;
             private final String mUri;
 
-            ExamplePersistentStorageCallback(final GeckoSession.PermissionDelegate.Callback callback, String uri) {
+            PersistentStorageCallback(final GeckoSession.PermissionDelegate.Callback callback, String uri) {
                 mCallback = callback;
                 mUri = uri;
             }
@@ -1220,7 +1217,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                     return;
                 }
                 resId = R.string.request_notification;
-                contentPermissionCallback = new ExampleNotificationCallback(callback);
+                contentPermissionCallback = new NotificationCallback(callback);
             } else if (PERMISSION_PERSISTENT_STORAGE == type) {
                 if (mAcceptedPersistentStorage.contains(uri)) {
                     Log.w(LOGTAG, "Persistent Storage for " + uri + " already granted by user.");
@@ -1228,7 +1225,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                     return;
                 }
                 resId = R.string.request_storage;
-                contentPermissionCallback = new ExamplePersistentStorageCallback(callback, uri);
+                contentPermissionCallback = new PersistentStorageCallback(callback, uri);
             } else {
                 Log.w(LOGTAG, "Unknown permission: " + type);
                 callback.reject();
@@ -1305,7 +1302,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
     }
 
-    private class ExampleNavigationDelegate implements GeckoSession.NavigationDelegate {
+    private class NavigationDelegate implements GeckoSession.NavigationDelegate {
         @Override
         public void onLocationChange(GeckoSession session, final String url) {
             TabSession tabSession = mTabSessionManager.getSession(session);
@@ -1401,7 +1398,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
     }
 
-    private class ExampleContentBlockingDelegate
+    private static class ContentBlockingDelegate
             implements ContentBlocking.Delegate {
         private int mBlockedAds = 0;
         private int mBlockedAnalytics = 0;
@@ -1420,66 +1417,66 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
 
         private void logCounters() {
-            Log.d(LOGTAG, "Trackers blocked: " + mBlockedAds + " ads, " +
-                    mBlockedAnalytics + " analytics, " +
-                    mBlockedSocial + " social, " +
-                    mBlockedContent + " content, " +
-                    mBlockedTest + " test, " +
-                    mBlockedStp + "stp");
+//            Log.d(LOGTAG, "Trackers blocked: " + mBlockedAds + " ads, " +
+//                    mBlockedAnalytics + " analytics, " +
+//                    mBlockedSocial + " social, " +
+//                    mBlockedContent + " content, " +
+//                    mBlockedTest + " test, " +
+//                    mBlockedStp + "stp");
         }
 
         @Override
         public void onContentBlocked(final GeckoSession session,
                                      final ContentBlocking.BlockEvent event) {
-            Log.d(LOGTAG, "onContentBlocked" +
-                    " AT: " + event.getAntiTrackingCategory() +
-                    " SB: " + event.getSafeBrowsingCategory() +
-                    " CB: " + event.getCookieBehaviorCategory() +
-                    " URI: " + event.uri);
-            if ((event.getAntiTrackingCategory() &
-                    ContentBlocking.AntiTracking.TEST) != 0) {
-                mBlockedTest++;
-            }
-            if ((event.getAntiTrackingCategory() &
-                    ContentBlocking.AntiTracking.AD) != 0) {
-                mBlockedAds++;
-            }
-            if ((event.getAntiTrackingCategory() &
-                    ContentBlocking.AntiTracking.ANALYTIC) != 0) {
-                mBlockedAnalytics++;
-            }
-            if ((event.getAntiTrackingCategory() &
-                    ContentBlocking.AntiTracking.SOCIAL) != 0) {
-                mBlockedSocial++;
-            }
-            if ((event.getAntiTrackingCategory() &
-                    ContentBlocking.AntiTracking.CONTENT) != 0) {
-                mBlockedContent++;
-            }
-            if ((event.getAntiTrackingCategory() &
-                    ContentBlocking.AntiTracking.STP) != 0) {
-                mBlockedStp++;
-            }
+//            Log.d(LOGTAG, "onContentBlocked" +
+//                    " AT: " + event.getAntiTrackingCategory() +
+//                    " SB: " + event.getSafeBrowsingCategory() +
+//                    " CB: " + event.getCookieBehaviorCategory() +
+//                    " URI: " + event.uri);
+//            if ((event.getAntiTrackingCategory() &
+//                    ContentBlocking.AntiTracking.TEST) != 0) {
+//                mBlockedTest++;
+//            }
+//            if ((event.getAntiTrackingCategory() &
+//                    ContentBlocking.AntiTracking.AD) != 0) {
+//                mBlockedAds++;
+//            }
+//            if ((event.getAntiTrackingCategory() &
+//                    ContentBlocking.AntiTracking.ANALYTIC) != 0) {
+//                mBlockedAnalytics++;
+//            }
+//            if ((event.getAntiTrackingCategory() &
+//                    ContentBlocking.AntiTracking.SOCIAL) != 0) {
+//                mBlockedSocial++;
+//            }
+//            if ((event.getAntiTrackingCategory() &
+//                    ContentBlocking.AntiTracking.CONTENT) != 0) {
+//                mBlockedContent++;
+//            }
+//            if ((event.getAntiTrackingCategory() &
+//                    ContentBlocking.AntiTracking.STP) != 0) {
+//                mBlockedStp++;
+//            }
         }
 
         @Override
         public void onContentLoaded(final GeckoSession session,
                                     final ContentBlocking.BlockEvent event) {
-            Log.d(LOGTAG, "onContentLoaded" +
-                    " AT: " + event.getAntiTrackingCategory() +
-                    " SB: " + event.getSafeBrowsingCategory() +
-                    " CB: " + event.getCookieBehaviorCategory() +
-                    " URI: " + event.uri);
+//            Log.d(LOGTAG, "onContentLoaded" +
+//                    " AT: " + event.getAntiTrackingCategory() +
+//                    " SB: " + event.getSafeBrowsingCategory() +
+//                    " CB: " + event.getCookieBehaviorCategory() +
+//                    " URI: " + event.uri);
         }
     }
 
-    private class ExampleMediaDelegate
+    private class MediaDelegate
             implements GeckoSession.MediaDelegate {
         private Integer mLastNotificationId = 100;
         private Integer mNotificationId;
         final private Activity mActivity;
 
-        public ExampleMediaDelegate(Activity activity) {
+        public MediaDelegate(Activity activity) {
             mActivity = activity;
         }
 
@@ -1499,19 +1496,19 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 }
             }
             if (camera != null && microphone != null) {
-                Log.d(LOGTAG, "ExampleDeviceDelegate:onRecordingDeviceEvent display alert_mic_camera");
+                Log.d(LOGTAG, "DeviceDelegate:onRecordingDeviceEvent display alert_mic_camera");
                 message = getResources().getString(R.string.device_sharing_camera_and_mic);
                 icon = R.drawable.alert_mic_camera;
             } else if (camera != null) {
-                Log.d(LOGTAG, "ExampleDeviceDelegate:onRecordingDeviceEvent display alert_camera");
+                Log.d(LOGTAG, "DeviceDelegate:onRecordingDeviceEvent display alert_camera");
                 message = getResources().getString(R.string.device_sharing_camera);
                 icon = R.drawable.alert_camera;
             } else if (microphone != null) {
-                Log.d(LOGTAG, "ExampleDeviceDelegate:onRecordingDeviceEvent display alert_mic");
+                Log.d(LOGTAG, "DeviceDelegate:onRecordingDeviceEvent display alert_mic");
                 message = getResources().getString(R.string.device_sharing_microphone);
                 icon = R.drawable.alert_mic;
             } else {
-                Log.d(LOGTAG, "ExampleDeviceDelegate:onRecordingDeviceEvent dismiss any notifications");
+                Log.d(LOGTAG, "DeviceDelegate:onRecordingDeviceEvent dismiss any notifications");
                 if (mNotificationId != null) {
                     notificationManager.cancel(mNotificationId);
                     mNotificationId = null;
@@ -1545,7 +1542,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     //Qslide feature
     @Override
     public void onAttachedToFloatingWindow(FloatingWindow floatingWindow) {
-        Log.d("WindowFlow", "onAttachedToFloatingWindow.");
+//        Log.d("WindowFlow", "onAttachedToFloatingWindow.");
         /* all resources should be reinitialized once again
          * if you set new layout for the floating mode setContentViewForFloatingMode()*/
         // and also listeners a should be added once again to the buttons in floating mode
@@ -1556,7 +1553,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
     @Override
     public boolean onDetachedFromFloatingWindow(FloatingWindow w, boolean isReturningToFullScreen) {
-        Log.d("WindowFlow", "onDetachedFromFloatingWindow. Returning to Fullscreen: " + isReturningToFullScreen);
+//        Log.d("WindowFlow", "onDetachedFromFloatingWindow. Returning to Fullscreen: " + isReturningToFullScreen);
 
         return true;
     }
