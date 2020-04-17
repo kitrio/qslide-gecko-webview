@@ -16,11 +16,11 @@ android {
     productFlavors {
         arm {
             dimension "abi"
-            versionCode 2332016
+            versionCode 2332020
         }
         aarch64 {
             dimension "abi"
-            versionCode 2364019
+            versionCode 2364021
         }
     }
     compileOptions {
