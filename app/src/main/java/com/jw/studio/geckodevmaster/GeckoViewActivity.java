@@ -330,7 +330,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             EditText urlEdit = findViewById(mToolbarView.getLocationView().getId());
             imm.hideSoftInputFromWindow(urlEdit.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-//            mGeckoView.requestFocus();
         }
     };
 
@@ -847,22 +846,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         mTabSessionManager.setCurrentSession(session);
     }
 
-//    private void isUrlIntent(String url){
-//        if (url.startsWith("tel:")){
-//            startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse(url)));
-//        }
-//        if (url.startsWith("mailto:")) {
-//            startActivity(new Intent(Intent.EXTRA_EMAIL, Uri.parse(url)));
-//        }
-//        if (url.startsWith("intent://www.google.com/maps")) {
-//            Intent mapIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-//            mapIntent.setClassName("com.google.android.apps.maps","com.google.android.maps.MapsActivity");
-//            if (mapIntent.resolveActivity(getPackageManager()) != null) {
-//                startActivity(mapIntent);
-//            }
-//        }
-//    }
-
     @Override
     public void onDestroy() {
         if (mKillProcessOnDestroy) {
@@ -1017,16 +1000,14 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
         @Override
         public void onFullScreen(final GeckoSession session, final boolean fullScreen) {
-//            getWindow().setFlags(fullScreen ? WindowManager.LayoutParams.FLAG_FULLSCREEN : 0,
-//                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
             mFullScreen = fullScreen;
-            if (fullScreen) {
+            if (mFullScreen) {
                 ActivityUtils.setFullScreen(GeckoViewActivity.this, true);
                 mToolbarView.setVisibility(ConstraintLayout.GONE);
-//                Log.d("Geckoview", "Fullscreen in");
+                Log.d("Geckoview", "Fullscreen in");
             } else {
                 mToolbarView.setVisibility(ConstraintLayout.VISIBLE);
-//                Log.d("Geckoview", "Fullscreen out");
+                Log.d("Geckoview", "Fullscreen out");
             }
         }
 
@@ -1113,9 +1094,9 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
         @Override
         public void onPageStart(GeckoSession session, String url) {
-//            Log.i(LOGTAG, "Starting to load page at " + url);
-//            Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
-//                    " - page load start");
+            Log.i(LOGTAG, "Starting to load page at " + url);
+            Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
+                    " - page load start");
             mCb.clearCounters();
             if (!url.trim().equals("about:blank")) {
                 hideHome();
@@ -1124,10 +1105,10 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
         @Override
         public void onPageStop(GeckoSession session, boolean success) {
-//            Log.i(LOGTAG, "Stopping page load " + (success ? "successfully" : "unsuccessfully"));
-//            Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
-//                    " - page load stop");
-//            mCb.logCounters();
+            Log.i(LOGTAG, "Stopping page load " + (success ? "successfully" : "unsuccessfully"));
+            Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
+                    " - page load stop");
+            mCb.logCounters();
         }
     }
 
@@ -1398,8 +1379,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
     }
 
-    private static class ContentBlockingDelegate
-            implements ContentBlocking.Delegate {
+    private static class ContentBlockingDelegate implements ContentBlocking.Delegate {
         private int mBlockedAds = 0;
         private int mBlockedAnalytics = 0;
         private int mBlockedSocial = 0;
@@ -1542,10 +1522,9 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     //Qslide feature
     @Override
     public void onAttachedToFloatingWindow(FloatingWindow floatingWindow) {
-//        Log.d("WindowFlow", "onAttachedToFloatingWindow.");
+        Log.d("WindowFlow", "onAttachedToFloatingWindow.");
         /* all resources should be reinitialized once again
          * if you set new layout for the floating mode setContentViewForFloatingMode()*/
-        // and also listeners a should be added once again to the buttons in floating mode
         int width = dpToPx(324);
         int height = dpToPx(360);
         floatingWindow.setSize(width, height);
@@ -1553,7 +1532,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
     @Override
     public boolean onDetachedFromFloatingWindow(FloatingWindow w, boolean isReturningToFullScreen) {
-//        Log.d("WindowFlow", "onDetachedFromFloatingWindow. Returning to Fullscreen: " + isReturningToFullScreen);
+        Log.d("WindowFlow", "onDetachedFromFloatingWindow. Returning to Fullscreen: " + isReturningToFullScreen);
 
         return true;
     }
