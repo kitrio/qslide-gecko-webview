@@ -27,6 +27,12 @@ android {
     defaultConfig {
         resConfigs "en", "ko"
     }
+    aaptOptions {
+        noCompress "ja"
+    }
+    dataBinding {
+        enabled = true
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -42,10 +48,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-    }
-
-    dataBinding {
-        enabled = true
     }
 }
 
