@@ -16,13 +16,18 @@ android {
     productFlavors {
         arm {
             dimension "abi"
-            versionCode 2332020
+            versionCode 2332024
         }
         aarch64 {
             dimension "abi"
-            versionCode 2364021
+            versionCode 2364025
         }
+
     }
+    defaultConfig {
+        resConfigs "en", "ko"
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
