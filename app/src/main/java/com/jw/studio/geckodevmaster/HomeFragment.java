@@ -42,22 +42,17 @@ public class HomeFragment extends Fragment {
         Button youtubeBtn = rootView.findViewById(R.id.button_youtube);
         Button localBtn = rootView.findViewById(R.id.button_localurl);
         Drawable topDrawable;
+
         googleBtn.setText("Google");
-        googleBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                activity.mTabSessionManager.getCurrentSession().loadUri("https://www.google.com");
-                fragmentManager.beginTransaction().hide(HomeFragment.this).commitAllowingStateLoss();
-            }
+        googleBtn.setOnClickListener(v -> {
+            activity.mTabSessionManager.getCurrentSession().loadUri("https://www.google.com");
+            fragmentManager.beginTransaction().hide(HomeFragment.this).commitAllowingStateLoss();
         });
 
         youtubeBtn.setText("Youtube");
-        youtubeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                activity.mTabSessionManager.getCurrentSession().loadUri("https://m.youtube.com");
-                fragmentManager.beginTransaction().hide(HomeFragment.this).commitAllowingStateLoss();
-            }
+        youtubeBtn.setOnClickListener(v -> {
+            activity.mTabSessionManager.getCurrentSession().loadUri("https://m.youtube.com");
+            fragmentManager.beginTransaction().hide(HomeFragment.this).commitAllowingStateLoss();
         });
 
         if (Locale.getDefault().getLanguage().equals("ko")) {
@@ -68,12 +63,9 @@ public class HomeFragment extends Fragment {
         topDrawable.setBounds(0, -5, 0, 0);
         localBtn.setCompoundDrawablesWithIntrinsicBounds(null, topDrawable, null, null);
         localBtn.setText(getString(R.string.urlname));
-        localBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                activity.mTabSessionManager.getCurrentSession().loadUri(getString(R.string.initurl));
-                fragmentManager.beginTransaction().hide(HomeFragment.this).commitAllowingStateLoss();
-            }
+        localBtn.setOnClickListener(v -> {
+            activity.mTabSessionManager.getCurrentSession().loadUri(getString(R.string.initurl));
+            fragmentManager.beginTransaction().hide(HomeFragment.this).commitAllowingStateLoss();
         });
         return rootView;
     }
