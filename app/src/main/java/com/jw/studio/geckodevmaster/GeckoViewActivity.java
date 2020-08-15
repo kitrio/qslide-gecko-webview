@@ -40,6 +40,8 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
 import com.jw.studio.geckodevmaster.databinding.AppmenuPopupBinding;
+import com.jw.studio.geckodevmaster.session.TabSession;
+import com.jw.studio.geckodevmaster.session.TabSessionManager;
 import com.lge.app.floating.FloatableActivity;
 import com.lge.app.floating.FloatingWindow;
 

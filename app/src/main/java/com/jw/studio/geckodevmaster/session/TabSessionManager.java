@@ -1,6 +1,8 @@
-package com.jw.studio.geckodevmaster;
+package com.jw.studio.geckodevmaster.session;
 
 import android.util.Log;
+
+import com.jw.studio.geckodevmaster.session.TabSession;
 
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoSessionSettings;

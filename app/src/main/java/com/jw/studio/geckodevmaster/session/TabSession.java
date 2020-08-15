@@ -1,4 +1,4 @@
-package com.jw.studio.geckodevmaster;
+package com.jw.studio.geckodevmaster.session;
 
 import android.os.Parcel;
 

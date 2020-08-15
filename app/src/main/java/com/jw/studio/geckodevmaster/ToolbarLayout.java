@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.jw.studio.geckodevmaster.session.TabSessionManager;
+
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class ToolbarLayout extends ConstraintLayout {
