@@ -21,31 +21,31 @@ public class ToolbarLayout extends ConstraintLayout {
         void onBrowserActionClick();
     }
 
-    private LocationView mLocationView;
-    private Button mTabsCountButton;
-    private View mBrowserAction;
-    private TabListener mTabListener;
-    private TabSessionManager mSessionManager;
+    private LocationView locationView;
+    private Button tabsCountButton;
+    private View browserAction;
+    private TabListener tabListener;
+    private TabSessionManager sessionManager;
 
 
     public ToolbarLayout(Context context, TabSessionManager sessionManager) {
         super(context);
-        mSessionManager = sessionManager;
+        this.sessionManager = sessionManager;
         initView();
     }
 
     private void initView() {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.toolbar_layout, this, true);
-        mLocationView = findViewById(R.id.locationView);
-        mBrowserAction = getBrowserAction();
-        addView(mBrowserAction);
-        mTabsCountButton = findViewById(R.id.tabs_button);
-        mTabsCountButton.setOnClickListener(this::onTabButtonClicked);
+        locationView = findViewById(R.id.locationView);
+        browserAction = getBrowserAction();
+        addView(browserAction);
+        tabsCountButton = findViewById(R.id.tabs_button);
+        tabsCountButton.setOnClickListener(this::onTabButtonClicked);
     }
 
     public LocationView getLocationView() {
-        return mLocationView;
+        return locationView;
     }
 
     private View getBrowserAction() {
@@ -57,16 +57,16 @@ public class ToolbarLayout extends ConstraintLayout {
 
     public void setBrowserActionButton(ActionButton button) {
         if (button == null) {
-            mBrowserAction.setVisibility(GONE);
+            browserAction.setVisibility(GONE);
             return;
         }
 
         BitmapDrawable drawable = new BitmapDrawable(getContext().getResources(), button.icon);
-        ImageView view = mBrowserAction.findViewById(R.id.browser_action_icon);
+        ImageView view = browserAction.findViewById(R.id.browser_action_icon);
         view.setOnClickListener(this::onBrowserActionButtonClicked);
         view.setBackground(drawable);
 
-        TextView badge = mBrowserAction.findViewById(R.id.browser_action_badge);
+        TextView badge = browserAction.findViewById(R.id.browser_action_badge);
         if (button.text != null && !button.text.equals("")) {
             if (button.backgroundColor != null) {
                 GradientDrawable backgroundDrawable = ((GradientDrawable) badge.getBackground().mutate());
@@ -82,29 +82,29 @@ public class ToolbarLayout extends ConstraintLayout {
             badge.setVisibility(GONE);
         }
 
-        mBrowserAction.setVisibility(VISIBLE);
+        browserAction.setVisibility(VISIBLE);
     }
 
     public void onBrowserActionButtonClicked(View view) {
-        mTabListener.onBrowserActionClick();
+        tabListener.onBrowserActionClick();
     }
 
     public void setTabListener(TabListener listener) {
-        this.mTabListener = listener;
+        this.tabListener = listener;
     }
 
     public void updateTabCount() {
-        mTabsCountButton.setText(String.valueOf(mSessionManager.sessionCount()));
+        tabsCountButton.setText(String.valueOf(sessionManager.sessionCount()));
     }
 
     public void onTabButtonClicked(View view) {
-        PopupMenu tabButtonMenu = new PopupMenu(view.getContext(), mTabsCountButton);
-        for (int idx = 0; idx < mSessionManager.sessionCount(); ++idx) {
+        PopupMenu tabButtonMenu = new PopupMenu(view.getContext(), tabsCountButton);
+        for (int idx = 0; idx < sessionManager.sessionCount(); ++idx) {
             tabButtonMenu.getMenu().add(0, idx, idx,
-                    mSessionManager.getSession(idx).getTitle());
+                    sessionManager.getSession(idx).getTitle());
         }
         tabButtonMenu.setOnMenuItemClickListener(item -> {
-            mTabListener.switchToTab(item.getItemId());
+            tabListener.switchToTab(item.getItemId());
             return true;
         });
         tabButtonMenu.show();

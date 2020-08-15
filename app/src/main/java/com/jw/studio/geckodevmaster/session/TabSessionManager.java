@@ -2,8 +2,6 @@ package com.jw.studio.geckodevmaster.session;
 
 import android.util.Log;
 
-import com.jw.studio.geckodevmaster.session.TabSession;
-
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoSessionSettings;
 import org.mozilla.geckoview.WebExtension;
@@ -13,9 +11,9 @@ import java.util.LinkedList;
 import androidx.annotation.Nullable;
 
 public class TabSessionManager {
-    private static LinkedList<TabSession> mTabSessions = new LinkedList<>();
-    private int mCurrentSessionIndex = 0;
-    private TabObserver mTabObserver;
+    private static LinkedList<TabSession> tabSessions = new LinkedList<>();
+    private int currentSessionIndex = 0;
+    private TabObserver tabObserver;
 
     public interface TabObserver {
         void onCurrentSession(TabSession session);
@@ -25,40 +23,40 @@ public class TabSessionManager {
     }
 
     public void unregisterWebExtension() {
-        for (final TabSession session : mTabSessions) {
+        for (final TabSession session : tabSessions) {
             session.action = null;
         }
     }
 
     public void setWebExtensionActionDelegate(WebExtension extension,
                                               WebExtension.ActionDelegate delegate) {
-        for (final TabSession session : mTabSessions) {
+        for (final TabSession session : tabSessions) {
             session.setWebExtensionActionDelegate(extension, delegate);
         }
     }
 
     public void setTabObserver(TabObserver observer) {
-        mTabObserver = observer;
+        tabObserver = observer;
     }
 
     public void addSession(TabSession session) {
-        mTabSessions.add(session);
+        tabSessions.add(session);
     }
 
     public TabSession getSession(int index) {
-        Log.d("tabsize geckoview","size:"+mTabSessions.size() + " index:"+ index);
-        if((mTabSessions.size()) <= index){
-            return  mTabSessions.get(--index);
+        Log.d("tabsize geckoview","size:"+ tabSessions.size() + " index:"+ index);
+        if((tabSessions.size()) <= index){
+            return  tabSessions.get(--index);
         }
-        return mTabSessions.get(index);
+        return tabSessions.get(index);
     }
 
     public TabSession getCurrentSession() {
-        return getSession(mCurrentSessionIndex);
+        return getSession(currentSessionIndex);
     }
 
     public TabSession getSession(GeckoSession session) {
-        int index = mTabSessions.indexOf(session);
+        int index = tabSessions.indexOf(session);
         if (index == -1) {
             return null;
         }
@@ -66,15 +64,15 @@ public class TabSessionManager {
     }
 
     public void setCurrentSession(TabSession session) {
-        int index = mTabSessions.indexOf(session);
+        int index = tabSessions.indexOf(session);
         if (index == -1) {
-            mTabSessions.add(session);
-            index = mTabSessions.size() - 1;
+            tabSessions.add(session);
+            index = tabSessions.size() - 1;
         }
-        mCurrentSessionIndex = index;
+        currentSessionIndex = index;
 
-        if(mTabObserver != null) {
-            mTabObserver.onCurrentSession(session);
+        if(tabObserver != null) {
+            tabObserver.onCurrentSession(session);
         }
     }
 
@@ -85,20 +83,20 @@ public class TabSessionManager {
     public void closeSession(@Nullable TabSession session) {
         if (session == null) { return; }
         if (isCurrentSession(session)
-                && mCurrentSessionIndex == mTabSessions.size() - 1) {
-            --mCurrentSessionIndex;
+                && currentSessionIndex == tabSessions.size() - 1) {
+            --currentSessionIndex;
         }
         session.close();
-        mTabSessions.remove(session);
+        tabSessions.remove(session);
     }
 
     public TabSession newSession(GeckoSessionSettings settings) {
         TabSession tabSession = new TabSession(settings);
-        mTabSessions.add(tabSession);
+        tabSessions.add(tabSession);
         return tabSession;
     }
 
     public int sessionCount() {
-        return mTabSessions.size();
+        return tabSessions.size();
     }
 }

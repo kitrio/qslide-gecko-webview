@@ -66,23 +66,23 @@ import static android.content.Intent.CATEGORY_OPENABLE;
 import static android.content.Intent.EXTRA_LOCAL_ONLY;
 
 final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
-    private static final int sdkVersion = Build.VERSION.SDK_INT;
+    private static final int SDK_VERSION = Build.VERSION.SDK_INT;
     private static final String LOGTAG = "GeckoViewPrompt";
 
-    private final Activity mActivity;
+    private final Activity activity;
     public int filePickerRequestCode = 1;
-//    private int mFileType;
-    private GeckoResult<PromptResponse> mFileResponse;
-    private FilePrompt mFilePrompt;
+//    private int fileType;
+    private GeckoResult<PromptResponse> fileResponse;
+    private FilePrompt filePrompt;
 
     public BasicGeckoViewPrompt(final Activity activity) {
-        mActivity = activity;
+        this.activity = activity;
     }
 
     @Override
     public GeckoResult<PromptResponse> onAlertPrompt(final GeckoSession session,
                                                      final AlertPrompt prompt) {
-        final Activity activity = mActivity;
+        final Activity activity = this.activity;
         if (activity == null) {
             return GeckoResult.fromValue(prompt.dismiss());
         }
@@ -98,7 +98,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     @Override
     public GeckoResult<PromptResponse> onButtonPrompt(final GeckoSession session,
                                                       final ButtonPrompt prompt) {
-        final Activity activity = mActivity;
+        final Activity activity = this.activity;
         if (activity == null) {
             return GeckoResult.fromValue(prompt.dismiss());
         }
@@ -156,11 +156,11 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     private AlertDialog createStandardDialog(final AlertDialog.Builder builder,
                                              final BasePrompt prompt,
                                              final GeckoResult<PromptResponse> response) {
-        if (mActivity == null) {
+        if (activity == null) {
             response.fromValue(prompt.dismiss());
         }
         final AlertDialog dialog = builder.create();
-        if (sdkVersion <= 25) {
+        if (SDK_VERSION <= 25) {
             dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_PHONE);
         } else {
             dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
@@ -179,7 +179,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     @Override
     public GeckoResult<PromptResponse> onTextPrompt(final GeckoSession session,
                                                     final TextPrompt prompt) {
-        final Activity activity = mActivity;
+        final Activity activity = this.activity;
         if (activity == null) {
             return GeckoResult.fromValue(prompt.dismiss());
         }
@@ -207,7 +207,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     @Override
     public GeckoResult<PromptResponse> onAuthPrompt(final GeckoSession session,
                                                     final AuthPrompt prompt) {
-        final Activity activity = mActivity;
+        final Activity activity = this.activity;
         if (activity == null) {
             return GeckoResult.fromValue(prompt.dismiss());
         }
@@ -307,7 +307,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
                                     final String message, final int type,
                                     final ChoicePrompt.Choice[] choices, final ChoicePrompt prompt,
                                     final GeckoResult<PromptResponse> res) {
-        final Activity activity = mActivity;
+        final Activity activity = this.activity;
         if (activity == null) {
             res.complete(prompt.dismiss());
             return;
@@ -488,7 +488,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
         msg.putExtra(Intent.EXTRA_SUBJECT, prompt.title);
         msg.putExtra(Intent.EXTRA_TEXT, prompt.title+ "  "+ prompt.text + "  " + prompt.uri);
         msg.setType("text/plain");
-        mActivity.startActivity(msg);
+        activity.startActivity(msg);
 
         return GeckoResult.fromValue(prompt.confirm(SharePrompt.Result.SUCCESS));
     }
@@ -513,7 +513,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     @Override
     public GeckoResult<PromptResponse> onColorPrompt(final GeckoSession session,
                                                      final ColorPrompt prompt) {
-        final Activity activity = mActivity;
+        final Activity activity = this.activity;
         if (activity == null) {
             return GeckoResult.fromValue(prompt.dismiss());
         }
@@ -614,7 +614,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     @Override
     public GeckoResult<PromptResponse> onDateTimePrompt(final GeckoSession session,
                                                         final DateTimePrompt prompt) {
-        final Activity activity = mActivity;
+        final Activity activity = this.activity;
         if (activity == null) {
             return GeckoResult.fromValue(prompt.dismiss());
         }
@@ -732,7 +732,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     @Override
     public GeckoResult<PromptResponse> onFilePrompt(GeckoSession session, FilePrompt prompt)
     {
-        final Activity activity = mActivity;
+        final Activity activity = this.activity;
         if (activity == null) {
             return GeckoResult.fromValue(prompt.dismiss());
         }
@@ -779,8 +779,8 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
         GeckoResult<PromptResponse> res = new GeckoResult<>();
 
         try {
-            mFileResponse = res;
-            mFilePrompt = prompt;
+            fileResponse = res;
+            filePrompt = prompt;
             activity.startActivityForResult(intent, filePickerRequestCode);
         } catch (final ActivityNotFoundException e) {
             Log.e(LOGTAG, "Cannot launch activity", e);
@@ -791,15 +791,15 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     }
 
     public void onFileCallbackResult(final int resultCode, final Intent data) {
-        if (mFileResponse == null) {
+        if (fileResponse == null) {
             return;
         }
 
-        final GeckoResult<PromptResponse> res = mFileResponse;
-        mFileResponse = null;
+        final GeckoResult<PromptResponse> res = fileResponse;
+        fileResponse = null;
 
-        final FilePrompt prompt = mFilePrompt;
-        mFilePrompt = null;
+        final FilePrompt prompt = filePrompt;
+        filePrompt = null;
 
         if (resultCode != Activity.RESULT_OK || data == null) {
             res.complete(prompt.dismiss());
@@ -808,8 +808,8 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
 
         Uri uri = data.getData();
         Log.d("BasicGeckoview","file uri=" +uri.toString());
-        String contentPath = getRealContentPathFromURI(mActivity.getApplication(),uri);
-        mActivity.getBaseContext().grantUriPermission(mActivity.getPackageName(), uri, Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        String contentPath = getRealContentPathFromURI(activity.getApplication(),uri);
+        activity.getBaseContext().grantUriPermission(activity.getPackageName(), uri, Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         uri = Uri.parse(contentPath);
 
         Log.d("BasicGeckoview","file uri content path=" +uri.toString());
@@ -817,7 +817,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
 
         if (prompt.type == FilePrompt.Type.SINGLE ||
                 (prompt.type == FilePrompt.Type.MULTIPLE && clip == null)) {
-            res.complete(prompt.confirm(mActivity, uri));
+            res.complete(prompt.confirm(activity, uri));
         } else if (prompt.type == FilePrompt.Type.MULTIPLE) {
             if (clip == null) {
                 Log.w(LOGTAG, "No selected file");
@@ -829,13 +829,13 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
             for (int i = 0; i < count; i++) {
                 uris.add(clip.getItemAt(i).getUri());
             }
-            res.complete(prompt.confirm(mActivity, uris.toArray(new Uri[uris.size()])));
+            res.complete(prompt.confirm(activity, uris.toArray(new Uri[uris.size()])));
         }
     }
 
     public void onPermissionPrompt(final GeckoSession session, final String title,
                                    final GeckoSession.PermissionDelegate.Callback callback) {
-        final Activity activity = mActivity;
+        final Activity activity = this.activity;
         if (activity == null) {
             callback.reject();
             return;
@@ -860,7 +860,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
     }
 
     public void onSlowScriptPrompt(GeckoSession geckoSession, String title, GeckoResult<SlowScriptResponse> reportAction) {
-        final Activity activity = mActivity;
+        final Activity activity = this.activity;
         if (activity == null) {
             return;
         }
@@ -921,7 +921,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
                               final MediaSource[] video, final MediaSource[] audio,
                               final String[] videoNames, final String[] audioNames,
                               final GeckoSession.PermissionDelegate.MediaCallback callback) {
-        final Activity activity = mActivity;
+        final Activity activity = this.activity;
         if (activity == null || (video == null && audio == null)) {
             callback.reject();
             return;

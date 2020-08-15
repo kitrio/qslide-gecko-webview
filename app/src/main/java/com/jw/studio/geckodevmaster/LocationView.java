@@ -15,8 +15,8 @@ import androidx.appcompat.widget.AppCompatEditText;
 
 public class LocationView extends AppCompatEditText {
 
-    private CommitListener mCommitListener;
-    private FocusAndCommitListener mFocusCommitListener = new FocusAndCommitListener();
+    private CommitListener commitListener;
+    private FocusAndCommitListener focusCommitListener = new FocusAndCommitListener();
 
     public interface CommitListener {
         void onCommit(String text);
@@ -25,41 +25,41 @@ public class LocationView extends AppCompatEditText {
     public LocationView(Context context) {
         super(context);
 
-        setOnFocusChangeListener(mFocusCommitListener);
-        setOnEditorActionListener(mFocusCommitListener);
+        setOnFocusChangeListener(focusCommitListener);
+        setOnEditorActionListener(focusCommitListener);
     }
     public LocationView(Context context, AttributeSet attrs) {
         super(context ,attrs);
 
-        setOnFocusChangeListener(mFocusCommitListener);
-        setOnEditorActionListener(mFocusCommitListener);
+        setOnFocusChangeListener(focusCommitListener);
+        setOnEditorActionListener(focusCommitListener);
     }
 
     public void setCommitListener(CommitListener listener) {
-        mCommitListener = listener;
+        commitListener = listener;
     }
 
     private class FocusAndCommitListener implements OnFocusChangeListener, OnEditorActionListener {
-        private String mInitialText;
-        private boolean mCommitted;
+        private String initialText;
+        private boolean committed;
 
         @Override
         public void onFocusChange(View view, boolean focused) {
             if (focused) {
-                mInitialText = ((TextView)view).getText().toString();
-                mCommitted = false;
-            } else if (!mCommitted) {
-                setText(mInitialText);
+                initialText = ((TextView)view).getText().toString();
+                committed = false;
+            } else if (!committed) {
+                setText(initialText);
             }
         }
 
         @Override
         public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-            if (mCommitListener != null) {
-                mCommitListener.onCommit(textView.getText().toString());
+            if (commitListener != null) {
+                commitListener.onCommit(textView.getText().toString());
             }
 
-            mCommitted = true;
+            committed = true;
             return true;
         }
     }

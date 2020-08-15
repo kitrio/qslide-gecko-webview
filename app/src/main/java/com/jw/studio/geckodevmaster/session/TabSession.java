@@ -10,8 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 
 public class TabSession extends GeckoSession {
-    private String mTitle;
-    private String mUri;
+    private String title;
+    private String uri;
     public WebExtension.Action action;
 
     public TabSession() { super(); }
@@ -21,41 +21,41 @@ public class TabSession extends GeckoSession {
     }
 
     public String getTitle() {
-        return mTitle == null || mTitle.length() == 0 ? "about:blank" : mTitle;
+        return title == null || title.length() == 0 ? "about:blank" : title;
     }
 
     public void setTitle(String title) {
-        this.mTitle = title;
+        this.title = title;
     }
 
     public String getUri() {
-        return mUri;
+        return uri;
     }
 
     @Override
     public void loadUri(@NonNull String uri) {
         super.loadUri(uri);
-        mUri = uri;
+        this.uri = uri;
     }
 
     public void onLocationChange(@NonNull String uri) {
-        mUri = uri;
+        this.uri = uri;
     }
 
     @Override // Parcelable
     @UiThread
     public void writeToParcel(final Parcel out, final int flags) {
         super.writeToParcel(out, flags);
-        out.writeString(mTitle);
-        out.writeString(mUri);
+        out.writeString(title);
+        out.writeString(uri);
     }
 
     // AIDL code may call readFromParcel even though it's not part of Parcelable.
     @UiThread
     public void readFromParcel(final @NonNull Parcel source) {
         super.readFromParcel(source);
-        mTitle = source.readString();
-        mUri = source.readString();
+        title = source.readString();
+        uri = source.readString();
     }
 
     public static final Creator<GeckoSession> CREATOR = new Creator<GeckoSession>() {

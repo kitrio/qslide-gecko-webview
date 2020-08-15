@@ -34,11 +34,10 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
         TabSessionManager.TabObserver {
     public WebExtension extension;
 
-    private LruCache<WebExtension.Icon, Bitmap> mBitmapCache = new LruCache<>(5);
-    private GeckoRuntime mRuntime;
-    private WebExtension.Action mDefaultAction;
-
-    private WeakReference<BrowserActionDelegate> mActionDelegate;
+    private LruCache<WebExtension.Icon, Bitmap> bitmapCache = new LruCache<>(5);
+    private GeckoRuntime runtime;
+    private WebExtension.Action defaultAction;
+    private WeakReference<BrowserActionDelegate> actionDelegate;
 
     @Nullable
     @Override
@@ -49,7 +48,7 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
     // We only support either one browserAction or one pageAction
     private void onAction(final WebExtension extension, final GeckoSession session,
                           final WebExtension.Action action) {
-        BrowserActionDelegate delegate = mActionDelegate.get();
+        BrowserActionDelegate delegate = actionDelegate.get();
         if (delegate == null) {
             return;
         }
@@ -58,7 +57,7 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
 
         if (session == null) {
             // This is the default action
-            mDefaultAction = action;
+            defaultAction = action;
             resolved = actionFor(delegate.getCurrentSession());
         } else {
             if (delegate.getSession(session) == null) {
@@ -70,7 +69,7 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
                 // no need to update the UI
                 return;
             }
-            resolved = action.withDefault(mDefaultAction);
+            resolved = action.withDefault(defaultAction);
         }
 
         updateAction(resolved);
@@ -91,7 +90,7 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
     }
 
     private GeckoResult<GeckoSession> togglePopup(boolean force) {
-        BrowserActionDelegate actionDelegate = mActionDelegate.get();
+        BrowserActionDelegate actionDelegate = this.actionDelegate.get();
         if (actionDelegate == null) {
             return null;
         }
@@ -118,14 +117,14 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
 
     private WebExtension.Action actionFor(TabSession session) {
         if (session.action == null) {
-            return mDefaultAction;
+            return defaultAction;
         } else {
-            return session.action.withDefault(mDefaultAction);
+            return session.action.withDefault(defaultAction);
         }
     }
 
     private void updateAction(WebExtension.Action resolved) {
-        BrowserActionDelegate actionDelegate = mActionDelegate.get();
+        BrowserActionDelegate actionDelegate = this.actionDelegate.get();
         if (actionDelegate == null) {
             return;
         }
@@ -136,15 +135,15 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
         }
 
         if (resolved.icon != null) {
-            if (mBitmapCache.get(resolved.icon) != null) {
+            if (bitmapCache.get(resolved.icon) != null) {
                 actionDelegate.onActionButton(new ActionButton(
-                        mBitmapCache.get(resolved.icon), resolved.badgeText,
+                        bitmapCache.get(resolved.icon), resolved.badgeText,
                         resolved.badgeTextColor,
                         resolved.badgeBackgroundColor
                 ));
             } else {
                 resolved.icon.get(100).accept(bitmap -> {
-                    mBitmapCache.put(resolved.icon, bitmap);
+                    bitmapCache.put(resolved.icon, bitmap);
                     actionDelegate.onActionButton(new ActionButton(
                             bitmap, resolved.badgeText,
                             resolved.badgeTextColor,
@@ -164,20 +163,20 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
     }
 
     public void setActionDelegate(BrowserActionDelegate delegate) {
-        mActionDelegate = new WeakReference<>(delegate);
+        actionDelegate = new WeakReference<>(delegate);
     }
 
     @Override
     public void onCurrentSession(TabSession session) {
-        if (mDefaultAction == null) {
+        if (defaultAction == null) {
             // No action was ever defined, so nothing to do
             return;
         }
 
         if (session.action != null) {
-            updateAction(session.action.withDefault(mDefaultAction));
+            updateAction(session.action.withDefault(defaultAction));
         } else {
-            updateAction(mDefaultAction);
+            updateAction(defaultAction);
         }
     }
 
@@ -188,9 +187,9 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
 
         tabManager.unregisterWebExtension();
 
-        return mRuntime.getWebExtensionController().uninstall(extension).accept((unused) -> {
+        return runtime.getWebExtensionController().uninstall(extension).accept((unused) -> {
             extension = null;
-            mDefaultAction = null;
+            defaultAction = null;
             updateAction(null);
         });
     }
@@ -210,6 +209,6 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
                 registerExtension(extension, tabManager);
             }
         });
-        mRuntime = runtime;
+        this.runtime = runtime;
     }
 }

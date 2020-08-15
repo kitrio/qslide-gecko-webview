@@ -93,44 +93,45 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     private static final int REQUEST_PERMISSIONS = 2;
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 3;
 
-    private static WebExtensionManager sExtensionManager;
+    private static WebExtensionManager extensionManager;
+    private static GeckoRuntime geckoRuntime;
 
-    public TabSessionManager mTabSessionManager;
-    private static GeckoRuntime sGeckoRuntime;
-    private GeckoView mGeckoView;
-    private boolean mUseTrackingProtection = true;
-    private boolean mUsePrivateBrowsing;
-    private boolean mKillProcessOnDestroy;
-    private boolean mDesktopMode;
-    private TabSession mPopupSession;
-    private View mPopupView;
+    public TabSessionManager tabSessionManager;
 
-    private boolean mShowNotificationsRejected;
-    private ArrayList<String> mAcceptedPersistentStorage = new ArrayList<>();
+    private GeckoView geckoView;
+    private boolean isTrackingProtection = true;
+    private boolean isPrivateBrowsing;
+    private boolean isKillProcessOnDestroy;
+    private boolean isDesktopMode;
+    private TabSession popupSession;
+    private View popupView;
+
+    private boolean isShowNotificationsRejected;
+    private ArrayList<String> acceptedPersistentStorage = new ArrayList<>();
 
     private PopupWindow popupWindow;
-    private ToolbarLayout mToolbarView;
-    private String mCurrentUri;
-    private boolean mCanGoBack;
-    private static boolean mFullScreen;
-    private HashMap<String, Integer> mNotificationIDMap = new HashMap<>();
-    private HashMap<Integer, WebNotification> mNotificationMap = new HashMap<>();
-    private int mLastID = 100;
+    private ToolbarLayout toolbarView;
+    private String currentUri;
+    private boolean isCanGoBack;
+    private static boolean isFullScreen;
+    private HashMap<String, Integer> notificationIDMap = new HashMap<>();
+    private HashMap<Integer, WebNotification> notificationMap = new HashMap<>();
+    private int lastID = 100;
     private Fragment homeFragment;
     private FragmentManager fragmentManager;
 
-    private LinkedList<GeckoSession.WebResponseInfo> mPendingDownloads = new LinkedList<>();
+    private LinkedList<GeckoSession.WebResponseInfo> pendingDownloads = new LinkedList<>();
 
-    private final LocationView.CommitListener mCommitListener = new LocationView.CommitListener() {
+    private final LocationView.CommitListener commitListener = new LocationView.CommitListener() {
         @Override
         public void onCommit(String text) {
             if ((text.contains(".") || text.contains(":")) && !text.contains(" ")) {
-                mTabSessionManager.getCurrentSession().loadUri(text);
+                tabSessionManager.getCurrentSession().loadUri(text);
             } else {
-                mTabSessionManager.getCurrentSession().loadUri(SEARCH_URI_BASE + text);
+                tabSessionManager.getCurrentSession().loadUri(SEARCH_URI_BASE + text);
             }
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            EditText urlEdit = findViewById(mToolbarView.getLocationView().getId());
+            EditText urlEdit = findViewById(toolbarView.getLocationView().getId());
             imm.hideSoftInputFromWindow(urlEdit.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     };
@@ -142,18 +143,18 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 " - application start");
         createNotificationChannel();
         setContentView(R.layout.geckoview_activity);
-        mGeckoView = findViewById(R.id.gecko_view);
+        geckoView = findViewById(R.id.gecko_view);
         ImageButton toolbar = findViewById(R.id.toolbar);
         ConstraintLayout appLayout = findViewById(R.id.main);
 
-        mTabSessionManager = new TabSessionManager();
-        mToolbarView = new ToolbarLayout(this, mTabSessionManager);
-        mToolbarView.setId(R.id.toolbar_layout);
-        mToolbarView.setTabListener(this);
-        mToolbarView.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
+        tabSessionManager = new TabSessionManager();
+        toolbarView = new ToolbarLayout(this, tabSessionManager);
+        toolbarView.setId(R.id.toolbar_layout);
+        toolbarView.setTabListener(this);
+        toolbarView.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
 
         ConstraintSet set = new ConstraintSet();
-        appLayout.addView(mToolbarView);
+        appLayout.addView(toolbarView);
         set.clone(appLayout);
         set.connect(R.id.gecko_view, ConstraintSet.TOP, R.id.main, ConstraintSet.TOP);
         set.connect(R.id.gecko_view, ConstraintSet.BOTTOM, R.id.toolbar_layout, ConstraintSet.TOP);
@@ -171,7 +172,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
         final boolean useMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
         
-        if (sGeckoRuntime == null) {
+        if (geckoRuntime == null) {
             final GeckoRuntimeSettings.Builder runtimeSettingsBuilder = new GeckoRuntimeSettings.Builder();
             final Bundle extras = getIntent().getExtras();
             if (extras != null) {
@@ -191,20 +192,20 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                     .build())
                 .aboutConfigEnabled(true);
 
-            sGeckoRuntime = GeckoRuntime.create(this, runtimeSettingsBuilder.build());
+            geckoRuntime = GeckoRuntime.create(this, runtimeSettingsBuilder.build());
 
-            sGeckoRuntime.getWebExtensionController().setTabDelegate(new WebExtensionController.TabDelegate() {
+            geckoRuntime.getWebExtensionController().setTabDelegate(new WebExtensionController.TabDelegate() {
                 @Override
                 public GeckoResult<GeckoSession> onNewTab(WebExtension source, String uri) {
                     final TabSession newSession = createSession();
-                    mToolbarView.updateTabCount();
+                    toolbarView.updateTabCount();
                     setGeckoViewSession(newSession);
                     return GeckoResult.fromValue(newSession);
                 }
 
                 @Override
                 public GeckoResult<AllowOrDeny> onCloseTab(WebExtension source, GeckoSession session) {
-                    TabSession tabSession = mTabSessionManager.getSession(session);
+                    TabSession tabSession = tabSessionManager.getSession(session);
                     if (tabSession != null) {
                         closeTab(tabSession);
                     }
@@ -212,17 +213,17 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 }
             });
 
-            sExtensionManager = new WebExtensionManager(sGeckoRuntime, mTabSessionManager);
-            mTabSessionManager.setTabObserver(sExtensionManager);
+            extensionManager = new WebExtensionManager(geckoRuntime, tabSessionManager);
+            tabSessionManager.setTabObserver(extensionManager);
 
-            sGeckoRuntime.setWebNotificationDelegate(new WebNotificationDelegate() {
+            geckoRuntime.setWebNotificationDelegate(new WebNotificationDelegate() {
                 NotificationManager notificationManager = getSystemService(NotificationManager.class);
 
                 @Override
                 public void onShowNotification(@NonNull WebNotification notification) {
                     Intent clickIntent = new Intent(GeckoViewActivity.this, GeckoViewActivity.class);
                     clickIntent.putExtra("onClick", notification.tag);
-                    PendingIntent dismissIntent = PendingIntent.getActivity(GeckoViewActivity.this, mLastID, clickIntent, 0);
+                    PendingIntent dismissIntent = PendingIntent.getActivity(GeckoViewActivity.this, lastID, clickIntent, 0);
 
                     Notification.Builder builder = new Notification.Builder(GeckoViewActivity.this)
                             .setContentTitle(notification.title)
@@ -231,11 +232,11 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                             .setContentIntent(dismissIntent)
                             .setAutoCancel(true);
 
-                    mNotificationIDMap.put(notification.tag, mLastID);
-                    mNotificationMap.put(mLastID, notification);
+                    notificationIDMap.put(notification.tag, lastID);
+                    notificationMap.put(lastID, notification);
 
                     if (notification.imageUrl != null && notification.imageUrl.length() > 0) {
-                        final GeckoWebExecutor executor = new GeckoWebExecutor(sGeckoRuntime);
+                        final GeckoWebExecutor executor = new GeckoWebExecutor(geckoRuntime);
 
                         GeckoResult<WebResponse> response = executor.fetch(
                                 new WebRequest.Builder(notification.imageUrl)
@@ -244,31 +245,31 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                         response.accept(value -> {
                             Bitmap bitmap = BitmapFactory.decodeStream(value.body);
                             builder.setLargeIcon(Icon.createWithBitmap(bitmap));
-                            notificationManager.notify(mLastID++, builder.build());
+                            notificationManager.notify(lastID++, builder.build());
                         });
                     } else {
-                        notificationManager.notify(mLastID++, builder.build());
+                        notificationManager.notify(lastID++, builder.build());
                     }
 
                 }
 
                 @Override
                 public void onCloseNotification(@NonNull WebNotification notification) {
-                    if (mNotificationIDMap.containsKey(notification.tag)) {
-                        int id = mNotificationIDMap.get(notification.tag);
+                    if (notificationIDMap.containsKey(notification.tag)) {
+                        int id = notificationIDMap.get(notification.tag);
                         notificationManager.cancel(id);
-                        mNotificationMap.remove(id);
-                        mNotificationIDMap.remove(notification.tag);
+                        notificationMap.remove(id);
+                        notificationIDMap.remove(notification.tag);
                     }
                 }
             });
 
-            sGeckoRuntime.setDelegate(() -> {
-                mKillProcessOnDestroy = true;
+            geckoRuntime.setDelegate(() -> {
+                isKillProcessOnDestroy = true;
                 finish();
             });
         }
-        sExtensionManager.setActionDelegate(this);
+        extensionManager.setActionDelegate(this);
 
         if (savedInstanceState == null) {
             TabSession session = getIntent().getParcelableExtra("session");
@@ -276,27 +277,27 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 connectSession(session);
 
                 if (!session.isOpen()) {
-                    session.open(sGeckoRuntime);
+                    session.open(geckoRuntime);
                 }
-                mTabSessionManager.addSession(session);
-                session.open(sGeckoRuntime);
+                tabSessionManager.addSession(session);
+                session.open(geckoRuntime);
                 setGeckoViewSession(session);
             } else {
                 showHome();
                 session = createSession();
-                session.open(sGeckoRuntime);
-                mTabSessionManager.setCurrentSession(session);
-                mGeckoView.setSession(session);
-                sGeckoRuntime.getWebExtensionController().setTabActive(session, true);
+                session.open(geckoRuntime);
+                tabSessionManager.setCurrentSession(session);
+                geckoView.setSession(session);
+                geckoRuntime.getWebExtensionController().setTabActive(session, true);
             }
             loadFromIntent(getIntent());
         }
-        mToolbarView.updateTabCount();
-        mToolbarView.getLocationView().setCommitListener(mCommitListener);
+        toolbarView.updateTabCount();
+        toolbarView.getLocationView().setCommitListener(commitListener);
 
         toolbar.setOnClickListener((view) -> {
             AppmenuPopupBinding menu = DataBindingUtil.inflate(getLayoutInflater(), R.layout.appmenu_popup, null, false);
-            GeckoSession session = mTabSessionManager.getCurrentSession();
+            GeckoSession session = tabSessionManager.getCurrentSession();
             popupWindow = new PopupWindow(menu.getRoot(), ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             popupWindow.setFocusable(true);
             int menu_height = dpToPx(260);
@@ -329,28 +330,28 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                     switchToFloatingMode();
                 });
             }
-            menu.switchDesktop.setChecked(mDesktopMode);
+            menu.switchDesktop.setChecked(isDesktopMode);
             menu.switchDesktop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    mDesktopMode = !mDesktopMode;
+                    isDesktopMode = !isDesktopMode;
                     updateDesktopMode(session);
                     session.reload();
                 }
             });
-            menu.switchPrivate.setChecked(mUsePrivateBrowsing);
+            menu.switchPrivate.setChecked(isPrivateBrowsing);
             menu.switchPrivate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    mUsePrivateBrowsing = !mUsePrivateBrowsing;
+                    isPrivateBrowsing = !isPrivateBrowsing;
                     recreateSession();
                 }
             });
-            menu.switchTracking.setChecked(mUseTrackingProtection);
+            menu.switchTracking.setChecked(isTrackingProtection);
             menu.switchTracking.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    mUseTrackingProtection = !mUseTrackingProtection;
+                    isTrackingProtection = !isTrackingProtection;
                     updateTrackingProtection(session);
                     session.reload();
                 }
@@ -358,7 +359,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 //            menu.extendsInstallButton.setOnClickListener(v -> {
 //                installAddon() ;
 //            });
-            popupWindow.showAsDropDown(toolbar, toolbar.getHeight(), -menu_height, mGeckoView.getPaddingBottom());
+            popupWindow.showAsDropDown(toolbar, toolbar.getHeight(), -menu_height, geckoView.getPaddingBottom());
 
         });
         ImageButton mBackButton = findViewById(R.id.back_button);
@@ -402,36 +403,36 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
     @Override
     public TabSession getSession(GeckoSession session) {
-        return  mTabSessionManager.getSession(session);
+        return  tabSessionManager.getSession(session);
     }
 
     @Override
     public TabSession getCurrentSession() {
-        return mTabSessionManager.getCurrentSession();
+        return tabSessionManager.getCurrentSession();
     }
 
     @Override
     public void onActionButton(ActionButton button) {
-        mToolbarView.setBrowserActionButton(button);
+        toolbarView.setBrowserActionButton(button);
     }
 
     @Override
     public GeckoSession toggleBrowserActionPopup(boolean force) {
-        if (mPopupSession == null) {
+        if (popupSession == null) {
             openPopupSession();
         }
 
-        ViewGroup.LayoutParams params = mPopupView.getLayoutParams();
+        ViewGroup.LayoutParams params = popupView.getLayoutParams();
         boolean shouldShow = force || params.width == 0;
         setPopupVisibility(shouldShow);
 
-        return shouldShow ? mPopupSession : null;
+        return shouldShow ? popupSession : null;
     }
     private void setPopupVisibility(boolean visible) {
-        if (mPopupView == null) {
+        if (popupView == null) {
             return;
         }
-        ViewGroup.LayoutParams params = mPopupView.getLayoutParams();
+        ViewGroup.LayoutParams params = popupView.getLayoutParams();
 
         if (visible) {
             params.height = 1100;
@@ -440,33 +441,33 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             params.height = 0;
             params.width = 0;
         }
-        mPopupView.setLayoutParams(params);
+        popupView.setLayoutParams(params);
     }
 
     private void openPopupSession() {
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
-        mPopupView = inflater.inflate(R.layout.browser_action_popup, null);
-        GeckoView geckoView = mPopupView.findViewById(R.id.gecko_view_popup);
+        popupView = inflater.inflate(R.layout.browser_action_popup, null);
+        GeckoView geckoView = popupView.findViewById(R.id.gecko_view_popup);
         geckoView.setViewBackend(GeckoView.BACKEND_TEXTURE_VIEW);
-        mPopupSession = new TabSession();
-        mPopupSession.open(sGeckoRuntime);
-        geckoView.setSession(mPopupSession);
+        popupSession = new TabSession();
+        popupSession.open(geckoRuntime);
+        geckoView.setSession(popupSession);
 
-        mPopupView.setOnFocusChangeListener(this::hideBrowserAction);
+        popupView.setOnFocusChangeListener(this::hideBrowserAction);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(0, 0);
         params.addRule(RelativeLayout.ABOVE, R.id.toolbar);
-        mPopupView.setLayoutParams(params);
-        mPopupView.setFocusable(true);
-        ((ViewGroup) findViewById(R.id.main)).addView(mPopupView);
+        popupView.setLayoutParams(params);
+        popupView.setFocusable(true);
+        ((ViewGroup) findViewById(R.id.main)).addView(popupView);
     }
 
     private void hideBrowserAction(View view, boolean hasFocus) {
         if (!hasFocus) {
-            ViewGroup.LayoutParams params = mPopupView.getLayoutParams();
+            ViewGroup.LayoutParams params = popupView.getLayoutParams();
             params.height = 0;
             params.width = 0;
-            mPopupView.setLayoutParams(params);
+            popupView.setLayoutParams(params);
         }
     }
 
@@ -487,14 +488,14 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     }
 
     private TabSession createSession() {
-        TabSession session = mTabSessionManager.newSession(new GeckoSessionSettings.Builder()
+        TabSession session = tabSessionManager.newSession(new GeckoSessionSettings.Builder()
                 .suspendMediaWhenInactive(true)
-                .usePrivateMode(mUsePrivateBrowsing)
-                .useTrackingProtection(mUseTrackingProtection)
-                .viewportMode(mDesktopMode
+                .usePrivateMode(isPrivateBrowsing)
+                .useTrackingProtection(isTrackingProtection)
+                .viewportMode(isDesktopMode
                         ? GeckoSessionSettings.VIEWPORT_MODE_DESKTOP
                         : GeckoSessionSettings.VIEWPORT_MODE_MOBILE)
-                .userAgentMode(mDesktopMode
+                .userAgentMode(isDesktopMode
                         ? GeckoSessionSettings.USER_AGENT_MODE_DESKTOP
                         : GeckoSessionSettings.USER_AGENT_MODE_MOBILE)
                 .build());
@@ -519,95 +520,95 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         session.setPermissionDelegate(permission);
         session.setMediaDelegate(new MediaDelegate(this));
 		
-        if(sExtensionManager.extension != null) {
-            session.setWebExtensionActionDelegate(sExtensionManager.extension, sExtensionManager);
+        if(extensionManager.extension != null) {
+            session.setWebExtensionActionDelegate(extensionManager.extension, extensionManager);
         }
         updateTrackingProtection(session);
         updateDesktopMode(session);
     }
 
     private void recreateSession() {
-        recreateSession(mTabSessionManager.getCurrentSession());
+        recreateSession(tabSessionManager.getCurrentSession());
     }
 
     private void recreateSession(TabSession session) {
         if (session != null) {
-            mTabSessionManager.closeSession(session);
+            tabSessionManager.closeSession(session);
         }
         session = createSession();
-        session.open(sGeckoRuntime);
-        mTabSessionManager.setCurrentSession(session);
-        mGeckoView.setSession(session);
-        sGeckoRuntime.getWebExtensionController().setTabActive(session, true);
-        if (mCurrentUri != null) {
-            session.loadUri(mCurrentUri);
+        session.open(geckoRuntime);
+        tabSessionManager.setCurrentSession(session);
+        geckoView.setSession(session);
+        geckoRuntime.getWebExtensionController().setTabActive(session, true);
+        if (currentUri != null) {
+            session.loadUri(currentUri);
         }
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState != null && mGeckoView.getSession() !=  null) {
-            mTabSessionManager.setCurrentSession((TabSession) mGeckoView.getSession());
-            sGeckoRuntime.getWebExtensionController().setTabActive((mGeckoView.getSession()), true);
+        if (savedInstanceState != null && geckoView.getSession() !=  null) {
+            tabSessionManager.setCurrentSession((TabSession) geckoView.getSession());
+            geckoRuntime.getWebExtensionController().setTabActive((geckoView.getSession()), true);
         } else {
             recreateSession();
         }
     }
 
     private void updateDesktopMode(GeckoSession session) {
-        session.getSettings().setViewportMode(mDesktopMode
+        session.getSettings().setViewportMode(isDesktopMode
                 ? GeckoSessionSettings.VIEWPORT_MODE_DESKTOP
                 : GeckoSessionSettings.VIEWPORT_MODE_MOBILE);
-        session.getSettings().setUserAgentMode(mDesktopMode
+        session.getSettings().setUserAgentMode(isDesktopMode
                 ? GeckoSessionSettings.USER_AGENT_MODE_DESKTOP
                 : GeckoSessionSettings.USER_AGENT_MODE_MOBILE);
     }
 
     private void updateTrackingProtection(GeckoSession session) {
-        session.getSettings().setUseTrackingProtection(mUseTrackingProtection);
-        sGeckoRuntime.getSettings().getContentBlocking()
-                .setStrictSocialTrackingProtection(mUseTrackingProtection);
+        session.getSettings().setUseTrackingProtection(isTrackingProtection);
+        geckoRuntime.getSettings().getContentBlocking()
+                .setStrictSocialTrackingProtection(isTrackingProtection);
     }
 
     @Override
     public void onBackPressed() {
-        GeckoSession session = mTabSessionManager.getCurrentSession();
-        if (mFullScreen && session != null) {
+        GeckoSession session = tabSessionManager.getCurrentSession();
+        if (isFullScreen && session != null) {
             session.exitFullScreen();
             return;
         }
 
-        if (mCanGoBack && session != null) {
+        if (isCanGoBack && session != null) {
             session.goBack();
         }
     }
 
     public void createNewTab(String url) {
         TabSession newSession = createSession();
-        newSession.open(sGeckoRuntime);
+        newSession.open(geckoRuntime);
         setGeckoViewSession(newSession);
         newSession.loadUri(url);
-        mToolbarView.updateTabCount();
+        toolbarView.updateTabCount();
     }
 
     private void createNewTab() {
         TabSession newSession = createSession();
-        newSession.open(sGeckoRuntime);
+        newSession.open(geckoRuntime);
         setGeckoViewSession(newSession);
-        mToolbarView.updateTabCount();
+        toolbarView.updateTabCount();
     }
 
     public void closeTab(TabSession session) {
-        if (mTabSessionManager.sessionCount() > 1) {
-            mTabSessionManager.closeSession(session);
-            TabSession tabSession = mTabSessionManager.getCurrentSession();
+        if (tabSessionManager.sessionCount() > 1) {
+            tabSessionManager.closeSession(session);
+            TabSession tabSession = tabSessionManager.getCurrentSession();
             setGeckoViewSession(tabSession);
             if (tabSession.getTitle().equals("about:blank")) {
                 showHome();
             }
-            mToolbarView.getLocationView().setText(tabSession.getUri());
-            mToolbarView.updateTabCount();
+            toolbarView.getLocationView().setText(tabSession.getUri());
+            toolbarView.updateTabCount();
         } else {
             recreateSession();
             showHome();
@@ -615,42 +616,42 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     }
 
     public void onBrowserActionClick() {
-        sExtensionManager.onClicked(mTabSessionManager.getCurrentSession());
+        extensionManager.onClicked(tabSessionManager.getCurrentSession());
     }
     public void switchToTab(int index) {
         hideHome();
-        if (mTabSessionManager.sessionCount() <= 0) {
+        if (tabSessionManager.sessionCount() <= 0) {
             createNewTab("about:blank");
         }
-        TabSession currentSession = mTabSessionManager.getCurrentSession();
-        TabSession nextSession = mTabSessionManager.getSession(index);
+        TabSession currentSession = tabSessionManager.getCurrentSession();
+        TabSession nextSession = tabSessionManager.getSession(index);
 
         if (nextSession != currentSession) {
             setGeckoViewSession(nextSession);
-            mCurrentUri = nextSession.getUri();
+            currentUri = nextSession.getUri();
             if (nextSession.getTitle().equals("about:blank")) {
-                mCurrentUri = "about:blank";
-                Log.d("geckoview location=", mCurrentUri);
+                currentUri = "about:blank";
+                Log.d("geckoview location=", currentUri);
                 showHome();
             }
-            mToolbarView.getLocationView().setText(nextSession.getUri());
+            toolbarView.getLocationView().setText(nextSession.getUri());
         }
     }
 
     private void setGeckoViewSession(TabSession session) {
-        final WebExtensionController controller = sGeckoRuntime.getWebExtensionController();
-        final GeckoSession previousSession = mGeckoView.releaseSession();
+        final WebExtensionController controller = geckoRuntime.getWebExtensionController();
+        final GeckoSession previousSession = geckoView.releaseSession();
         if (previousSession != null){
             controller.setTabActive(previousSession, false);
         }
-        mGeckoView.setSession(session);
+        geckoView.setSession(session);
         controller.setTabActive(session, true);
-        mTabSessionManager.setCurrentSession(session);
+        tabSessionManager.setCurrentSession(session);
     }
 
     @Override
     public void onDestroy() {
-        if (mKillProcessOnDestroy) {
+        if (isKillProcessOnDestroy) {
             android.os.Process.killProcess(android.os.Process.myPid());
         }
 
@@ -667,10 +668,10 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
         if (intent.hasExtra("onClick")) {
             int key = intent.getExtras().getInt("onClick");
-            WebNotification notification = mNotificationMap.get(key);
+            WebNotification notification = notificationMap.get(key);
             if (notification != null) {
                 notification.click();
-                mNotificationMap.remove(key);
+                notificationMap.remove(key);
             }
         }
 
@@ -684,7 +685,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     private void loadFromIntent(final Intent intent) {
         final Uri uri = intent.getData();
         if (uri != null) {
-            mTabSessionManager.getCurrentSession().loadUri(uri.toString());
+            tabSessionManager.getCurrentSession().loadUri(uri.toString());
         }
     }
 
@@ -693,7 +694,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                                     final Intent data) {
         if (requestCode == REQUEST_FILE_PICKER) {
             final BasicGeckoViewPrompt prompt = (BasicGeckoViewPrompt)
-                    mTabSessionManager.getCurrentSession().getPromptDelegate();
+                    tabSessionManager.getCurrentSession().getPromptDelegate();
             prompt.onFileCallbackResult(resultCode, data);
             super.onActivityResult(requestCode, resultCode, data);
         } else {
@@ -707,7 +708,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                                            final int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS) {
             final PermissionDelegate permission = (PermissionDelegate)
-                    mTabSessionManager.getCurrentSession().getPermissionDelegate();
+                    tabSessionManager.getCurrentSession().getPermissionDelegate();
             permission.onRequestPermissionsResult(permissions, grantResults);
         } else if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -718,8 +719,8 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     }
 
     private void continueDownloads() {
-        LinkedList<GeckoSession.WebResponseInfo> downloads = mPendingDownloads;
-        mPendingDownloads = new LinkedList<>();
+        LinkedList<GeckoSession.WebResponseInfo> downloads = pendingDownloads;
+        pendingDownloads = new LinkedList<>();
 
         for (GeckoSession.WebResponseInfo response : downloads) {
             downloadFile(response);
@@ -727,7 +728,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     }
 
     private void downloadFile(GeckoSession.WebResponseInfo response) {
-        mTabSessionManager.getCurrentSession()
+        tabSessionManager.getCurrentSession()
                 .getUserAgent()
                 .accept(userAgent -> downloadFile(response, userAgent),
                         exception -> {
@@ -738,7 +739,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     private void downloadFile(GeckoSession.WebResponseInfo response, String userAgent) {
         if (ContextCompat.checkSelfPermission(GeckoViewActivity.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            mPendingDownloads.add(response);
+            pendingDownloads.add(response);
             ActivityCompat.requestPermissions(GeckoViewActivity.this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     REQUEST_WRITE_EXTERNAL_STORAGE);
@@ -794,7 +795,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         @Override
         public void onTitleChange(GeckoSession session, String title) {
 //            Log.i(LOGTAG, "Content title changed to " + title);
-            TabSession tabSession = mTabSessionManager.getSession(session);
+            TabSession tabSession = tabSessionManager.getSession(session);
             if (tabSession != null) {
                 tabSession.setTitle(title);
             }
@@ -802,13 +803,13 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
         @Override
         public void onFullScreen(final GeckoSession session, final boolean fullScreen) {
-            mFullScreen = fullScreen;
-            if (mFullScreen) {
+            isFullScreen = fullScreen;
+            if (isFullScreen) {
                 ActivityUtils.setFullScreen(GeckoViewActivity.this, true);
-                mToolbarView.setVisibility(ConstraintLayout.GONE);
+                toolbarView.setVisibility(ConstraintLayout.GONE);
                 Log.d("Geckoview", "Fullscreen in");
             } else {
-                mToolbarView.setVisibility(ConstraintLayout.VISIBLE);
+                toolbarView.setVisibility(ConstraintLayout.VISIBLE);
                 Log.d("Geckoview", "Fullscreen out");
             }
         }
@@ -820,7 +821,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
         @Override
         public void onCloseRequest(final GeckoSession session) {
-            if (session == mTabSessionManager.getCurrentSession()) {
+            if (session == tabSessionManager.getCurrentSession()) {
                 finish();
             }
         }
@@ -853,7 +854,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         @Override
         public void onCrash(GeckoSession session) {
             Log.e(LOGTAG, "Crashed, reopening session");
-            session.open(sGeckoRuntime);
+            session.open(geckoRuntime);
         }
 
         @Override
@@ -871,7 +872,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         @Override
         public GeckoResult<SlowScriptResponse> onSlowScript(final GeckoSession geckoSession,
                                                             final String scriptFileName) {
-            BasicGeckoViewPrompt prompt = (BasicGeckoViewPrompt) mTabSessionManager.getCurrentSession().getPromptDelegate();
+            BasicGeckoViewPrompt prompt = (BasicGeckoViewPrompt) tabSessionManager.getCurrentSession().getPromptDelegate();
             if (prompt != null) {
                 GeckoResult<SlowScriptResponse> result = new GeckoResult<>();
                 if (!activeAlert) {
@@ -888,10 +889,10 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     }
 
     private class ProgressDelegate implements GeckoSession.ProgressDelegate {
-        private ContentBlockingDelegate mCb;
+        private ContentBlockingDelegate contentBlockingDelegate;
 
-        private ProgressDelegate(final ContentBlockingDelegate cb) {
-            mCb = cb;
+        private ProgressDelegate(final ContentBlockingDelegate contentBlockingDelegate) {
+            this.contentBlockingDelegate = contentBlockingDelegate;
         }
 
         @Override
@@ -899,7 +900,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             Log.i(LOGTAG, "Starting to load page at " + url);
             Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
                     " - page load start");
-            mCb.clearCounters();
+            contentBlockingDelegate.clearCounters();
             if (!url.trim().equals("about:blank")) {
                 hideHome();
             }
@@ -910,64 +911,64 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             Log.i(LOGTAG, "Stopping page load " + (success ? "successfully" : "unsuccessfully"));
             Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
                     " - page load stop");
-            mCb.logCounters();
+            contentBlockingDelegate.logCounters();
         }
     }
 
     private class PermissionDelegate implements GeckoSession.PermissionDelegate {
 
         public int androidPermissionRequestCode = 1;
-        private Callback mCallback;
+        private Callback callback;
 
         class NotificationCallback implements GeckoSession.PermissionDelegate.Callback {
-            private final GeckoSession.PermissionDelegate.Callback mCallback;
+            private final GeckoSession.PermissionDelegate.Callback permissionCallback;
 
             NotificationCallback(final GeckoSession.PermissionDelegate.Callback callback) {
-                mCallback = callback;
+                permissionCallback = callback;
             }
 
             @Override
             public void reject() {
-                mShowNotificationsRejected = true;
-                mCallback.reject();
+                isShowNotificationsRejected = true;
+                permissionCallback.reject();
             }
 
             @Override
             public void grant() {
-                mShowNotificationsRejected = false;
-                mCallback.grant();
+                isShowNotificationsRejected = false;
+                permissionCallback.grant();
             }
         }
 
         class PersistentStorageCallback implements GeckoSession.PermissionDelegate.Callback {
-            private final GeckoSession.PermissionDelegate.Callback mCallback;
-            private final String mUri;
+            private final GeckoSession.PermissionDelegate.Callback callback;
+            private final String uri;
 
             PersistentStorageCallback(final GeckoSession.PermissionDelegate.Callback callback, String uri) {
-                mCallback = callback;
-                mUri = uri;
+                this.callback = callback;
+                this.uri = uri;
             }
 
             @Override
             public void reject() {
-                mCallback.reject();
+                callback.reject();
             }
 
             @Override
             public void grant() {
-                mAcceptedPersistentStorage.add(mUri);
-                mCallback.grant();
+                acceptedPersistentStorage.add(uri);
+                callback.grant();
             }
         }
 
         public void onRequestPermissionsResult(final String[] permissions,
                                                final int[] grantResults) {
-            if (mCallback == null) {
+            if (callback == null) {
                 return;
             }
 
-            final Callback cb = mCallback;
-            mCallback = null;
+            final Callback cb = callback;
+            callback = null;
             for (final int result : grantResults) {
                 if (result != PackageManager.PERMISSION_GRANTED) {
                     // At least one permission was not granted.
@@ -982,7 +983,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         public void onAndroidPermissionsRequest(final GeckoSession session, final String[] permissions,
                                                 final Callback callback) {
             // requestPermissions was introduced in API 23.
-            mCallback = callback;
+            this.callback = callback;
             requestPermissions(permissions, androidPermissionRequestCode);
         }
 
@@ -994,7 +995,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             if (PERMISSION_GEOLOCATION == type) {
                 resId = R.string.request_geolocation;
             } else if (PERMISSION_DESKTOP_NOTIFICATION == type) {
-                if (mShowNotificationsRejected) {
+                if (isShowNotificationsRejected) {
                     Log.w(LOGTAG, "Desktop notifications already denied by user.");
                     callback.reject();
                     return;
@@ -1002,7 +1003,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 resId = R.string.request_notification;
                 contentPermissionCallback = new NotificationCallback(callback);
             } else if (PERMISSION_PERSISTENT_STORAGE == type) {
-                if (mAcceptedPersistentStorage.contains(uri)) {
+                if (acceptedPersistentStorage.contains(uri)) {
                     Log.w(LOGTAG, "Persistent Storage for " + uri + " already granted by user.");
                     callback.grant();
                     return;
@@ -1017,7 +1018,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
             final String title = getString(resId, Uri.parse(uri).getAuthority());
             final BasicGeckoViewPrompt prompt = (BasicGeckoViewPrompt)
-                    mTabSessionManager.getCurrentSession().getPromptDelegate();
+                    tabSessionManager.getCurrentSession().getPromptDelegate();
             prompt.onPermissionPrompt(session, title, contentPermissionCallback);
         }
 
@@ -1080,7 +1081,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             String[] audioNames = normalizeMediaName(audio);
 
             final BasicGeckoViewPrompt prompt = (BasicGeckoViewPrompt)
-                    mTabSessionManager.getCurrentSession().getPromptDelegate();
+                    tabSessionManager.getCurrentSession().getPromptDelegate();
             prompt.onMediaPrompt(session, title, video, audio, videoNames, audioNames, callback);
         }
     }
@@ -1088,17 +1089,17 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     private class NavigationDelegate implements GeckoSession.NavigationDelegate {
         @Override
         public void onLocationChange(GeckoSession session, final String url) {
-            TabSession tabSession = mTabSessionManager.getSession(session);
+            TabSession tabSession = tabSessionManager.getSession(session);
             if (tabSession != null ) {
                 tabSession.onLocationChange(url);
             }
-            mCurrentUri = url;
-            mToolbarView.getLocationView().setText(mCurrentUri);
+            currentUri = url;
+            toolbarView.getLocationView().setText(currentUri);
         }
 
         @Override
         public void onCanGoBack(GeckoSession session, boolean canGoBack) {
-            mCanGoBack = canGoBack;
+            isCanGoBack = canGoBack;
         }
 
         @Override
@@ -1106,20 +1107,14 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
 
         @Override
-        public GeckoResult<AllowOrDeny> onLoadRequest(final GeckoSession session,
-                                                      final LoadRequest request) {
-//            Log.d(LOGTAG, "onLoadRequest=" + request.uri +
-//                    " triggerUri=" + request.triggerUri +
-//                    " where=" + request.target +
-//                    " isRedirect=" + request.isRedirect);
-
+        public GeckoResult<AllowOrDeny> onLoadRequest(final GeckoSession session, final LoadRequest request) {
             return GeckoResult.fromValue(AllowOrDeny.ALLOW);
         }
 
         @Override
         public GeckoResult<GeckoSession> onNewSession(final GeckoSession session, final String uri) {
             final TabSession newSession = createSession();
-            mToolbarView.updateTabCount();
+            toolbarView.updateTabCount();
             setGeckoViewSession(newSession);
             // A reference to newSession is stored by mTabSessionManager,
             // which prevents the session from being garbage-collected.
@@ -1182,29 +1177,29 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     }
 
     private static class ContentBlockingDelegate implements ContentBlocking.Delegate {
-        private int mBlockedAds = 0;
-        private int mBlockedAnalytics = 0;
-        private int mBlockedSocial = 0;
-        private int mBlockedContent = 0;
-        private int mBlockedTest = 0;
-        private int mBlockedStp = 0;
+        private int blockedAds = 0;
+        private int blockedAnalytics = 0;
+        private int blockedSocial = 0;
+        private int blockedContent = 0;
+        private int blockedTest = 0;
+        private int blockedStp = 0;
 
         private void clearCounters() {
-            mBlockedAds = 0;
-            mBlockedAnalytics = 0;
-            mBlockedSocial = 0;
-            mBlockedContent = 0;
-            mBlockedTest = 0;
-            mBlockedStp = 0;
+            blockedAds = 0;
+            blockedAnalytics = 0;
+            blockedSocial = 0;
+            blockedContent = 0;
+            blockedTest = 0;
+            blockedStp = 0;
         }
 
         private void logCounters() {
-//            Log.d(LOGTAG, "Trackers blocked: " + mBlockedAds + " ads, " +
-//                    mBlockedAnalytics + " analytics, " +
-//                    mBlockedSocial + " social, " +
-//                    mBlockedContent + " content, " +
-//                    mBlockedTest + " test, " +
-//                    mBlockedStp + "stp");
+            Log.d(LOGTAG, "Trackers blocked: " + blockedAds + " ads, " +
+                    blockedAnalytics + " analytics, " +
+                    blockedSocial + " social, " +
+                    blockedContent + " content, " +
+                    blockedTest + " test, " +
+                    blockedStp + "stp");
         }
 
         @Override
@@ -1217,27 +1212,27 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 //                    " URI: " + event.uri);
 //            if ((event.getAntiTrackingCategory() &
 //                    ContentBlocking.AntiTracking.TEST) != 0) {
-//                mBlockedTest++;
+//                blockedTest++;
 //            }
 //            if ((event.getAntiTrackingCategory() &
 //                    ContentBlocking.AntiTracking.AD) != 0) {
-//                mBlockedAds++;
+//                blockedAds++;
 //            }
 //            if ((event.getAntiTrackingCategory() &
 //                    ContentBlocking.AntiTracking.ANALYTIC) != 0) {
-//                mBlockedAnalytics++;
+//                blockedAnalytics++;
 //            }
 //            if ((event.getAntiTrackingCategory() &
 //                    ContentBlocking.AntiTracking.SOCIAL) != 0) {
-//                mBlockedSocial++;
+//                blockedSocial++;
 //            }
 //            if ((event.getAntiTrackingCategory() &
 //                    ContentBlocking.AntiTracking.CONTENT) != 0) {
-//                mBlockedContent++;
+//                blockedContent++;
 //            }
 //            if ((event.getAntiTrackingCategory() &
 //                    ContentBlocking.AntiTracking.STP) != 0) {
-//                mBlockedStp++;
+//                blockedStp++;
 //            }
         }
 
@@ -1254,19 +1249,19 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
     private class MediaDelegate
             implements GeckoSession.MediaDelegate {
-        private Integer mLastNotificationId = 100;
-        private Integer mNotificationId;
-        final private Activity mActivity;
+        private Integer lastNotificationId = 100;
+        private Integer notificationId;
+        final private Activity activity;
 
         public MediaDelegate(Activity activity) {
-            mActivity = activity;
+            this.activity = activity;
         }
 
         @Override
         public void onRecordingStatusChanged(@NonNull GeckoSession session, RecordingDevice[] devices) {
             String message;
             int icon;
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(mActivity);
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(activity);
             RecordingDevice camera = null;
             RecordingDevice microphone = null;
 
@@ -1291,21 +1286,21 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 icon = R.drawable.alert_mic;
             } else {
                 Log.d(LOGTAG, "DeviceDelegate:onRecordingDeviceEvent dismiss any notifications");
-                if (mNotificationId != null) {
-                    notificationManager.cancel(mNotificationId);
-                    mNotificationId = null;
+                if (notificationId != null) {
+                    notificationManager.cancel(notificationId);
+                    notificationId = null;
                 }
                 return;
             }
-            if (mNotificationId == null) {
-                mNotificationId = ++mLastNotificationId;
+            if (notificationId == null) {
+                notificationId = ++lastNotificationId;
             }
 
-            Intent intent = new Intent(mActivity, GeckoViewActivity.class);
+            Intent intent = new Intent(activity, GeckoViewActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            PendingIntent pendingIntent = PendingIntent.getActivity(mActivity.getApplicationContext(), 0, intent, 0);
+            PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
 
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(mActivity.getApplicationContext(), CHANNEL_ID)
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(activity.getApplicationContext(), CHANNEL_ID)
                     .setSmallIcon(icon)
                     .setContentTitle(getResources().getString(R.string.app_name))
                     .setContentText(message)
@@ -1313,7 +1308,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                     .setContentIntent(pendingIntent)
                     .setCategory(NotificationCompat.CATEGORY_SERVICE);
 
-            notificationManager.notify(mNotificationId, builder.build());
+            notificationManager.notify(notificationId, builder.build());
         }
     }
 

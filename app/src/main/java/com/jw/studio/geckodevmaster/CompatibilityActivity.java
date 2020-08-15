@@ -13,13 +13,13 @@ import androidx.core.content.ContextCompat;
 
 
 public class CompatibilityActivity extends Activity {
+    final String MANUFACTURE = Build.MANUFACTURER;
+    final int SDK_VERSION = Build.VERSION.SDK_INT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String MANUFACTURE = Build.MANUFACTURER;
-        int OSVERSION = Build.VERSION.SDK_INT;
-        if (MANUFACTURE.contains("LGE") && !(Build.VERSION_CODES.P < OSVERSION)) {
+        if (MANUFACTURE.contains("LGE") && !(Build.VERSION_CODES.P < SDK_VERSION)) {
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,

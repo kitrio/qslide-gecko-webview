@@ -45,13 +45,13 @@ public class HomeFragment extends Fragment {
 
         googleBtn.setText("Google");
         googleBtn.setOnClickListener(v -> {
-            activity.mTabSessionManager.getCurrentSession().loadUri("https://www.google.com");
+            activity.tabSessionManager.getCurrentSession().loadUri("https://www.google.com");
             fragmentManager.beginTransaction().hide(HomeFragment.this).commitAllowingStateLoss();
         });
 
         youtubeBtn.setText("Youtube");
         youtubeBtn.setOnClickListener(v -> {
-            activity.mTabSessionManager.getCurrentSession().loadUri("https://m.youtube.com");
+            activity.tabSessionManager.getCurrentSession().loadUri("https://m.youtube.com");
             fragmentManager.beginTransaction().hide(HomeFragment.this).commitAllowingStateLoss();
         });
 
@@ -64,7 +64,7 @@ public class HomeFragment extends Fragment {
         localBtn.setCompoundDrawablesWithIntrinsicBounds(null, topDrawable, null, null);
         localBtn.setText(getString(R.string.urlname));
         localBtn.setOnClickListener(v -> {
-            activity.mTabSessionManager.getCurrentSession().loadUri(getString(R.string.initurl));
+            activity.tabSessionManager.getCurrentSession().loadUri(getString(R.string.initurl));
             fragmentManager.beginTransaction().hide(HomeFragment.this).commitAllowingStateLoss();
         });
         return rootView;
