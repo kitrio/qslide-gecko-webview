@@ -19,7 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 -renamesourcefileattribute SourceFile
--keep public class * extends androidx.versionedparcelable
 -keep class androidx.core.app.CoreComponentFactory{*;}
 -keep class androidx.lifecycle.ProcessLifecycleOwnerInitializer{*;}
 -keep class com.lge.app.floating**
