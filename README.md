@@ -1,17 +1,17 @@
 # Qwebview
  
-This app using LG Qslide SDK and Mozila Geckoview based app
+This app using LG Qslide SDK and Mozilla Geckoview based app
 
 큐슬라이드를 지원하는 모질라 Geckoview뷰기반 웹뷰입니다.
 [플레이스토어 링크](https://play.google.com/store/apps/details?id=com.jw.studio.geckodevmaster)
 
 ## License
-Mozila MPL 2.0
+Mozilla MPL 2.0
 
 ## Build
 
-1. 프로젝트를 다운받아 Android Studio에 추가합니다.
-2. LG Qslide SDK 에서LGQSlideAPIs.jar를 project/app/libs 경로에 추가합니다.
+1. 프로젝트를 다운받아 Android Studio 에 추가합니다.
+2. LG Qslide SDK 에서 LGQSlideAPIs.jar를 project/app/libs 경로에 추가합니다.
 
 ## Changelog
 2.0.1
