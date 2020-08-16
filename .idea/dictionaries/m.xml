@@ -2,11 +2,17 @@
   <dictionary name="m">
     <words>
       <w>activitythis</w>
+      <w>buildship</w>
       <w>closetab</w>
+      <w>dcardpath</w>
       <w>emptybutton</w>
+      <w>externalstorage</w>
+      <w>gradleprojectbuilder</w>
+      <w>gradleprojectnature</w>
       <w>newtab</w>
       <w>popupmenu</w>
       <w>qslide</w>
+      <w>storages</w>
       <w>tabsize</w>
     </words>
   </dictionary>
