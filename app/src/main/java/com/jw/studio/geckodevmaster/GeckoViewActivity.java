@@ -1116,7 +1116,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             return GeckoResult.fromValue(newSession);
         }
 
-        private String createErrorPage() {
+        private String loadErrorPage() {
             String errorPageTemplate;
             InputStream stream = null;
             BufferedReader reader = null;
@@ -1161,13 +1161,9 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
 
         @Override
-        public GeckoResult<String> onLoadError(final GeckoSession session, final String uri,
-                                               final WebRequestError error) {
-//            Log.d(LOGTAG, "onLoadError=" + uri +
-//                    " error category=" + error.category +
-//                    " error=" + error.code);
+        public GeckoResult<String> onLoadError(final GeckoSession session, final String uri, final WebRequestError error) {
 
-            return GeckoResult.fromValue("data:text/html," + createErrorPage());
+            return GeckoResult.fromValue("data:text/html," + loadErrorPage());
         }
     }
 
