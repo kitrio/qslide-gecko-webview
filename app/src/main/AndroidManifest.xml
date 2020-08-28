@@ -96,7 +96,7 @@
         <activity
             android:name=".session.SessionActivity"
             android:label="GeckoView"
-            android:windowSoftInputMode="stateUnspecified"></activity>
+            android:windowSoftInputMode="stateUnspecified" />
 
         <service android:name="com.lge.app.floating.FloatingWindowService" />
     </application>

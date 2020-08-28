@@ -103,17 +103,19 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     private boolean isPrivateBrowsing;
     private boolean isKillProcessOnDestroy;
     private boolean isDesktopMode;
+    private boolean isCanGoBack;
+    private boolean isShowNotificationsRejected;
+
+    private static boolean isFullScreen;
     private TabSession popupSession;
     private View popupView;
 
-    private boolean isShowNotificationsRejected;
     private ArrayList<String> acceptedPersistentStorage = new ArrayList<>();
 
     private PopupWindow popupWindow;
     private ToolbarLayout toolbarView;
     private String currentUri;
-    private boolean isCanGoBack;
-    private static boolean isFullScreen;
+
     private HashMap<String, Integer> notificationIDMap = new HashMap<>();
     private HashMap<Integer, WebNotification> notificationMap = new HashMap<>();
     private int lastID = 100;
@@ -691,10 +693,8 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             final BasicGeckoViewPrompt prompt = (BasicGeckoViewPrompt)
                     tabSessionManager.getCurrentSession().getPromptDelegate();
             prompt.onFileCallbackResult(resultCode, data);
-            super.onActivityResult(requestCode, resultCode, data);
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
