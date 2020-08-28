@@ -610,7 +610,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             toolbarView.getLocationView().setText(tabSession.getUri());
             toolbarView.updateTabCount();
         } else {
-            recreateSession();
+            session.loadUri("about:blank");
             showHome();
         }
     }
@@ -620,9 +620,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     }
     public void switchToTab(int index) {
         hideHome();
-        if (tabSessionManager.sessionCount() <= 0) {
-            createNewTab("about:blank");
-        }
         TabSession currentSession = tabSessionManager.getCurrentSession();
         TabSession nextSession = tabSessionManager.getSession(index);
 
@@ -631,7 +628,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             currentUri = nextSession.getUri();
             if (nextSession.getTitle().equals("about:blank")) {
                 currentUri = "about:blank";
-                Log.d("geckoview location=", currentUri);
                 showHome();
             }
             toolbarView.getLocationView().setText(nextSession.getUri());
@@ -654,7 +650,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         if (isKillProcessOnDestroy) {
             android.os.Process.killProcess(android.os.Process.myPid());
         }
-
         super.onDestroy();
     }
 
