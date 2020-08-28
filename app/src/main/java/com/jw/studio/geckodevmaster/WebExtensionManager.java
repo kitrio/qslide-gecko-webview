@@ -18,18 +18,6 @@ import java.lang.ref.WeakReference;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-interface BrowserActionDelegate {
-    default GeckoSession toggleBrowserActionPopup(boolean force) {
-        return null;
-    }
-    default void onActionButton(ActionButton button) {}
-    default TabSession getSession(GeckoSession session) {
-        return null;
-    }
-    default TabSession getCurrentSession() {
-        return null;
-    }
-}
 public class WebExtensionManager implements WebExtension.ActionDelegate, WebExtensionController.PromptDelegate,
         TabSessionManager.TabObserver {
     public WebExtension extension;
