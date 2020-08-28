@@ -29,8 +29,14 @@
             <div></div>
 
             <div></div>
-            <button id="search" onclick="let a=location.href; a=a.replace('http://www.','');  location.href='https://www.google.com/search?q='+a">Search in Google</button>
+            <button id="search" onclick="searchGoogle()">Search in Google</button>
             <div></div>
         </div>
+        <script>
+            function searchGoogle(){
+                let keyword = location.href;
+                location.href='https://www.google.com/search?q='+ keyword
+            }
+        </script>
     </body>
 </html>
