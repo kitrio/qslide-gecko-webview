@@ -162,7 +162,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
         final AlertDialog dialog = builder.create();
         if (SDK_VERSION <= 25) {
             dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_PHONE);
-        } else {
+        } else if (SDK_VERSION < 29){
             dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
         }
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -1059,9 +1059,9 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
             Dialog dialog = new Dialog(geckoViewActivity);
             dialog.setContentView(R.layout.contextmenu_dialog);
             dialog.getWindow().setBackgroundDrawable(geckoViewActivity.getDrawable(R.drawable.border));
-            if (Build.VERSION.SDK_INT <= 25) {
+            if (SDK_VERSION <= 25) {
                 dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_PHONE);
-            } else {
+            } else if (SDK_VERSION < 29){
                 dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
             }
             TextView tvTitle = dialog.findViewById(R.id.title_textview);
