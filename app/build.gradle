@@ -24,9 +24,7 @@ android {
         }
 
     }
-    defaultConfig {
-        resConfigs "en", "ko"
-    }
+
     aaptOptions {
         noCompress "ja"
     }
