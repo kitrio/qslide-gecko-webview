@@ -41,6 +41,9 @@ public class HomeFragment extends Fragment {
         Button googleBtn = rootView.findViewById(R.id.button_google);
         Button youtubeBtn = rootView.findViewById(R.id.button_youtube);
         Button localBtn = rootView.findViewById(R.id.button_localurl);
+        Button facebookBtn = rootView.findViewById(R.id.button_facebook);
+        Button instagramBtn =rootView.findViewById(R.id.button_instagram);
+        Button twitterBtn =rootView.findViewById(R.id.button_twitter);
         Drawable topDrawable;
 
         googleBtn.setText("Google");
@@ -67,6 +70,26 @@ public class HomeFragment extends Fragment {
             activity.tabSessionManager.getCurrentSession().loadUri(getString(R.string.initurl));
             fragmentManager.beginTransaction().hide(HomeFragment.this).commitAllowingStateLoss();
         });
+
+        facebookBtn.setText(getString(R.string.facebook));
+        facebookBtn.setOnClickListener(v -> {
+            activity.tabSessionManager.getCurrentSession().loadUri("https://m.facebook.com");
+            fragmentManager.beginTransaction().hide(HomeFragment.this).commitAllowingStateLoss();
+        });
+
+        instagramBtn.setText(getString(R.string.instagram));
+        instagramBtn.setOnClickListener(v -> {
+            activity.tabSessionManager.getCurrentSession().loadUri("https://www.instagram.com");
+            fragmentManager.beginTransaction().hide(HomeFragment.this).commitAllowingStateLoss();
+        });
+
+        twitterBtn.setText(getString(R.string.twitter));
+        twitterBtn.setOnClickListener(v -> {
+            activity.tabSessionManager.getCurrentSession().loadUri("https://twitter.com");
+            fragmentManager.beginTransaction().hide(HomeFragment.this).commitAllowingStateLoss();
+        });
+
+
         return rootView;
     }
 
