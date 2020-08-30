@@ -60,6 +60,8 @@ public class HomeFragment extends Fragment {
 
         if (Locale.getDefault().getLanguage().equals("ko")) {
             topDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.fav_naver, null);
+        } else if(Locale.getDefault().getLanguage().equals("ja")){
+            topDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.fav_yahoo, null);
         } else {
             topDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.fav_duckduckgo, null);
         }

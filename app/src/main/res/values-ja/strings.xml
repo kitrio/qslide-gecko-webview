@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="location_hint">検索語またはURLを入力</string>
+    <string name="tracking_protection">トラッキング防止</string>
+    <string name="private_browsing">プライベート</string>
+    <string name="desktop_mode">PC 版</string>
+    <string name="urlname">yahoo jp</string>
+    <string name="initurl">https://m.yahoo.co.jp</string>
+</resources>
