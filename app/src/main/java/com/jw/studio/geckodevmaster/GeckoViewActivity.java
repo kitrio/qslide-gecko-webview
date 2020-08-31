@@ -550,7 +550,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState != null && geckoView.getSession() !=  null) {
+        if (savedInstanceState != null) {
             tabSessionManager.setCurrentSession((TabSession) geckoView.getSession());
             geckoRuntime.getWebExtensionController().setTabActive((geckoView.getSession()), true);
         } else {
