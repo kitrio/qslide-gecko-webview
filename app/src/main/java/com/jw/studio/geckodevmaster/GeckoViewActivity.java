@@ -48,6 +48,7 @@ import com.lge.app.floating.FloatingWindow;
 import org.json.JSONObject;
 import org.mozilla.gecko.util.ActivityUtils;
 import org.mozilla.geckoview.AllowOrDeny;
+import org.mozilla.geckoview.BasicSelectionActionDelegate;
 import org.mozilla.geckoview.ContentBlocking;
 import org.mozilla.geckoview.GeckoResult;
 import org.mozilla.geckoview.GeckoRuntime;
@@ -141,8 +142,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
-                " - application start");
         createNotificationChannel();
         setContentView(R.layout.geckoview_activity);
         geckoView = findViewById(R.id.gecko_view);
@@ -521,6 +520,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         permission.androidPermissionRequestCode = REQUEST_PERMISSIONS;
         session.setPermissionDelegate(permission);
         session.setMediaDelegate(new MediaDelegate(this));
+        session.setSelectionActionDelegate(new BasicSelectionActionDelegate(this));
 		
         if(extensionManager.extension != null) {
             session.setWebExtensionActionDelegate(extensionManager.extension, extensionManager);
@@ -620,11 +620,11 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     public void onBrowserActionClick() {
         extensionManager.onClicked(tabSessionManager.getCurrentSession());
     }
+
     public void switchToTab(int index) {
         hideHome();
         TabSession currentSession = tabSessionManager.getCurrentSession();
         TabSession nextSession = tabSessionManager.getSession(index);
-
         if (nextSession != currentSession) {
             setGeckoViewSession(nextSession);
             currentUri = nextSession.getUri();
