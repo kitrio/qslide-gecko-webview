@@ -87,7 +87,7 @@ public class HomeFragment extends Fragment {
 
         twitterBtn.setText(getString(R.string.twitter));
         twitterBtn.setOnClickListener(v -> {
-            activity.tabSessionManager.getCurrentSession().loadUri("https://twitter.com");
+            activity.tabSessionManager.getCurrentSession().loadUri("https://mobile.twitter.com");
             fragmentManager.beginTransaction().hide(HomeFragment.this).commitAllowingStateLoss();
         });
 
