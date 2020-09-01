@@ -33,7 +33,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
@@ -303,13 +302,10 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             popupWindow.setFocusable(true);
             int menu_height = dpToPx(260);
 
-            menu.newtabButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    popupWindow.dismiss();
-                    createNewTab();
-                    showHome();
-                }
+            menu.newtabButton.setOnClickListener(v -> {
+                popupWindow.dismiss();
+                createNewTab();
+                showHome();
             });
             menu.forwardButton.setOnClickListener((v -> {
                 session.goForward();
@@ -332,30 +328,21 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 });
             }
             menu.switchDesktop.setChecked(isDesktopMode);
-            menu.switchDesktop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    isDesktopMode = !isDesktopMode;
-                    updateDesktopMode(session);
-                    session.reload();
-                }
+            menu.switchDesktop.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isDesktopMode = !isDesktopMode;
+                updateDesktopMode(session);
+                session.reload();
             });
             menu.switchPrivate.setChecked(isPrivateBrowsing);
-            menu.switchPrivate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    isPrivateBrowsing = !isPrivateBrowsing;
-                    recreateSession();
-                }
+            menu.switchPrivate.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isPrivateBrowsing = !isPrivateBrowsing;
+                recreateSession();
             });
             menu.switchTracking.setChecked(isTrackingProtection);
-            menu.switchTracking.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    isTrackingProtection = !isTrackingProtection;
-                    updateTrackingProtection(session);
-                    session.reload();
-                }
+            menu.switchTracking.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isTrackingProtection = !isTrackingProtection;
+                updateTrackingProtection(session);
+                session.reload();
             });
 //            menu.extendsInstallButton.setOnClickListener(v -> {
 //                installAddon() ;
@@ -678,7 +665,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
     }
 
-
     private void loadFromIntent(final Intent intent) {
         final Uri uri = intent.getData();
         if (uri != null) {
@@ -789,7 +775,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     private class ContentDelegate implements GeckoSession.ContentDelegate {
         @Override
         public void onTitleChange(GeckoSession session, String title) {
-//            Log.i(LOGTAG, "Content title changed to " + title);
             TabSession tabSession = tabSessionManager.getSession(session);
             if (tabSession != null) {
                 tabSession.setTitle(title);
