@@ -1,5 +1,4 @@
-/* -*- Mode: Java; c-basic-offset: 4; tab-width: 20; indent-tabs-mode: nil; -*-
- * This Source Code Form is subject to the terms of the Mozilla Public
+/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -95,6 +94,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
     private static WebExtensionManager extensionManager;
     private static GeckoRuntime geckoRuntime;
+    private static boolean isFullScreen;
 
     public TabSessionManager tabSessionManager;
 
@@ -105,8 +105,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     private boolean isDesktopMode;
     private boolean isCanGoBack;
     private boolean isShowNotificationsRejected;
-
-    private static boolean isFullScreen;
     private TabSession popupSession;
     private View popupView;
 
@@ -350,13 +348,8 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             popupWindow.showAsDropDown(toolbar, toolbar.getHeight(), -menu_height, geckoView.getPaddingBottom());
 
         });
-        ImageButton mBackButton = findViewById(R.id.back_button);
-        mBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        ImageButton backButton = geckoviewActivityBinding.includeLayout.backButton;
+        backButton.setOnClickListener(v -> onBackPressed());
 
         if (ContextCompat.checkSelfPermission(GeckoViewActivity.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -673,8 +666,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     }
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode,
-                                    final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_FILE_PICKER) {
             final BasicGeckoViewPrompt prompt = (BasicGeckoViewPrompt)
                     tabSessionManager.getCurrentSession().getPromptDelegate();
@@ -684,8 +676,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     }
 
     @Override
-    public void onRequestPermissionsResult(final int requestCode,
-                                           final String[] permissions,
+    public void onRequestPermissionsResult(final int requestCode, final String[] permissions,
                                            final int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS) {
             final PermissionDelegate permission = (PermissionDelegate)
@@ -741,18 +732,18 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
 
     private static class HistoryDelegate implements GeckoSession.HistoryDelegate {
-        private final HashSet<String> mVisitedURLs;
+        private final HashSet<String> visitedURLs;
 
         private HistoryDelegate() {
-            mVisitedURLs = new HashSet<>();
+            visitedURLs = new HashSet<>();
         }
 
         @Override
         public GeckoResult<Boolean> onVisited(GeckoSession session, String url,
                                               String lastVisitedURL, int flags) {
-//            Log.i(LOGTAG, "Visited URL: " + url);
+            Log.i(LOGTAG, "Visited URL: " + url);
 
-            mVisitedURLs.add(url);
+            visitedURLs.add(url);
             return GeckoResult.fromValue(true);
         }
 
@@ -760,7 +751,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         public GeckoResult<boolean[]> getVisited(GeckoSession session, String[] urls) {
             boolean[] visited = new boolean[urls.length];
             for (int i = 0; i < urls.length; i++) {
-                visited[i] = mVisitedURLs.contains(urls[i]);
+                visited[i] = visitedURLs.contains(urls[i]);
             }
             return GeckoResult.fromValue(visited);
         }
@@ -768,7 +759,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         @Override
         public void onHistoryStateChange(final GeckoSession session,
                                          final GeckoSession.HistoryDelegate.HistoryList state) {
-            //Log.i(LOGTAG, "History state updated");
+            Log.i(LOGTAG, "History state updated");
         }
     }
 
