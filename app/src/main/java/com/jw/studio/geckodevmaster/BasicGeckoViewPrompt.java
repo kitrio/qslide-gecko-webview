@@ -1027,25 +1027,23 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
 
     public static String getRemovableSDCardPath(Context context) {
         File[] storages = ContextCompat.getExternalFilesDirs(context, null);
-        if (storages.length > 1 && storages[0] != null && storages[1] != null)
+        if (storages.length > 1 && storages[0] != null && storages[1] != null) {
             return storages[1].toString();
-        else
+        } else {
             return "";
+        }
     }
 
     public static boolean isExternalStorageDocument(Uri uri) {
-        return "com.android.externalstorage.documents".equals(uri
-                .getAuthority());
+        return "com.android.externalstorage.documents".equals(uri.getAuthority());
     }
 
     public static boolean isMediaDocument(Uri uri) {
-        return "com.android.providers.media.documents".equals(uri
-                .getAuthority());
+        return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
 
     public static boolean isGooglePhotosUri(Uri uri) {
-        return "com.google.android.apps.photos.content".equals(uri
-                .getAuthority());
+        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 
     public void contextMenuPrompt(GeckoViewActivity geckoViewActivity, GeckoSession.ContentDelegate.ContextElement element) {
@@ -1061,7 +1059,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
         dialog.setContentView(R.layout.contextmenu_dialog);
         if (SDK_VERSION <= 25) {
             dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_PHONE);
-        } else if (SDK_VERSION < 29){
+        } else if (SDK_VERSION < 29) {
             dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
         }
 

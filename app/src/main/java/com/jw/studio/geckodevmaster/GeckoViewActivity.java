@@ -138,7 +138,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     public TabSession openNewTab(WebExtension.CreateTabDetails details) {
         final TabSession newSession = createSession();
         toolbarView.updateTabCount();
-        if(details.active == Boolean.TRUE) {
+        if (details.active == Boolean.TRUE) {
             setGeckoViewSession(newSession, false);
         }
         return newSession;
@@ -176,7 +176,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         set.connect(R.id.toolbar_layout, ConstraintSet.TOP, R.id.gecko_view, ConstraintSet.BOTTOM);
         set.connect(R.id.toolbar_layout, ConstraintSet.BOTTOM, R.id.main, ConstraintSet.BOTTOM);
         set.applyTo(appLayout);
-        
+
         if (geckoRuntime == null) {
             final GeckoRuntimeSettings.Builder runtimeSettingsBuilder = new GeckoRuntimeSettings.Builder();
             final Bundle extras = getIntent().getExtras();
@@ -184,17 +184,17 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 runtimeSettingsBuilder.extras(extras);
             }
             runtimeSettingsBuilder
-                .remoteDebuggingEnabled(false)
-                .consoleOutput(false)
-                .debugLogging(false)
-                .contentBlocking(new ContentBlocking.Settings.Builder()
-                    .antiTracking(ContentBlocking.AntiTracking.DEFAULT |
-                            ContentBlocking.AntiTracking.STP)
-                    .safeBrowsing(ContentBlocking.SafeBrowsing.DEFAULT)
-                    .cookieBehavior(ContentBlocking.CookieBehavior.ACCEPT_NON_TRACKERS)
-                    .enhancedTrackingProtectionLevel(ContentBlocking.EtpLevel.DEFAULT)
-                    .build())
-                .aboutConfigEnabled(true);
+                    .remoteDebuggingEnabled(false)
+                    .consoleOutput(false)
+                    .debugLogging(false)
+                    .contentBlocking(new ContentBlocking.Settings.Builder()
+                            .antiTracking(ContentBlocking.AntiTracking.DEFAULT |
+                                    ContentBlocking.AntiTracking.STP)
+                            .safeBrowsing(ContentBlocking.SafeBrowsing.DEFAULT)
+                            .cookieBehavior(ContentBlocking.CookieBehavior.ACCEPT_NON_TRACKERS)
+                            .enhancedTrackingProtectionLevel(ContentBlocking.EtpLevel.DEFAULT)
+                            .build())
+                    .aboutConfigEnabled(true);
 
             geckoRuntime = GeckoRuntime.create(this, runtimeSettingsBuilder.build());
             extensionManager = new WebExtensionManager(geckoRuntime, tabSessionManager);
@@ -368,7 +368,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
     @Override
     public TabSession getSession(GeckoSession session) {
-        return  tabSessionManager.getSession(session);
+        return tabSessionManager.getSession(session);
     }
 
     @Override
@@ -393,6 +393,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
         return shouldShow ? popupSession : null;
     }
+
     private void setPopupVisibility(boolean visible) {
         if (popupView == null) {
             return;
@@ -408,11 +409,12 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
         popupView.setLayoutParams(params);
     }
+
     private class PopupSessionContentDelegate implements GeckoSession.ContentDelegate {
         @Override
         public void onCloseRequest(final GeckoSession session) {
             setPopupVisibility(false);
-            if(popupSession != null) {
+            if (popupSession != null) {
                 popupSession.close();
             }
             popupSession = null;
@@ -495,8 +497,8 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         session.setPermissionDelegate(permission);
         session.setMediaDelegate(new MediaDelegate(this));
         session.setSelectionActionDelegate(new BasicSelectionActionDelegate(this));
-		
-        if(extensionManager.extension != null) {
+
+        if (extensionManager.extension != null) {
             final WebExtension.SessionController sessionController =
                     session.getWebExtensionController();
             sessionController.setActionDelegate(extensionManager.extension, extensionManager);
@@ -577,6 +579,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         setGeckoViewSession(newSession);
         toolbarView.updateTabCount();
     }
+
     @Override
     public void closeTab(TabSession session) {
         if (tabSessionManager.sessionCount() > 1) {
@@ -611,7 +614,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         if (session != currentSession) {
             setGeckoViewSession(session, activateTab);
             currentUri = session.getUri();
-            if(session.getTitle().equals("about:blank")){
+            if (session.getTitle().equals("about:blank")) {
                 currentUri = "about:blank";
                 showHome();
             }
@@ -631,11 +634,11 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     private void setGeckoViewSession(TabSession session, boolean activateTab) {
         final WebExtensionController controller = geckoRuntime.getWebExtensionController();
         final GeckoSession previousSession = geckoView.releaseSession();
-        if (previousSession != null){
+        if (previousSession != null) {
             controller.setTabActive(previousSession, false);
         }
         geckoView.setSession(session);
-        if(activateTab) {
+        if (activateTab) {
             controller.setTabActive(session, true);
         }
         tabSessionManager.setCurrentSession(session);
@@ -1067,7 +1070,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         @Override
         public void onLocationChange(GeckoSession session, final String url) {
             TabSession tabSession = tabSessionManager.getSession(session);
-            if (tabSession != null ) {
+            if (tabSession != null) {
                 tabSession.onLocationChange(url);
             }
             currentUri = url;
