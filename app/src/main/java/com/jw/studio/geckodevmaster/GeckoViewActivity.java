@@ -150,7 +150,8 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         createNotificationChannel();
         setContentView(R.layout.geckoview_activity);
         geckoView = findViewById(R.id.gecko_view);
-        ImageButton toolbar = findViewById(R.id.toolbar);
+        ImageButton menuButton = findViewById(R.id.menu_button);
+
         ConstraintLayout appLayout = findViewById(R.id.main);
 
         tabSessionManager = new TabSessionManager();
@@ -165,13 +166,13 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         set.connect(R.id.gecko_view, ConstraintSet.TOP, R.id.main, ConstraintSet.TOP);
         set.connect(R.id.gecko_view, ConstraintSet.BOTTOM, R.id.toolbar_layout, ConstraintSet.TOP);
 
-        set.connect(R.id.toolbar, ConstraintSet.LEFT, R.id.toolbar_layout, ConstraintSet.RIGHT);
-        set.connect(R.id.toolbar, ConstraintSet.RIGHT, R.id.main, ConstraintSet.RIGHT, 60);
-        set.connect(R.id.toolbar, ConstraintSet.TOP, R.id.gecko_view, ConstraintSet.BOTTOM);
-        set.connect(R.id.toolbar, ConstraintSet.BOTTOM, R.id.toolbar_layout, ConstraintSet.BOTTOM);
+        set.connect(R.id.menu_button, ConstraintSet.LEFT, R.id.toolbar_layout, ConstraintSet.RIGHT);
+        set.connect(R.id.menu_button, ConstraintSet.RIGHT, R.id.main, ConstraintSet.RIGHT, 60);
+        set.connect(R.id.menu_button, ConstraintSet.TOP, R.id.gecko_view, ConstraintSet.BOTTOM);
+        set.connect(R.id.menu_button, ConstraintSet.BOTTOM, R.id.toolbar_layout, ConstraintSet.BOTTOM);
 
         set.connect(R.id.toolbar_layout, ConstraintSet.LEFT, R.id.main, ConstraintSet.LEFT);
-        set.connect(R.id.toolbar_layout, ConstraintSet.RIGHT, R.id.toolbar, ConstraintSet.LEFT);
+        set.connect(R.id.toolbar_layout, ConstraintSet.RIGHT, R.id.menu_button, ConstraintSet.LEFT);
         set.connect(R.id.toolbar_layout, ConstraintSet.TOP, R.id.gecko_view, ConstraintSet.BOTTOM);
         set.connect(R.id.toolbar_layout, ConstraintSet.BOTTOM, R.id.main, ConstraintSet.BOTTOM);
         set.applyTo(appLayout);
@@ -278,7 +279,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         toolbarView.updateTabCount();
         toolbarView.getLocationView().setCommitListener(commitListener);
 
-        toolbar.setOnClickListener((view) -> {
+        menuButton.setOnClickListener((view) -> {
             AppmenuPopupBinding menu = DataBindingUtil.inflate(getLayoutInflater(), R.layout.appmenu_popup, null, false);
             GeckoSession session = tabSessionManager.getCurrentSession();
             popupWindow = new PopupWindow(menu.getRoot(), ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -328,7 +329,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 session.reload();
             });
 
-            popupWindow.showAsDropDown(toolbar, toolbar.getHeight(), -menu_height, geckoView.getPaddingBottom());
+            popupWindow.showAsDropDown(menuButton, menuButton.getHeight(), -menu_height, geckoView.getPaddingBottom());
 
         });
         ImageButton backButton = findViewById(R.id.back_button);
@@ -432,7 +433,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
         popupView.setOnFocusChangeListener(this::hideBrowserAction);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(0, 0);
-        params.addRule(RelativeLayout.ABOVE, R.id.toolbar);
+        params.addRule(RelativeLayout.ABOVE, R.id.menu_button);
         popupView.setLayoutParams(params);
         popupView.setFocusable(true);
         ((ViewGroup) findViewById(R.id.main)).addView(popupView);
@@ -839,12 +840,12 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
         @Override
         public void onFirstComposite(final GeckoSession session) {
-//            Log.d(LOGTAG, "onFirstComposite");
+            Log.d(LOGTAG, "onFirstComposite");
         }
 
         @Override
         public void onWebAppManifest(final GeckoSession session, JSONObject manifest) {
-//            Log.d(LOGTAG, "onWebAppManifest: " + manifest);
+            Log.d(LOGTAG, "onWebAppManifest: " + manifest);
         }
 
         private boolean activeAlert = false;
