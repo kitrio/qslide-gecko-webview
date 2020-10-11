@@ -83,9 +83,8 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 
-public class GeckoViewActivity extends FloatableActivity implements ToolbarLayout.TabListener, BrowserActionDelegate {
+public class GeckoViewActivity extends FloatableActivity implements ToolbarLayout.TabListener, WebExtensionDelegate {
     private static final String LOGTAG = "GeckoViewActivity";
-    private static final String USE_MULTIPROCESS_EXTRA = "use_multiprocess";
     private static final String SEARCH_URI_BASE = "https://www.google.com/search?q=";
     private static final String CHANNEL_ID = "QwebviewChannel";
     private static final int REQUEST_FILE_PICKER = 1;
@@ -137,6 +136,16 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     };
 
     @Override
+    public TabSession openNewTab(WebExtension.CreateTabDetails details) {
+        final TabSession newSession = createSession();
+        toolbarView.updateTabCount();
+        if(details.active == Boolean.TRUE) {
+            setGeckoViewSession(newSession, false);
+        }
+        return newSession;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         createNotificationChannel();
@@ -167,8 +176,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         set.connect(R.id.toolbar_layout, ConstraintSet.TOP, R.id.gecko_view, ConstraintSet.BOTTOM);
         set.connect(R.id.toolbar_layout, ConstraintSet.BOTTOM, R.id.main, ConstraintSet.BOTTOM);
         set.applyTo(appLayout);
-
-        final boolean useMultiprocess = getIntent().getBooleanExtra(USE_MULTIPROCESS_EXTRA, true);
         
         if (geckoRuntime == null) {
             final GeckoRuntimeSettings.Builder runtimeSettingsBuilder = new GeckoRuntimeSettings.Builder();
@@ -177,7 +184,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 runtimeSettingsBuilder.extras(extras);
             }
             runtimeSettingsBuilder
-                .useContentProcessHint(useMultiprocess)
                 .remoteDebuggingEnabled(false)
                 .consoleOutput(false)
                 .debugLogging(false)
@@ -191,26 +197,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 .aboutConfigEnabled(true);
 
             geckoRuntime = GeckoRuntime.create(this, runtimeSettingsBuilder.build());
-
-            geckoRuntime.getWebExtensionController().setTabDelegate(new WebExtensionController.TabDelegate() {
-                @Override
-                public GeckoResult<GeckoSession> onNewTab(WebExtension source, String uri) {
-                    final TabSession newSession = createSession();
-                    toolbarView.updateTabCount();
-                    setGeckoViewSession(newSession);
-                    return GeckoResult.fromValue(newSession);
-                }
-
-                @Override
-                public GeckoResult<AllowOrDeny> onCloseTab(WebExtension source, GeckoSession session) {
-                    TabSession tabSession = tabSessionManager.getSession(session);
-                    if (tabSession != null) {
-                        closeTab(tabSession);
-                    }
-                    return GeckoResult.fromValue(AllowOrDeny.ALLOW);
-                }
-            });
-
             extensionManager = new WebExtensionManager(geckoRuntime, tabSessionManager);
             tabSessionManager.setTabObserver(extensionManager);
 
@@ -267,7 +253,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 finish();
             });
         }
-        extensionManager.setActionDelegate(this);
+        extensionManager.setExtensionDelegate(this);
 
         if (savedInstanceState == null) {
             TabSession session = getIntent().getParcelableExtra("session");
@@ -342,13 +328,11 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 updateTrackingProtection(session);
                 session.reload();
             });
-//            menu.extendsInstallButton.setOnClickListener(v -> {
-//                installAddon() ;
-//            });
+
             popupWindow.showAsDropDown(toolbar, toolbar.getHeight(), -menu_height, geckoView.getPaddingBottom());
 
         });
-        ImageButton backButton = geckoviewActivityBinding.includeLayout.backButton;
+        ImageButton backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> onBackPressed());
 
         if (ContextCompat.checkSelfPermission(GeckoViewActivity.this,
@@ -424,6 +408,17 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
         popupView.setLayoutParams(params);
     }
+    private class PopupSessionContentDelegate implements GeckoSession.ContentDelegate {
+        @Override
+        public void onCloseRequest(final GeckoSession session) {
+            setPopupVisibility(false);
+            if(popupSession != null) {
+                popupSession.close();
+            }
+            popupSession = null;
+            popupView = null;
+        }
+    }
 
     private void openPopupSession() {
         LayoutInflater inflater = (LayoutInflater)
@@ -432,6 +427,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         GeckoView geckoView = popupView.findViewById(R.id.gecko_view_popup);
         geckoView.setViewBackend(GeckoView.BACKEND_TEXTURE_VIEW);
         popupSession = new TabSession();
+        popupSession.setContentDelegate(new PopupSessionContentDelegate());
         popupSession.open(geckoRuntime);
         geckoView.setSession(popupSession);
 
@@ -503,7 +499,10 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         session.setSelectionActionDelegate(new BasicSelectionActionDelegate(this));
 		
         if(extensionManager.extension != null) {
-            session.setWebExtensionActionDelegate(extensionManager.extension, extensionManager);
+            final WebExtension.SessionController sessionController =
+                    session.getWebExtensionController();
+            sessionController.setActionDelegate(extensionManager.extension, extensionManager);
+            sessionController.setTabDelegate(extensionManager.extension, extensionManager);
         }
         updateTrackingProtection(session);
         updateDesktopMode(session);
@@ -580,7 +579,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         setGeckoViewSession(newSession);
         toolbarView.updateTabCount();
     }
-
+    @Override
     public void closeTab(TabSession session) {
         if (tabSessionManager.sessionCount() > 1) {
             tabSessionManager.closeSession(session);
@@ -597,33 +596,50 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
     }
 
+    @Override
+    public void updateTab(TabSession session, WebExtension.UpdateTabDetails details) {
+        if (details.active == Boolean.TRUE) {
+            switchToSession(session, false);
+        }
+    }
+
     public void onBrowserActionClick() {
         extensionManager.onClicked(tabSessionManager.getCurrentSession());
     }
 
-    public void switchToTab(int index) {
+    public void switchToSession(TabSession session, boolean activateTab) {
         hideHome();
         TabSession currentSession = tabSessionManager.getCurrentSession();
-        TabSession nextSession = tabSessionManager.getSession(index);
-        if (nextSession != currentSession) {
-            setGeckoViewSession(nextSession);
-            currentUri = nextSession.getUri();
-            if (nextSession.getTitle().equals("about:blank")) {
+        if (session != currentSession) {
+            setGeckoViewSession(session, activateTab);
+            currentUri = session.getUri();
+            if(session.getTitle().equals("about:blank")){
                 currentUri = "about:blank";
                 showHome();
             }
-            toolbarView.getLocationView().setText(nextSession.getUri());
+            toolbarView.getLocationView().setText(currentUri);
         }
     }
 
+    public void switchToTab(int index) {
+        TabSession nextSession = tabSessionManager.getSession(index);
+        switchToSession(nextSession, true);
+    }
+
     private void setGeckoViewSession(TabSession session) {
+        setGeckoViewSession(session, true);
+    }
+
+    private void setGeckoViewSession(TabSession session, boolean activateTab) {
         final WebExtensionController controller = geckoRuntime.getWebExtensionController();
         final GeckoSession previousSession = geckoView.releaseSession();
         if (previousSession != null){
             controller.setTabActive(previousSession, false);
         }
         geckoView.setSession(session);
-        controller.setTabActive(session, true);
+        if(activateTab) {
+            controller.setTabActive(session, true);
+        }
         tabSessionManager.setCurrentSession(session);
     }
 
@@ -857,6 +873,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             }
             return null;
         }
+
     }
 
     private class ProgressDelegate implements GeckoSession.ProgressDelegate {
@@ -981,6 +998,8 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 }
                 resId = R.string.request_storage;
                 contentPermissionCallback = new PersistentStorageCallback(callback, uri);
+            } else if (PERMISSION_XR == type) {
+                resId = R.string.request_xr;
             } else {
                 Log.w(LOGTAG, "Unknown permission: " + type);
                 callback.reject();

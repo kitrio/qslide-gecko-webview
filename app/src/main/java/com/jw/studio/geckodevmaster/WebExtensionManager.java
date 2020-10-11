@@ -18,14 +18,18 @@ import java.lang.ref.WeakReference;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class WebExtensionManager implements WebExtension.ActionDelegate, WebExtensionController.PromptDelegate,
+public class WebExtensionManager implements WebExtension.ActionDelegate, WebExtension.SessionTabDelegate,
+        WebExtension.TabDelegate,
+        WebExtensionController.PromptDelegate,
+        WebExtensionController.DebuggerDelegate,
         TabSessionManager.TabObserver {
     public WebExtension extension;
 
     private LruCache<WebExtension.Icon, Bitmap> bitmapCache = new LruCache<>(5);
     private GeckoRuntime runtime;
     private WebExtension.Action defaultAction;
-    private WeakReference<BrowserActionDelegate> actionDelegate;
+    private WeakReference<WebExtensionDelegate> extensionDelegate;
+    private TabSessionManager tabSessionManager;
 
     @Nullable
     @Override
@@ -33,10 +37,15 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
         return GeckoResult.fromValue(AllowOrDeny.ALLOW);
     }
 
+    @Override
+    public void onExtensionListUpdated() {
+        refreshExtensionList();
+    }
+
     // We only support either one browserAction or one pageAction
     private void onAction(final WebExtension extension, final GeckoSession session,
                           final WebExtension.Action action) {
-        BrowserActionDelegate delegate = actionDelegate.get();
+        WebExtensionDelegate delegate = extensionDelegate.get();
         if (delegate == null) {
             return;
         }
@@ -64,6 +73,47 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
     }
 
     @Override
+    public GeckoResult<GeckoSession> onNewTab(@NonNull WebExtension webExtension, @NonNull WebExtension.CreateTabDetails createTabDetails) {
+        WebExtensionDelegate delegate = extensionDelegate.get();
+        if (delegate == null) {
+            return GeckoResult.fromValue(null);
+        }
+        return GeckoResult.fromValue(delegate.openNewTab(createTabDetails));
+    }
+
+    @Override
+    public GeckoResult<AllowOrDeny> onCloseTab(WebExtension extension, GeckoSession session) {
+        final WebExtensionDelegate delegate = extensionDelegate.get();
+        if (delegate == null) {
+            return GeckoResult.fromValue(AllowOrDeny.DENY);
+        }
+
+        final TabSession tabSession = tabSessionManager.getSession(session);
+        if (tabSession != null) {
+            delegate.closeTab(tabSession);
+        }
+
+        return GeckoResult.fromValue(AllowOrDeny.ALLOW);
+    }
+
+    @Override
+    public GeckoResult<AllowOrDeny> onUpdateTab(WebExtension extension,
+                                                GeckoSession session,
+                                                WebExtension.UpdateTabDetails updateDetails) {
+        final WebExtensionDelegate delegate = extensionDelegate.get();
+        if (delegate == null) {
+            return GeckoResult.fromValue(AllowOrDeny.DENY);
+        }
+
+        final TabSession tabSession = tabSessionManager.getSession(session);
+        if (tabSession != null) {
+            delegate.updateTab(tabSession, updateDetails);
+        }
+
+        return GeckoResult.fromValue(AllowOrDeny.ALLOW);
+    }
+
+    @Override
     public void onPageAction(final WebExtension extension,
                              final GeckoSession session,
                              final WebExtension.Action action) {
@@ -78,12 +128,12 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
     }
 
     private GeckoResult<GeckoSession> togglePopup(boolean force) {
-        BrowserActionDelegate actionDelegate = this.actionDelegate.get();
-        if (actionDelegate == null) {
+        WebExtensionDelegate extensionDelegate = this.extensionDelegate.get();
+        if (extensionDelegate == null) {
             return null;
         }
 
-        GeckoSession session = actionDelegate.toggleBrowserActionPopup(false);
+        GeckoSession session = extensionDelegate.toggleBrowserActionPopup(false);
         if (session == null) {
             return null;
         }
@@ -112,19 +162,19 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
     }
 
     private void updateAction(WebExtension.Action resolved) {
-        BrowserActionDelegate actionDelegate = this.actionDelegate.get();
-        if (actionDelegate == null) {
+        WebExtensionDelegate extensionDelegate = this.extensionDelegate.get();
+        if (extensionDelegate == null) {
             return;
         }
 
         if (resolved == null || resolved.enabled == null || !resolved.enabled) {
-            actionDelegate.onActionButton(null);
+            extensionDelegate.onActionButton(null);
             return;
         }
 
         if (resolved.icon != null) {
             if (bitmapCache.get(resolved.icon) != null) {
-                actionDelegate.onActionButton(new ActionButton(
+                extensionDelegate.onActionButton(new ActionButton(
                         bitmapCache.get(resolved.icon), resolved.badgeText,
                         resolved.badgeTextColor,
                         resolved.badgeBackgroundColor
@@ -132,14 +182,14 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
             } else {
                 resolved.icon.get(100).accept(bitmap -> {
                     bitmapCache.put(resolved.icon, bitmap);
-                    actionDelegate.onActionButton(new ActionButton(
+                    extensionDelegate.onActionButton(new ActionButton(
                             bitmap, resolved.badgeText,
                             resolved.badgeTextColor,
                             resolved.badgeBackgroundColor));
                 });
             }
         } else {
-            actionDelegate.onActionButton(null);
+            extensionDelegate.onActionButton(null);
         }
     }
 
@@ -150,8 +200,8 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
         }
     }
 
-    public void setActionDelegate(BrowserActionDelegate delegate) {
-        actionDelegate = new WeakReference<>(delegate);
+    public void setExtensionDelegate(WebExtensionDelegate delegate) {
+        extensionDelegate = new WeakReference<>(delegate);
     }
 
     @Override
@@ -168,12 +218,12 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
         }
     }
 
-    public GeckoResult<Void> unregisterExtension(TabSessionManager tabManager) {
+    public GeckoResult<Void> unregisterExtension() {
         if (extension == null) {
             return GeckoResult.fromValue(null);
         }
 
-        tabManager.unregisterWebExtension();
+        tabSessionManager.unregisterWebExtension();
 
         return runtime.getWebExtensionController().uninstall(extension).accept((unused) -> {
             extension = null;
@@ -182,21 +232,25 @@ public class WebExtensionManager implements WebExtension.ActionDelegate, WebExte
         });
     }
 
-    public void registerExtension(WebExtension extension,
-                                  TabSessionManager tabManager) {
+    public void registerExtension(WebExtension extension) {
         extension.setActionDelegate(this);
-        tabManager.setWebExtensionActionDelegate(extension, this);
+        extension.setTabDelegate(this);
+        tabSessionManager.setWebExtensionActionDelegate(extension, this, this);
         this.extension = extension;
+    }
+
+    private void refreshExtensionList() {
+        runtime.getWebExtensionController()
+                .list().accept(extensions -> {
+            for (final WebExtension extension : extensions) {
+                registerExtension(extension);
+            }
+        });
     }
 
     public WebExtensionManager(GeckoRuntime runtime,
                                TabSessionManager tabManager) {
-        runtime.getWebExtensionController()
-                .list().accept(extensions -> {
-            for (final WebExtension extension : extensions) {
-                registerExtension(extension, tabManager);
-            }
-        });
+        tabSessionManager = tabManager;
         this.runtime = runtime;
     }
 }
