@@ -483,9 +483,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     private void connectSession(GeckoSession session) {
         session.setContentDelegate(new ContentDelegate());
         session.setHistoryDelegate(new HistoryDelegate());
-        final ContentBlockingDelegate cb = new ContentBlockingDelegate();
-        session.setContentBlockingDelegate(cb);
-        session.setProgressDelegate(new ProgressDelegate(cb));
+        session.setProgressDelegate(new ProgressDelegate());
         session.setNavigationDelegate(new NavigationDelegate());
 
         prompt.filePickerRequestCode = REQUEST_FILE_PICKER;
@@ -872,18 +870,12 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     }
 
     private class ProgressDelegate implements GeckoSession.ProgressDelegate {
-        private ContentBlockingDelegate contentBlockingDelegate;
-
-        private ProgressDelegate(final ContentBlockingDelegate contentBlockingDelegate) {
-            this.contentBlockingDelegate = contentBlockingDelegate;
-        }
 
         @Override
         public void onPageStart(GeckoSession session, String url) {
             Log.i(LOGTAG, "Starting to load page at " + url);
             Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
                     " - page load start");
-            contentBlockingDelegate.clearCounters();
             if (!url.trim().equals("about:blank")) {
                 hideHome();
             }
@@ -894,7 +886,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             Log.i(LOGTAG, "Stopping page load " + (success ? "successfully" : "unsuccessfully"));
             Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
                     " - page load stop");
-            contentBlockingDelegate.logCounters();
         }
     }
 
@@ -965,7 +956,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         @Override
         public void onAndroidPermissionsRequest(final GeckoSession session, final String[] permissions,
                                                 final Callback callback) {
-            // requestPermissions was introduced in API 23.
+            // requestPermissions API 23.
             this.callback = callback;
             requestPermissions(permissions, androidPermissionRequestCode);
         }
@@ -1101,7 +1092,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             final TabSession newSession = createSession();
             toolbarView.updateTabCount();
             setGeckoViewSession(newSession);
-            // A reference to newSession is stored by mTabSessionManager,
+            // A reference to newSession is stored by tabSessionManager,
             // which prevents the session from being garbage-collected.
             return GeckoResult.fromValue(newSession);
         }
@@ -1157,76 +1148,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
     }
 
-    private static class ContentBlockingDelegate implements ContentBlocking.Delegate {
-        private int blockedAds = 0;
-        private int blockedAnalytics = 0;
-        private int blockedSocial = 0;
-        private int blockedContent = 0;
-        private int blockedTest = 0;
-        private int blockedStp = 0;
-
-        private void clearCounters() {
-            blockedAds = 0;
-            blockedAnalytics = 0;
-            blockedSocial = 0;
-            blockedContent = 0;
-            blockedTest = 0;
-            blockedStp = 0;
-        }
-
-        private void logCounters() {
-            Log.d(LOGTAG, "Trackers blocked: " + blockedAds + " ads, " +
-                    blockedAnalytics + " analytics, " +
-                    blockedSocial + " social, " +
-                    blockedContent + " content, " +
-                    blockedTest + " test, " +
-                    blockedStp + "stp");
-        }
-
-        @Override
-        public void onContentBlocked(final GeckoSession session,
-                                     final ContentBlocking.BlockEvent event) {
-//            Log.d(LOGTAG, "onContentBlocked" +
-//                    " AT: " + event.getAntiTrackingCategory() +
-//                    " SB: " + event.getSafeBrowsingCategory() +
-//                    " CB: " + event.getCookieBehaviorCategory() +
-//                    " URI: " + event.uri);
-//            if ((event.getAntiTrackingCategory() &
-//                    ContentBlocking.AntiTracking.TEST) != 0) {
-//                blockedTest++;
-//            }
-//            if ((event.getAntiTrackingCategory() &
-//                    ContentBlocking.AntiTracking.AD) != 0) {
-//                blockedAds++;
-//            }
-//            if ((event.getAntiTrackingCategory() &
-//                    ContentBlocking.AntiTracking.ANALYTIC) != 0) {
-//                blockedAnalytics++;
-//            }
-//            if ((event.getAntiTrackingCategory() &
-//                    ContentBlocking.AntiTracking.SOCIAL) != 0) {
-//                blockedSocial++;
-//            }
-//            if ((event.getAntiTrackingCategory() &
-//                    ContentBlocking.AntiTracking.CONTENT) != 0) {
-//                blockedContent++;
-//            }
-//            if ((event.getAntiTrackingCategory() &
-//                    ContentBlocking.AntiTracking.STP) != 0) {
-//                blockedStp++;
-//            }
-        }
-
-        @Override
-        public void onContentLoaded(final GeckoSession session,
-                                    final ContentBlocking.BlockEvent event) {
-//            Log.d(LOGTAG, "onContentLoaded" +
-//                    " AT: " + event.getAntiTrackingCategory() +
-//                    " SB: " + event.getSafeBrowsingCategory() +
-//                    " CB: " + event.getCookieBehaviorCategory() +
-//                    " URI: " + event.uri);
-        }
-    }
 
     private class MediaDelegate
             implements GeckoSession.MediaDelegate {
