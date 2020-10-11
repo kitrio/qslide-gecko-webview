@@ -793,10 +793,11 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             isFullScreen = fullScreen;
             if (isFullScreen) {
                 ActivityUtils.setFullScreen(GeckoViewActivity.this, true);
-                toolbarView.setVisibility(ConstraintLayout.GONE);
+                toolbarView.setVisibility(View.GONE);
                 Log.d("Geckoview", "Fullscreen in");
             } else {
-                toolbarView.setVisibility(ConstraintLayout.VISIBLE);
+                ActivityUtils.setFullScreen(GeckoViewActivity.this, false);
+                toolbarView.setVisibility(View.VISIBLE);
                 Log.d("Geckoview", "Fullscreen out");
             }
         }
