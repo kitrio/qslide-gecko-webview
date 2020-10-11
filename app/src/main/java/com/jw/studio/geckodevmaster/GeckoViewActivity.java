@@ -112,15 +112,14 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     private PopupWindow popupWindow;
     private ToolbarLayout toolbarView;
     private String currentUri;
-
     private HashMap<String, Integer> notificationIDMap = new HashMap<>();
     private HashMap<Integer, WebNotification> notificationMap = new HashMap<>();
     private int lastID = 100;
     private Fragment homeFragment;
     private FragmentManager fragmentManager;
-
     private LinkedList<GeckoSession.WebResponseInfo> pendingDownloads = new LinkedList<>();
 
+    private final BasicGeckoViewPrompt prompt = new BasicGeckoViewPrompt(this);
     private final LocationView.CommitListener commitListener = new LocationView.CommitListener() {
         @Override
         public void onCommit(String text) {
@@ -488,7 +487,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         session.setContentBlockingDelegate(cb);
         session.setProgressDelegate(new ProgressDelegate(cb));
         session.setNavigationDelegate(new NavigationDelegate());
-        final BasicGeckoViewPrompt prompt = new BasicGeckoViewPrompt(this);
+
         prompt.filePickerRequestCode = REQUEST_FILE_PICKER;
         session.setPromptDelegate(prompt);
 
@@ -818,14 +817,9 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         public void onContextMenu(final GeckoSession session,
                                   int screenX, int screenY,
                                   final ContextElement element) {
-//            Log.d(LOGTAG, "onContextMenu screenX=" + screenX +
-//                    " screenY=" + screenY +
-//                    " type=" + element.type +
-//                    " linkUri=" + element.linkUri +
-//                    " title=" + element.title +
-//                    " alt=" + element.altText +
-//                    " srcUri=" + element.srcUri);
-            BasicGeckoViewPrompt.contextMenuPrompt(GeckoViewActivity.this, element);
+
+            prompt.contextMenuPrompt(GeckoViewActivity.this, element);
+
         }
 
         @Override

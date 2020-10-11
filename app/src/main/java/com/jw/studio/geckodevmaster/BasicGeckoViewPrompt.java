@@ -1048,41 +1048,39 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
                 .getAuthority());
     }
 
-    public static void contextMenuPrompt(GeckoViewActivity geckoViewActivity, GeckoSession.ContentDelegate.ContextElement element) {
-        if (!geckoViewActivity.isFinishing()) {
-            String contextUrl = element.linkUri;
-            if (contextUrl == null) {
-                contextUrl = element.srcUri;
-            }
-            String clipboardID = "qwebview";
+    public void contextMenuPrompt(GeckoViewActivity geckoViewActivity, GeckoSession.ContentDelegate.ContextElement element) {
 
-            Dialog dialog = new Dialog(geckoViewActivity);
-            dialog.setContentView(R.layout.contextmenu_dialog);
-            dialog.getWindow().setBackgroundDrawable(geckoViewActivity.getDrawable(R.drawable.border));
-            if (SDK_VERSION <= 25) {
-                dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_PHONE);
-            } else if (SDK_VERSION < 29){
-                dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-            }
-            TextView tvTitle = dialog.findViewById(R.id.title_textview);
-            String finalUrl = contextUrl;
-
-            Button btnUrl = dialog.findViewById(R.id.link_button);
-            Button btnCopy = dialog.findViewById(R.id.copy_button);
-
-            tvTitle.setText(element.linkUri);
-            btnUrl.setOnClickListener(v -> {
-                geckoViewActivity.createNewTab(finalUrl);
-                dialog.dismiss();
-            });
-            btnCopy.setOnClickListener(v -> {
-                ClipboardManager clipboard = (ClipboardManager) geckoViewActivity.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText(clipboardID, finalUrl);
-                clipboard.setPrimaryClip(clip);
-                dialog.dismiss();
-            });
-            dialog.show();
+        String contextUri = element.linkUri;
+        if (contextUri == null) {
+            contextUri = element.srcUri;
         }
+        String clipboardID = "qwebview";
+        final String uri = contextUri;
+
+        Dialog dialog = new Dialog(geckoViewActivity);
+        dialog.setContentView(R.layout.contextmenu_dialog);
+        if (SDK_VERSION <= 25) {
+            dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_PHONE);
+        } else if (SDK_VERSION < 29){
+            dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+        }
+
+        Button btnUrl = dialog.findViewById(R.id.link_button);
+        Button btnCopy = dialog.findViewById(R.id.copy_button);
+        TextView tvTitle = dialog.findViewById(R.id.title_textview);
+        tvTitle.setText(element.linkUri);
+
+        btnUrl.setOnClickListener(v -> {
+            geckoViewActivity.createNewTab(uri);
+            dialog.dismiss();
+        });
+        btnCopy.setOnClickListener(v -> {
+            ClipboardManager clipboard = (ClipboardManager) geckoViewActivity.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText(clipboardID, uri);
+            clipboard.setPrimaryClip(clip);
+            dialog.dismiss();
+        });
+        dialog.show();
     }
 
 }
