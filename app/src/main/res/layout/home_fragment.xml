@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
+<androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/home_layout"
     android:tag="home_fragment"
     android:layout_width="match_parent"
@@ -29,6 +30,7 @@
             android:drawablePadding="-5sp"
             android:paddingTop="10sp"
             android:singleLine="true"
+            android:text="Google"
             android:textAlignment="center"
             tools:ignore="ButtonStyle" />
 
@@ -42,6 +44,7 @@
             android:drawablePadding="-5sp"
             android:paddingTop="10sp"
             android:singleLine="true"
+            android:text="Youtube"
             android:textAlignment="center" />
 
         <Button
@@ -53,6 +56,7 @@
             android:drawablePadding="-5sp"
             android:paddingTop="10sp"
             android:singleLine="true"
+            android:text="@string/urlname"
             android:textAlignment="center" />
     </LinearLayout>
 
@@ -76,6 +80,7 @@
             android:drawablePadding="-5sp"
             android:paddingTop="10sp"
             android:singleLine="true"
+            android:text="@string/facebook"
             android:textAlignment="center"
             tools:ignore="ButtonStyle" />
 
@@ -89,6 +94,7 @@
             android:drawablePadding="-5sp"
             android:paddingTop="10sp"
             android:singleLine="true"
+            android:text="@string/instagram"
             android:textAlignment="center" />
 
         <Button
@@ -101,6 +107,8 @@
             android:drawablePadding="-5sp"
             android:paddingTop="10sp"
             android:singleLine="true"
+            android:text="@string/twitter"
             android:textAlignment="center" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
