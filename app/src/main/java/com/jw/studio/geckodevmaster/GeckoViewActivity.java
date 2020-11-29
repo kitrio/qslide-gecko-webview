@@ -990,6 +990,9 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 contentPermissionCallback = new PersistentStorageCallback(callback, uri);
             } else if (PERMISSION_XR == type) {
                 resId = R.string.request_xr;
+            }  else if (PERMISSION_MEDIA_KEY_SYSTEM_ACCESS == type) {
+                resId = R.string.request_media_key_system_access;
+
             } else {
                 Log.w(LOGTAG, "Unknown permission: " + type);
                 callback.reject();

@@ -13,6 +13,7 @@
     <string name="request_audio">"%1$s" 과(와) 소리 공유</string>
     <string name="request_media">"%1$s" 과(와) 영상 및 소리 공유</string>
     <string name="request_xr">"%1$s" 과(와) WebXR 화면을 공유</string>
+    <string name="request_media_key_system_access">"%1$s"에 시스템 미디어 키 접근을 허용하겠습니까?</string>
     <string name="media_back_camera">후면 카메라</string>
     <string name="media_front_camera">전면 카메라</string>
     <string name="media_microphone">마이크</string>
