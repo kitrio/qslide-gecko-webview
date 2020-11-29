@@ -6,7 +6,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/menu_border"
-        android:alpha="0.9"
+        android:alpha="0.92"
         android:focusable="false"
         android:minWidth="170dp"
         android:orientation="vertical"
@@ -15,7 +15,8 @@
         <Button
             android:id="@+id/button_qslide"
             android:layout_width="wrap_content"
-            android:layout_height="30sp"
+            android:layout_height="36sp"
+            android:layout_marginTop="1dp"
             android:background="@drawable/border"
             android:text="@string/qslide_mode" />
 
@@ -23,19 +24,15 @@
             android:id="@+id/newtab_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:background="@drawable/border"
             android:text="@string/new_tab" />
-
-        <Button
-            android:id="@+id/emptybutton"
-            android:layout_width="0dp"
-            android:layout_height="3dp"
-            />
 
         <Button
             android:id="@+id/closetab_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:background="@drawable/border"
             android:text="@string/close_tab" />
 
@@ -43,31 +40,34 @@
             android:id="@+id/switch_private"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
+            android:layout_marginTop="10dp"
             android:text="@string/private_browsing" />
 
         <Switch
             android:id="@+id/switch_desktop"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
             android:text="@string/desktop_mode" />
 
         <Switch
             android:id="@+id/switch_tracking"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
+            android:layout_marginTop="10dp"
             android:text="@string/tracking_protection" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/buttonLayout"
             android:layout_width="wrap_content"
-            android:layout_height="38dp">
+            android:layout_height="55dp">
 
             <Button
                 android:id="@+id/refresh_button"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginBottom="2dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="4dp"
                 android:background="@drawable/ic_refresh"
 
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -78,7 +78,7 @@
                 android:layout_width="36dp"
                 android:layout_height="32dp"
                 android:layout_marginEnd="32dp"
-                android:layout_marginBottom="2dp"
+                android:layout_marginBottom="4dp"
                 android:background="@drawable/ic_forward"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />

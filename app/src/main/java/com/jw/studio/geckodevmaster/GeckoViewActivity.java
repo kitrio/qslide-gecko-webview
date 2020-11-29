@@ -123,7 +123,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     private final LocationView.CommitListener commitListener = new LocationView.CommitListener() {
         @Override
         public void onCommit(String text) {
-            if ((text.contains(".") || text.contains(":")) && !text.contains(" ")) {
+            if (!text.contains(" ") && (text.contains(".") || text.contains(":"))) {
                 tabSessionManager.getCurrentSession().loadUri(text);
             } else {
                 tabSessionManager.getCurrentSession().loadUri(SEARCH_URI_BASE + text);
@@ -167,7 +167,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         set.connect(R.id.gecko_view, ConstraintSet.BOTTOM, R.id.toolbar_layout, ConstraintSet.TOP);
 
         set.connect(R.id.menu_button, ConstraintSet.LEFT, R.id.toolbar_layout, ConstraintSet.RIGHT);
-        set.connect(R.id.menu_button, ConstraintSet.RIGHT, R.id.main, ConstraintSet.RIGHT, 60);
+        set.connect(R.id.menu_button, ConstraintSet.RIGHT, R.id.main, ConstraintSet.RIGHT);
         set.connect(R.id.menu_button, ConstraintSet.TOP, R.id.gecko_view, ConstraintSet.BOTTOM);
         set.connect(R.id.menu_button, ConstraintSet.BOTTOM, R.id.toolbar_layout, ConstraintSet.BOTTOM);
 
@@ -284,7 +284,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             GeckoSession session = tabSessionManager.getCurrentSession();
             popupWindow = new PopupWindow(menu.getRoot(), ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             popupWindow.setFocusable(true);
-            int menu_height = dpToPx(260);
+            int menu_height = dpToPx(332);
 
             menu.newtabButton.setOnClickListener(v -> {
                 popupWindow.dismiss();
@@ -306,7 +306,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 menu.buttonQslide.setVisibility(View.GONE);
             } else {
                 menu.buttonQslide.setVisibility(View.VISIBLE);
-                menu_height = dpToPx(288);
+                menu_height = dpToPx(368);
                 menu.buttonQslide.setOnClickListener(v -> {
                     switchToFloatingMode();
                 });
@@ -887,7 +887,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
         @Override
         public void onPageStop(GeckoSession session, boolean success) {
-            Log.i(LOGTAG, "Stopping page load " + (success ? "successfully" : "unsuccessfully"));
             Log.i(LOGTAG, "zerdatime " + SystemClock.elapsedRealtime() +
                     " - page load stop");
         }

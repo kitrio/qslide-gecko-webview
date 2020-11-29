@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar_layout"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="42dp"
     android:background="@color/appBackground">
 
     <ImageButton
         android:id="@+id/back_button"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
-        android:layout_marginStart="14dp"
+        android:layout_width="40dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="12dp"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_backward"
         app:layout_constraintBottom_toBottomOf="parent"
