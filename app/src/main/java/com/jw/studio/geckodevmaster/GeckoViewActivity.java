@@ -611,15 +611,16 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     public void switchToSession(TabSession session, boolean activateTab) {
         hideHome();
         TabSession currentSession = tabSessionManager.getCurrentSession();
-        if (session != currentSession) {
-            setGeckoViewSession(session, activateTab);
-            currentUri = session.getUri();
-            if (session.getTitle().equals("about:blank")) {
-                currentUri = "about:blank";
-                showHome();
-            }
-            toolbarView.getLocationView().setText(currentUri);
+        if (session == currentSession) {
+            return;
         }
+        setGeckoViewSession(session, activateTab);
+        currentUri = session.getUri();
+        if (session.getTitle().equals("about:blank")) {
+            currentUri = "about:blank";
+            showHome();
+        }
+        toolbarView.getLocationView().setText(currentUri);
     }
 
     public void switchToTab(int index) {

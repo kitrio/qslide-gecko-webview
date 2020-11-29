@@ -98,7 +98,7 @@ public class ToolbarLayout extends ConstraintLayout {
     }
 
     public void onTabButtonClicked(View view) {
-        PopupMenu tabButtonMenu = new PopupMenu(view.getContext(), tabsCountButton);
+        PopupMenu tabButtonMenu = new PopupMenu(view.getContext(), view);
         for (int idx = 0; idx < sessionManager.sessionCount(); ++idx) {
             tabButtonMenu.getMenu().add(0, idx, idx,
                     sessionManager.getSession(idx).getTitle());
