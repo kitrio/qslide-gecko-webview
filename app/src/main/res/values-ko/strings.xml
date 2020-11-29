@@ -16,7 +16,7 @@
     <string name="media_back_camera">후면 카메라</string>
     <string name="media_front_camera">전면 카메라</string>
     <string name="media_microphone">마이크</string>
-    <string name="media_other">알수없는 미디어입니다.</string>
+    <string name="media_other">알 수 없는 미디어입니다.</string>
 
     <string name="crash_native">Native</string>
     <string name="crash_java">Java</string>
@@ -25,7 +25,7 @@
     <string name="tracking_protection_ex">TP 끄기</string>
     <string name="tracking_protection_ex2">TP 켜기</string>
     <string name="private_browsing">사생활 보호 모드</string>
-    <string name="qslide_mode">Q 슬라이드 모드</string>
+    <string name="qslide_mode">Q 슬라이드</string>
 
     <string name="crashed_title">Q웹뷰 오류</string>
     <string name="crashed_text">오류 보고 전송 하기</string>
