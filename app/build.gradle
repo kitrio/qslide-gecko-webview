@@ -8,7 +8,7 @@ android {
         applicationId "com.jw.studio.geckodevmaster"
         minSdkVersion 23
         targetSdkVersion 28
-        versionName "2.0.12"
+        versionName "2.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -16,11 +16,11 @@ android {
     productFlavors {
         arm {
             dimension "abi"
-            versionCode 2332024
+            versionCode 2332038
         }
         aarch64 {
             dimension "abi"
-            versionCode 2364031
+            versionCode 2364035
         }
 
     }
@@ -44,6 +44,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
     }
 }
 
