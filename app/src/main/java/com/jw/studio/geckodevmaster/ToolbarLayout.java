@@ -3,6 +3,7 @@ package com.jw.studio.geckodevmaster;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +32,11 @@ public class ToolbarLayout extends ConstraintLayout {
     public ToolbarLayout(Context context, TabSessionManager sessionManager) {
         super(context);
         this.sessionManager = sessionManager;
+        initView();
+    }
+
+    public ToolbarLayout(Context context, AttributeSet attributes) {
+        super(context, attributes);
         initView();
     }
 

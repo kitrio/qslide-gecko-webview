@@ -38,12 +38,12 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
 import com.jw.studio.geckodevmaster.databinding.AppmenuPopupBinding;
+import com.jw.studio.geckodevmaster.databinding.GeckoviewActivityBinding;
 import com.jw.studio.geckodevmaster.session.TabSession;
 import com.jw.studio.geckodevmaster.session.TabSessionManager;
 import com.lge.app.floating.FloatableActivity;
 import com.lge.app.floating.FloatingWindow;
 
-import org.json.JSONObject;
 import org.mozilla.gecko.util.ActivityUtils;
 import org.mozilla.geckoview.AllowOrDeny;
 import org.mozilla.geckoview.BasicSelectionActionDelegate;
@@ -75,8 +75,6 @@ import java.util.LinkedList;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -97,15 +95,18 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
 
     public TabSessionManager tabSessionManager;
 
-    private GeckoView geckoView;
-    private boolean isTrackingProtection = true;
+    private boolean isTrackingProtection;
     private boolean isPrivateBrowsing;
     private boolean isKillProcessOnDestroy;
     private boolean isDesktopMode;
     private boolean isCanGoBack;
     private boolean isShowNotificationsRejected;
+
+    private GeckoView geckoView;
+    private GeckoviewActivityBinding geckoViewBinding;
     private TabSession popupSession;
     private View popupView;
+    private View mainView;
 
     private ArrayList<String> acceptedPersistentStorage = new ArrayList<>();
 
@@ -135,47 +136,20 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     };
 
     @Override
-    public TabSession openNewTab(WebExtension.CreateTabDetails details) {
-        final TabSession newSession = createSession();
-        toolbarView.updateTabCount();
-        if (details.active == Boolean.TRUE) {
-            setGeckoViewSession(newSession, false);
-        }
-        return newSession;
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         createNotificationChannel();
-        setContentView(R.layout.geckoview_activity);
-        geckoView = findViewById(R.id.gecko_view);
-        ImageButton menuButton = findViewById(R.id.menu_button);
 
-        ConstraintLayout appLayout = findViewById(R.id.main);
+        geckoViewBinding = GeckoviewActivityBinding.inflate(getLayoutInflater());
+        mainView = geckoViewBinding.getRoot();
+        geckoView = geckoViewBinding.geckoView;
+        setContentView(mainView);
+        ImageButton menuButton = geckoViewBinding.menuButton;
 
         tabSessionManager = new TabSessionManager();
-        toolbarView = new ToolbarLayout(this, tabSessionManager);
-        toolbarView.setId(R.id.toolbar_layout);
+        toolbarView = geckoViewBinding.toolbar;
         toolbarView.setTabListener(this);
-        toolbarView.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
-
-        ConstraintSet set = new ConstraintSet();
-        appLayout.addView(toolbarView);
-        set.clone(appLayout);
-        set.connect(R.id.gecko_view, ConstraintSet.TOP, R.id.main, ConstraintSet.TOP);
-        set.connect(R.id.gecko_view, ConstraintSet.BOTTOM, R.id.toolbar_layout, ConstraintSet.TOP);
-
-        set.connect(R.id.menu_button, ConstraintSet.LEFT, R.id.toolbar_layout, ConstraintSet.RIGHT);
-        set.connect(R.id.menu_button, ConstraintSet.RIGHT, R.id.main, ConstraintSet.RIGHT);
-        set.connect(R.id.menu_button, ConstraintSet.TOP, R.id.gecko_view, ConstraintSet.BOTTOM);
-        set.connect(R.id.menu_button, ConstraintSet.BOTTOM, R.id.toolbar_layout, ConstraintSet.BOTTOM);
-
-        set.connect(R.id.toolbar_layout, ConstraintSet.LEFT, R.id.main, ConstraintSet.LEFT);
-        set.connect(R.id.toolbar_layout, ConstraintSet.RIGHT, R.id.menu_button, ConstraintSet.LEFT);
-        set.connect(R.id.toolbar_layout, ConstraintSet.TOP, R.id.gecko_view, ConstraintSet.BOTTOM);
-        set.connect(R.id.toolbar_layout, ConstraintSet.BOTTOM, R.id.main, ConstraintSet.BOTTOM);
-        set.applyTo(appLayout);
+        toolbarView.setSessionManager(tabSessionManager);
 
         if (geckoRuntime == null) {
             final GeckoRuntimeSettings.Builder runtimeSettingsBuilder = new GeckoRuntimeSettings.Builder();
@@ -364,6 +338,16 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         if (homeFragment.isVisible()) {
             fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("home_fragment")).commitAllowingStateLoss();
         }
+    }
+
+    @Override
+    public TabSession openNewTab(WebExtension.CreateTabDetails details) {
+        final TabSession newSession = createSession();
+        toolbarView.updateTabCount();
+        if (details.active == Boolean.TRUE) {
+            setGeckoViewSession(newSession, false);
+        }
+        return newSession;
     }
 
     @Override
