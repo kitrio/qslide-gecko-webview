@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 
-android.buildFeatures.dataBinding = true
 android {
     compileSdkVersion 28
     buildToolsVersion "29.0.2"
@@ -10,6 +9,11 @@ android {
         targetSdkVersion 28
         versionName "2.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        dataBinding true
+        viewBinding true
     }
 
     flavorDimensions "abi"
@@ -66,7 +70,7 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.1'
 
     //test
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 

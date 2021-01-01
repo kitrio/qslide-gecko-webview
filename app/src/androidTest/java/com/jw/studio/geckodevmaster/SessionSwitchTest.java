@@ -33,6 +33,9 @@ import static org.hamcrest.Matchers.allOf;
 @RunWith(AndroidJUnit4.class)
 public class SessionSwitchTest {
 
+    @Rule
+    public ActivityTestRule<CompatibilityActivity> mActivityTestRule = new ActivityTestRule<>(CompatibilityActivity.class);
+
     public static ViewAction waitFor(long delay) {
         return new ViewAction() {
             @Override public Matcher<View> getConstraints() {
@@ -50,15 +53,23 @@ public class SessionSwitchTest {
     }
 
     @Rule
-    public ActivityTestRule<CompatibilityActivity> mActivityTestRule = new ActivityTestRule<>(CompatibilityActivity.class);
-
-    @Rule
     public GrantPermissionRule mGrantPermissionRule =
             GrantPermissionRule.grant(
                     "android.permission.WRITE_EXTERNAL_STORAGE");
 
     @Test
-    public void sessionSwitchTest() {
+    public void sessionActivityTest() {
+        ViewInteraction button = onView(
+                allOf(withId(R.id.button_google), withText("Google"),
+                        childAtPosition(
+                                allOf(withId(R.id.webshortcut_row),
+                                        childAtPosition(
+                                                withId(R.id.home_layout),
+                                                0)),
+                                0),
+                        isDisplayed()));
+        button.perform(click());
+
         ViewInteraction imageButton = onView(
                 allOf(withId(R.id.menu_button),
                         childAtPosition(
@@ -66,55 +77,20 @@ public class SessionSwitchTest {
                                         childAtPosition(
                                                 withId(android.R.id.content),
                                                 0)),
-                                1),
+                                2),
                         isDisplayed()));
         imageButton.perform(click());
 
-        ViewInteraction button = onView(
-                allOf(withId(R.id.newtab_button), withText("새 탭"),
+        ViewInteraction button2 = onView(
+                allOf(withId(R.id.newtab_button), withText(R.string.new_tab),
                         childAtPosition(
                                 withId(R.id.app_popupmenu),
                                 1),
-                        isDisplayed()));
-        button.perform(click());
-        onView(isRoot()).perform(waitFor(1500));
-
-        ViewInteraction button2 = onView(
-                allOf(withId(R.id.button_localurl), withText("네이버"),
-                        childAtPosition(
-                                allOf(withId(R.id.webshortcut_row),
-                                        childAtPosition(
-                                                withId(R.id.home_layout),
-                                                0)),
-                                2),
                         isDisplayed()));
         button2.perform(click());
         onView(isRoot()).perform(waitFor(1500));
 
         ViewInteraction button3 = onView(
-                allOf(withId(R.id.tabs_button), withText("2"),
-                        childAtPosition(
-                                allOf(withId(R.id.toolbar_layout),
-                                        childAtPosition(
-                                                withId(R.id.toolbar_layout),
-                                                0)),
-                                2),
-                        isDisplayed()));
-        button3.perform(click());
-
-        onView(isRoot()).perform(waitFor(1500));
-
-        ViewInteraction textView = onView(
-                allOf(withId(android.R.id.title), withText("about:blank"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                0),
-                        isDisplayed()));
-        textView.perform(click());
-
-        ViewInteraction button4 = onView(
                 allOf(withId(R.id.button_youtube), withText("Youtube"),
                         childAtPosition(
                                 allOf(withId(R.id.webshortcut_row),
@@ -123,8 +99,30 @@ public class SessionSwitchTest {
                                                 0)),
                                 1),
                         isDisplayed()));
-        button4.perform(click());
+        button3.perform(click());
+        onView(isRoot()).perform(waitFor(1500));
 
+        ViewInteraction button4 = onView(
+                allOf(withId(R.id.tabs_button), withText("2"),
+                        childAtPosition(
+                                allOf(withId(R.id.toolbar_layout),
+                                        childAtPosition(
+                                                withId(R.id.toolbar),
+                                                0)),
+                                2),
+                        isDisplayed()));
+        button4.perform(click());
+        onView(isRoot()).perform(waitFor(1500));
+
+        ViewInteraction textView = onView(
+                allOf(withId(android.R.id.title), withText("Google"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                0),
+                        isDisplayed()));
+        textView.perform(click());
         onView(isRoot()).perform(waitFor(1500));
 
         ViewInteraction button5 = onView(
@@ -132,14 +130,15 @@ public class SessionSwitchTest {
                         childAtPosition(
                                 allOf(withId(R.id.toolbar_layout),
                                         childAtPosition(
-                                                withId(R.id.toolbar_layout),
+                                                withId(R.id.toolbar),
                                                 0)),
                                 2),
                         isDisplayed()));
         button5.perform(click());
+        onView(isRoot()).perform(waitFor(1000));
 
         ViewInteraction textView2 = onView(
-                allOf(withId(android.R.id.title), withText("NAVER"),
+                allOf(withId(android.R.id.title), withText("홈 - YouTube"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -148,40 +147,19 @@ public class SessionSwitchTest {
                         isDisplayed()));
         textView2.perform(click());
 
-        ViewInteraction imageButton2 = onView(
-                allOf(withId(R.id.menu_button),
-                        childAtPosition(
-                                allOf(withId(R.id.main),
-                                        childAtPosition(
-                                                withId(android.R.id.content),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        imageButton2.perform(click());
-
         ViewInteraction button6 = onView(
-                allOf(withId(R.id.newtab_button), withText("새 탭"),
-                        childAtPosition(
-                                withId(R.id.app_popupmenu),
-                                1),
-                        isDisplayed()));
-        button6.perform(click());
-
-        ViewInteraction button7 = onView(
-                allOf(withId(R.id.tabs_button), withText("3"),
+                allOf(withId(R.id.tabs_button), withText("2"),
                         childAtPosition(
                                 allOf(withId(R.id.toolbar_layout),
                                         childAtPosition(
-                                                withId(R.id.toolbar_layout),
+                                                withId(R.id.toolbar),
                                                 0)),
                                 2),
                         isDisplayed()));
-        button7.perform(click());
-
-        onView(isRoot()).perform(waitFor(1500));
+        button6.perform(click());
 
         ViewInteraction textView3 = onView(
-                allOf(withId(android.R.id.title), withText("홈 - YouTube"),
+                allOf(withId(android.R.id.title), withText("Google"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -189,50 +167,6 @@ public class SessionSwitchTest {
                                 0),
                         isDisplayed()));
         textView3.perform(click());
-
-        ViewInteraction button8 = onView(
-                allOf(withId(R.id.tabs_button), withText("3"),
-                        childAtPosition(
-                                allOf(withId(R.id.toolbar_layout),
-                                        childAtPosition(
-                                                withId(R.id.toolbar_layout),
-                                                0)),
-                                2),
-                        isDisplayed()));
-        button8.perform(click());
-
-        onView(isRoot()).perform(waitFor(1500));
-
-        ViewInteraction textView4 = onView(
-                allOf(withId(android.R.id.title), withText("NAVER"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                0),
-                        isDisplayed()));
-        textView4.perform(click());
-
-        ViewInteraction button9 = onView(
-                allOf(withId(R.id.tabs_button), withText("3"),
-                        childAtPosition(
-                                allOf(withId(R.id.toolbar_layout),
-                                        childAtPosition(
-                                                withId(R.id.toolbar_layout),
-                                                0)),
-                                2),
-                        isDisplayed()));
-        button9.perform(click());
-
-        ViewInteraction textView5 = onView(
-                allOf(withId(android.R.id.title), withText("about:blank"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                0),
-                        isDisplayed()));
-        textView5.perform(click());
     }
 
     private static Matcher<View> childAtPosition(
