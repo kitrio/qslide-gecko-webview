@@ -79,7 +79,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
 
 public class GeckoViewActivity extends FloatableActivity implements ToolbarLayout.TabListener, WebExtensionDelegate {
     private static final String LOGTAG = "GeckoViewActivity";
@@ -106,7 +105,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
     private GeckoviewActivityBinding geckoViewBinding;
     private TabSession popupSession;
     private View popupView;
-    private View mainView;
 
     private ArrayList<String> acceptedPersistentStorage = new ArrayList<>();
 
@@ -130,7 +128,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 tabSessionManager.getCurrentSession().loadUri(SEARCH_URI_BASE + text);
             }
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            EditText urlEdit = findViewById(toolbarView.getLocationView().getId());
+            EditText urlEdit = geckoViewBinding.toolbar.getLocationView();
             imm.hideSoftInputFromWindow(urlEdit.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     };
@@ -141,9 +139,8 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         createNotificationChannel();
 
         geckoViewBinding = GeckoviewActivityBinding.inflate(getLayoutInflater());
-        mainView = geckoViewBinding.getRoot();
         geckoView = geckoViewBinding.geckoView;
-        setContentView(mainView);
+        setContentView(geckoViewBinding.getRoot());
         ImageButton menuButton = geckoViewBinding.menuButton;
 
         tabSessionManager = new TabSessionManager();
@@ -254,11 +251,11 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         toolbarView.getLocationView().setCommitListener(commitListener);
 
         menuButton.setOnClickListener((view) -> {
-            AppmenuPopupBinding menu = DataBindingUtil.inflate(getLayoutInflater(), R.layout.appmenu_popup, null, false);
+            AppmenuPopupBinding menu = AppmenuPopupBinding.inflate(getLayoutInflater());
             GeckoSession session = tabSessionManager.getCurrentSession();
             popupWindow = new PopupWindow(menu.getRoot(), ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             popupWindow.setFocusable(true);
-            int menu_height = dpToPx(332);
+            int menu_height = dpToPx(324);
 
             menu.newtabButton.setOnClickListener(v -> {
                 popupWindow.dismiss();
