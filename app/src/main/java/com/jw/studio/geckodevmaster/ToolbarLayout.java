@@ -28,13 +28,6 @@ public class ToolbarLayout extends ConstraintLayout {
     private TabListener tabListener;
     private TabSessionManager sessionManager;
 
-
-    public ToolbarLayout(Context context, TabSessionManager sessionManager) {
-        super(context);
-        this.sessionManager = sessionManager;
-        initView();
-    }
-
     public ToolbarLayout(Context context, AttributeSet attributes) {
         super(context, attributes);
         initView();
@@ -93,6 +86,10 @@ public class ToolbarLayout extends ConstraintLayout {
 
     public void onBrowserActionButtonClicked(View view) {
         tabListener.onBrowserActionClick();
+    }
+
+    public void setSessionManager(TabSessionManager tabSessionManager) {
+        this.sessionManager = tabSessionManager;
     }
 
     public void setTabListener(TabListener listener) {
