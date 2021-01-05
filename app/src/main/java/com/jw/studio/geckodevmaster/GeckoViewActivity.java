@@ -262,12 +262,8 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 createNewTab();
                 showHome();
             });
-            menu.forwardButton.setOnClickListener((v -> {
-                session.goForward();
-            }));
-            menu.refreshButton.setOnClickListener((v) -> {
-                session.reload();
-            });
+            menu.forwardButton.setOnClickListener((v -> session.goForward()));
+            menu.refreshButton.setOnClickListener((v) -> session.reload());
             menu.closetabButton.setOnClickListener(v -> {
                 popupWindow.dismiss();
                 closeTab((TabSession) session);
@@ -278,9 +274,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             } else {
                 menu.buttonQslide.setVisibility(View.VISIBLE);
                 menu_height = dpToPx(368);
-                menu.buttonQslide.setOnClickListener(v -> {
-                    switchToFloatingMode();
-                });
+                menu.buttonQslide.setOnClickListener(v -> switchToFloatingMode());
             }
             menu.switchDesktop.setChecked(isDesktopMode);
             menu.switchDesktop.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -303,6 +297,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
             popupWindow.showAsDropDown(menuButton, menuButton.getHeight(), -menu_height, geckoView.getPaddingBottom());
 
         });
+
         ImageButton backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> onBackPressed());
 
