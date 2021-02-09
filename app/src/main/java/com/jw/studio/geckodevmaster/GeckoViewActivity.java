@@ -647,15 +647,21 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         }
 
         setIntent(intent);
-        if (intent.getData() != null) {
+        if (intent.getExtras() !=null || intent.getData() != null) {
             loadFromIntent(intent);
         }
     }
 
     private void loadFromIntent(final Intent intent) {
         final Uri uri = intent.getData();
-        if (uri != null) {
-            tabSessionManager.getCurrentSession().loadUri(uri.toString());
+        String shareText;
+        if(Intent.ACTION_SEND.equals(intent.getAction())){
+            if(intent.getExtras() != null){
+                shareText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                createNewTab(shareText);
+            }
+        } else if(uri != null) {
+            createNewTab(uri.toString());
         }
     }
 

@@ -53,4 +53,5 @@
     <string name="facebook">facebook</string>
     <string name="instagram">instagram</string>
     <string name="twitter">twitter</string>
-</resources>
+    <string name="open_new_tab">new tab opened</string>
+bhj     </resources>

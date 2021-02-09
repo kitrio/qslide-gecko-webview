@@ -49,4 +49,5 @@
     <string name="facebook">페이스북</string>
     <string name="instagram">인스타그램</string>
     <string name="twitter">트위터</string>
+    <string name="open_new_tab">새 탭으로 열렸습니다.</string>
 </resources>
