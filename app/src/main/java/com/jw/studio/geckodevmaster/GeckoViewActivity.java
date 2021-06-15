@@ -36,6 +36,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.jw.studio.geckodevmaster.databinding.AppmenuPopupBinding;
 import com.jw.studio.geckodevmaster.databinding.GeckoviewActivityBinding;
@@ -167,7 +168,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                             .build())
                     .aboutConfigEnabled(true);
 
-            geckoRuntime = GeckoRuntime.create(this, runtimeSettingsBuilder.build());
+            geckoRuntime = GeckoRuntime.create(GeckoViewActivity.this, runtimeSettingsBuilder.build());
             extensionManager = new WebExtensionManager(geckoRuntime, tabSessionManager);
             tabSessionManager.setTabObserver(extensionManager);
 
@@ -546,6 +547,7 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
         newSession.open(geckoRuntime);
         setGeckoViewSession(newSession);
         newSession.loadUri(url);
+        Toast.makeText(this, R.string.open_new_tab, Toast.LENGTH_SHORT).show();
         toolbarView.updateTabCount();
     }
 
@@ -1102,7 +1104,6 @@ public class GeckoViewActivity extends FloatableActivity implements ToolbarLayou
                 String line;
                 while ((line = reader.readLine()) != null) {
                     builder.append(line);
-                    builder.append("\n");
                 }
 
                 errorPageTemplate = builder.toString();
